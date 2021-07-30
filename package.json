@@ -1,12 +1,49 @@
 {
   "name": "ucycle-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "0.0.1",
+  "description": "The application for the fashion market will be an environment where it will enable the sale, exchange, or donation of used or pre-existing materials. From textile waste, used clothes, various materials that will go through an evaluation sieve.",
+  "keywords": [
+    "fashion",
+    "clean architecture",
+    "clean code",
+    "ddd",
+    "bdd",
+    "tdd",
+    "solid",
+    "design patterns",
+    "node",
+    "typescript",
+    "jest",
+    "type-orm"
+  ],
+  "author": {
+    "name": "Gustavo Eklund",
+    "email": "gustavo.eklund@esattodigital.com",
+    "url": "https://github.com/GustavoEklund"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GustavoEklund/ucycle-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GustavoEklund/ucycle-api/issues",
+    "email": "gustavo.eklund@esattodigital.com"
+  },
+  "license": "ISC",
+  "scripts": {
+    "start": "node ./dist/main/api",
+    "build": "rimraf ./dist && tsc"
+  },
+  "devDependencies": {
+    "@types/module-alias": "^2.0.1",
+    "@types/node": "^16.4.8",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "module-alias": "^2.2.2",
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": "16.x"
+  }
 }
