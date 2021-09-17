@@ -12,7 +12,7 @@ class ExpressRouter {
   }
 }
 
-describe('', () => {
+describe('ExpressRouter', () => {
   it('should call handle with correct request', async () => {
     const req = getMockReq({ body: { any: 'any' } })
     const { res } = getMockRes()
@@ -22,5 +22,16 @@ describe('', () => {
     await sut.adapt(req, res)
 
     expect(controller.handle).toHaveBeenCalledWith({ any: 'any' })
+  })
+
+  it('should call handle with empty request', async () => {
+    const req = getMockReq()
+    const { res } = getMockRes()
+    const controller = mock<Controller>()
+    const sut = new ExpressRouter(controller)
+
+    await sut.adapt(req, res)
+
+    expect(controller.handle).toHaveBeenCalledWith({})
   })
 })
