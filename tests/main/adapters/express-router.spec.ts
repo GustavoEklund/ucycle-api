@@ -1,5 +1,5 @@
+import { adaptExpressRoute } from '@/main/adapters'
 import { Controller } from '@/application/controllers'
-import { adaptExpressRoute } from '@/infra/http'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { RequestHandler, Request, Response, NextFunction } from 'express'
