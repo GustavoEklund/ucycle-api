@@ -10,3 +10,12 @@ export namespace TokenGenerator {
 
   export type Result = string
 }
+
+export interface TokenValidator {
+  validateToken: (params: TokenValidator.Input) => Promise<TokenValidator.Output>
+}
+
+namespace TokenValidator {
+  export type Input = { token: string }
+  export type Output = string
+}
