@@ -33,6 +33,7 @@ describe('JwtTokenGenerator', () => {
       await sut.generateToken({ key, expirationInMs })
 
       expect(fakeJwt.sign).toHaveBeenCalledWith({ key }, secret, { expiresIn: 1 })
+      expect(fakeJwt.sign).toHaveBeenCalledTimes(1)
     })
 
     it('should return a token', async () => {
@@ -50,23 +51,19 @@ describe('JwtTokenGenerator', () => {
       await expect(promise).rejects.toThrow(error)
     })
   })
-  //
-  // describe('validateToken', () => {
-  //   let key: string
-  //   let expirationInMs: number
-  //   let token: string
-  //
-  //   beforeAll(() => {
-  //     key = 'any_token'
-  //     token = 'any_token'
-  //     expirationInMs = 1000
-  //     fakeJwt.verify.mockImplementation(() => token)
-  //   })
-  //
-  //   it('should call verify with correct params', async () => {
-  //     await sut.validateToken({ key: 'any_key', expirationInMs })
-  //
-  //     expect(fakeJwt.verify).toHaveBeenCalledWith(token, secret)
-  //   })
-  // })
+
+  describe('validateToken', () => {
+    let token: string
+
+    beforeAll(() => {
+      token = 'any_token'
+    })
+
+    it('should call verify with correct params', async () => {
+      await sut.validateToken({ token })
+
+      expect(fakeJwt.verify).toHaveBeenCalledWith(token, secret)
+      expect(fakeJwt.verify).toHaveBeenCalledTimes(1)
+    })
+  })
 })
