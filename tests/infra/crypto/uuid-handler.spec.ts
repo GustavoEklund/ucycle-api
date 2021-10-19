@@ -5,7 +5,7 @@ import { v4 } from 'uuid'
 
 jest.mock('uuid')
 
-describe('', () => {
+describe('UUIDHandler', () => {
   let sut: UUIDHandler
 
   beforeAll(() => {
