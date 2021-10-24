@@ -22,6 +22,17 @@ describe('AwsS3FileStorage', () => {
     sut = new AwsS3FileStorage(accessKey, secret, bucket)
   })
 
+  it('should config aws credentials on creation', () => {
+    expect(sut).toBeDefined()
+    expect(config.update).toHaveBeenCalledWith({
+      credentials: {
+        accessKeyId: accessKey,
+        secretAccessKey: secret
+      }
+    })
+    expect(config.update).toHaveBeenCalledTimes(1)
+  })
+
   describe('upload', () => {
     let file: Buffer
     let putObjectPromiseSpy: jest.Mock
@@ -32,17 +43,6 @@ describe('AwsS3FileStorage', () => {
       putObjectPromiseSpy = jest.fn()
       putObjectSpy = jest.fn().mockImplementation(() => ({ promise: putObjectPromiseSpy }))
       mocked(S3).mockImplementation(jest.fn().mockImplementation(() => ({ putObject: putObjectSpy })))
-    })
-
-    it('should config aws credentials on creation', () => {
-      expect(sut).toBeDefined()
-      expect(config.update).toHaveBeenCalledWith({
-        credentials: {
-          accessKeyId: accessKey,
-          secretAccessKey: secret
-        }
-      })
-      expect(config.update).toHaveBeenCalledTimes(1)
     })
 
     it('should call putObject with correct input', async () => {
@@ -71,6 +71,28 @@ describe('AwsS3FileStorage', () => {
       const promise = sut.upload({ key, file })
 
       await expect(promise).rejects.toThrow(error)
+    })
+  })
+
+  describe('delete', () => {
+    let deleteObjectPromiseSpy: jest.Mock
+    let deleteObjectSpy: jest.Mock
+
+    beforeAll(() => {
+      deleteObjectPromiseSpy = jest.fn()
+      deleteObjectSpy = jest.fn().mockImplementation(() => ({ promise: deleteObjectPromiseSpy }))
+      mocked(S3).mockImplementation(jest.fn().mockImplementation(() => ({ deleteObject: deleteObjectSpy })))
+    })
+
+    it('should call deleteObject', async () => {
+      await sut.delete({ key })
+
+      expect(deleteObjectSpy).toHaveBeenCalledWith({
+        Bucket: bucket,
+        Key: key
+      })
+      expect(deleteObjectSpy).toHaveBeenCalledTimes(1)
+      expect(deleteObjectPromiseSpy).toHaveBeenCalledTimes(1)
     })
   })
 })
