@@ -64,6 +64,12 @@ describe('AwsS3FileStorage', () => {
       expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/${key}`)
     })
 
+    it('should return encoded imageUrl', async () => {
+      const imageUrl = await sut.upload({ key: 'any key', file })
+
+      expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/any%20key`)
+    })
+
     it('should rethrow if putObject throws', async () => {
       const error = new Error('upload_error')
       putObjectPromiseSpy.mockRejectedValueOnce(error)
@@ -93,6 +99,15 @@ describe('AwsS3FileStorage', () => {
       })
       expect(deleteObjectSpy).toHaveBeenCalledTimes(1)
       expect(deleteObjectPromiseSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('should rethrow if deleteObject throws', async () => {
+      const error = new Error('upload_error')
+      deleteObjectPromiseSpy.mockRejectedValueOnce(error)
+
+      const promise = sut.delete({ key })
+
+      await expect(promise).rejects.toThrow(error)
     })
   })
 })
