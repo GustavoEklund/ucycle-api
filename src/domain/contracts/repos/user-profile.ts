@@ -16,5 +16,5 @@ export interface LoadUserProfile {
 
 export namespace LoadUserProfile {
   export type Input = { id: string }
-  export type Output = { name?: string }
+  export type Output = { name?: string } | undefined
 }
