@@ -1,23 +1,12 @@
-import { NextFunction, RequestHandler, Request, Response } from 'express'
-import { getMockReq, getMockRes } from '@jest-mock/express'
-import multer from 'multer'
-import { mocked } from 'ts-jest/utils'
+import { adaptMulter } from '@/main/adapters'
 import { ServerError } from '@/application/errors'
 
-jest.mock('multer')
+import { NextFunction, RequestHandler, Request, Response } from 'express'
+import { getMockReq, getMockRes } from '@jest-mock/express'
+import { mocked } from 'ts-jest/utils'
+import multer from 'multer'
 
-const adaptMulter: RequestHandler = (req, res, next) => {
-  const upload = multer().single('picture')
-  upload(req, res, error => {
-    if (error !== undefined) {
-      return res.status(500).json({ error: new ServerError(error).message })
-    }
-    if (req.file !== undefined) {
-      req.locals = { ...req.locals, file: { buffer: req.file?.buffer, mimeType: req.file?.mimetype } }
-    }
-    next()
-  })
-}
+jest.mock('multer')
 
 describe('MulterAdapter', () => {
   let uploadSpy: jest.Mock
