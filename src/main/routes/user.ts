@@ -1,7 +1,6 @@
 import { Router } from 'express'
-import { makeFacebookLoginController } from '@/main/factories/application/controllers'
-import { adaptExpressRoute as adapt } from '@/main/adapters'
+import { auth } from '@/main/middlewares'
 
 export default (router: Router): void => {
-  router.post('/login/facebook', adapt(makeFacebookLoginController()))
+  router.delete('/users/profile/picture', auth)
 }
