@@ -35,7 +35,7 @@ describe('FacebookAuthentication', () => {
     sut = setupFacebookAuthentication(facebookApi, userAccountRepo, crypto)
   })
 
-  it('should call LoadFacebookUserApi with correct params', async () => {
+  it('should call LoadFacebookUser with correct params', async () => {
     await sut({ token })
 
     expect(facebookApi.loadUser).toHaveBeenCalledWith({ token })
@@ -50,14 +50,14 @@ describe('FacebookAuthentication', () => {
     await expect(promise).rejects.toThrow(new AuthenticationError())
   })
 
-  it('should call LoadUserAccountRepository when LoadFacebookUserApi returns data', async () => {
+  it('should call LoadUserAccount when LoadFacebookUser returns data', async () => {
     await sut({ token })
 
     expect(userAccountRepo.load).toHaveBeenCalledWith({ email: 'any_fb_email' })
     expect(userAccountRepo.load).toHaveBeenCalledTimes(1)
   })
 
-  it('should call SaveFacebookAccountRepository with FacebookAccount', async () => {
+  it('should call SaveFacebookAccount with FacebookAccount', async () => {
     await sut({ token })
 
     expect(userAccountRepo.saveWithFacebook).toHaveBeenCalledWith(mocked(FacebookAccount).mock.instances[0])
@@ -80,7 +80,7 @@ describe('FacebookAuthentication', () => {
     expect(authResult).toEqual({ accessToken: 'any_generated_token' })
   })
 
-  it('should rethrow if LoadFacebookUserApi throws', async () => {
+  it('should rethrow if LoadFacebookUser throws', async () => {
     const error = new Error('facebook_error')
     facebookApi.loadUser.mockRejectedValueOnce(error)
 
@@ -89,7 +89,7 @@ describe('FacebookAuthentication', () => {
     await expect(promise).rejects.toThrow(error)
   })
 
-  it('should rethrow if LoadUserAccountRepository throws', async () => {
+  it('should rethrow if LoadUserAccount throws', async () => {
     const error = new Error('load_error')
     userAccountRepo.load.mockRejectedValueOnce(error)
 
@@ -98,7 +98,7 @@ describe('FacebookAuthentication', () => {
     await expect(promise).rejects.toThrow(error)
   })
 
-  it('should rethrow if SaveFacebookAccountRepository throws', async () => {
+  it('should rethrow if SaveFacebookAccount throws', async () => {
     const error = new Error('save_error')
     userAccountRepo.saveWithFacebook.mockRejectedValueOnce(error)
 
