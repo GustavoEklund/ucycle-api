@@ -7,9 +7,9 @@ type Model = Error | { userId: string }
 type Authorize = (params: { token: string }) => Promise<string>
 
 export class AuthenticationMiddleware implements Middleware {
-  constructor (private readonly authorize: Authorize) {}
+  constructor(private readonly authorize: Authorize) {}
 
-  async handle ({ authorization }: HttpRequest): Promise<HttpResponse<Model>> {
+  async handle({ authorization }: HttpRequest): Promise<HttpResponse<Model>> {
     if (!AuthenticationMiddleware.validate({ authorization })) return forbidden()
     try {
       const userId = await this.authorize({ token: authorization })
@@ -19,7 +19,7 @@ export class AuthenticationMiddleware implements Middleware {
     }
   }
 
-  private static validate ({ authorization }: HttpRequest): boolean {
+  private static validate({ authorization }: HttpRequest): boolean {
     const error = new RequiredString(authorization, 'authorization').validate()
     return error === undefined
   }

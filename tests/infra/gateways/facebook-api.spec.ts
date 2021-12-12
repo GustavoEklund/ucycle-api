@@ -30,8 +30,8 @@ describe('FacebookApi', () => {
       params: {
         client_id: clientId,
         client_secret: clientSecret,
-        grant_type: 'client_credentials'
-      }
+        grant_type: 'client_credentials',
+      },
     })
   })
 
@@ -42,8 +42,8 @@ describe('FacebookApi', () => {
       url: 'https://graph.facebook.com/debug_token',
       params: {
         access_token: 'any_app_token',
-        input_token: 'any_client_token'
-      }
+        input_token: 'any_client_token',
+      },
     })
   })
 
@@ -54,8 +54,8 @@ describe('FacebookApi', () => {
       url: 'https://graph.facebook.com/any_user_id',
       params: {
         fields: 'id,name,email',
-        access_token: 'any_client_token'
-      }
+        access_token: 'any_client_token',
+      },
     })
   })
 
@@ -65,7 +65,7 @@ describe('FacebookApi', () => {
     expect(fbUser).toEqual({
       facebookId: 'any_fb_id',
       name: 'any_fb_name',
-      email: 'any_fb_email'
+      email: 'any_fb_email',
     })
   })
 

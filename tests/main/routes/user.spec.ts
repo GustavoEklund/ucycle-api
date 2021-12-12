@@ -31,8 +31,7 @@ describe('User Routes', () => {
 
   describe('DELETE /users/profile/picture', () => {
     it('should return 403 if no authorization header is present', async () => {
-      const { status } = await request(app)
-        .delete('/api/users/profile/picture')
+      const { status } = await request(app).delete('/api/users/profile/picture')
 
       expect(status).toBe(403)
     })
@@ -54,12 +53,11 @@ describe('User Routes', () => {
     const uploadSpy = jest.fn()
 
     jest.mock('@/infra/gateways/aws-s3-file-storage', () => ({
-      AwsS3FileStorage: jest.fn().mockReturnValue({ upload: uploadSpy })
+      AwsS3FileStorage: jest.fn().mockReturnValue({ upload: uploadSpy }),
     }))
 
     it('should return 403 if no authorization header is present', async () => {
-      const { status } = await request(app)
-        .put('/api/users/profile/picture')
+      const { status } = await request(app).put('/api/users/profile/picture')
 
       expect(status).toBe(403)
     })
@@ -72,7 +70,10 @@ describe('User Routes', () => {
       const { status, body } = await request(app)
         .put('/api/users/profile/picture')
         .set({ authorization })
-        .attach('picture', Buffer.from('any_buffer'), { filename: 'any_name', contentType: 'image/png' })
+        .attach('picture', Buffer.from('any_buffer'), {
+          filename: 'any_name',
+          contentType: 'image/png',
+        })
 
       expect(status).toBe(200)
       expect(body).toEqual({ pictureUrl: 'any_url', initials: undefined })

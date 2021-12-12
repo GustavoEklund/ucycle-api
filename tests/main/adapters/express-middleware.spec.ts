@@ -22,8 +22,8 @@ describe('ExpressMiddleware', () => {
         emptyProp: '',
         nullProp: null,
         undefinedProp: undefined,
-        prop: 'any_value'
-      }
+        prop: 'any_value',
+      },
     })
   })
 
@@ -50,7 +50,7 @@ describe('ExpressMiddleware', () => {
   it('should respond with correct error and status code', async () => {
     middleware.handle.mockResolvedValueOnce({
       statusCode: 500,
-      data: new Error('any_error')
+      data: new Error('any_error'),
     })
 
     await sut(req, res, next)

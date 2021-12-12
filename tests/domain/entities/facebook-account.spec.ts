@@ -4,7 +4,7 @@ describe('FacebookAccount', () => {
   const fbData = {
     name: 'any_fb_name',
     email: 'any_fb_email',
-    facebookId: 'any_fb_id'
+    facebookId: 'any_fb_id',
   }
 
   it('should create with facebook data only', () => {
@@ -13,7 +13,7 @@ describe('FacebookAccount', () => {
     expect(sut).toEqual({
       name: 'any_fb_name',
       email: 'any_fb_email',
-      facebookId: 'any_fb_id'
+      facebookId: 'any_fb_id',
     })
   })
 
@@ -26,7 +26,7 @@ describe('FacebookAccount', () => {
       id: 'any_id',
       name: 'any_fb_name',
       email: 'any_fb_email',
-      facebookId: 'any_fb_id'
+      facebookId: 'any_fb_id',
     })
   })
 
@@ -39,7 +39,7 @@ describe('FacebookAccount', () => {
       id: 'any_id',
       name: 'any_name',
       email: 'any_fb_email',
-      facebookId: 'any_fb_id'
+      facebookId: 'any_fb_id',
     })
   })
 })

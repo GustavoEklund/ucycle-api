@@ -1,4 +1,8 @@
-import { ConnectionNotFoundError, PgConnection, TransactionNotFoundError } from '@/infra/repos/postgres/helpers'
+import {
+  ConnectionNotFoundError,
+  PgConnection,
+  TransactionNotFoundError,
+} from '@/infra/repos/postgres/helpers'
 
 import { createConnection, getConnection, getConnectionManager, getRepository } from 'typeorm'
 import { mocked } from 'ts-jest/utils'
@@ -11,7 +15,7 @@ jest.mock('typeorm', () => ({
   createConnection: jest.fn(),
   getConnection: jest.fn(),
   getConnectionManager: jest.fn(),
-  getRepository: jest.fn()
+  getRepository: jest.fn(),
 }))
 
 describe('PgConnection', () => {
@@ -31,7 +35,7 @@ describe('PgConnection', () => {
   beforeAll(() => {
     hasSpy = jest.fn().mockReturnValue(true)
     getConnectionManagerSpy = jest.fn().mockReturnValue({
-      has: hasSpy
+      has: hasSpy,
     })
     mocked(getConnectionManager).mockImplementation(getConnectionManagerSpy)
     startTransactionSpy = jest.fn()
@@ -44,16 +48,16 @@ describe('PgConnection', () => {
       commitTransaction: commitTransactionSpy,
       rollbackTransaction: rollbackTransactionSpy,
       release: releaseSpy,
-      manager: { getRepository: getRepositorySpy }
+      manager: { getRepository: getRepositorySpy },
     })
     createConnectionSpy = jest.fn().mockResolvedValue({
-      createQueryRunner: createQueryRunnerSpy
+      createQueryRunner: createQueryRunnerSpy,
     })
     mocked(createConnection).mockImplementation(createConnectionSpy)
     closeSpy = jest.fn()
     getConnectionSpy = jest.fn().mockReturnValue({
       createQueryRunner: createQueryRunnerSpy,
-      close: closeSpy
+      close: closeSpy,
     })
     mocked(getConnection).mockImplementation(getConnectionSpy)
     mocked(getRepository).mockImplementation(getRepositorySpy)
@@ -64,7 +68,9 @@ describe('PgConnection', () => {
   })
 
   afterEach(async () => {
-    try { await sut.disconnect() } catch {}
+    try {
+      await sut.disconnect()
+    } catch {}
   })
 
   it('should have only one instance', () => {

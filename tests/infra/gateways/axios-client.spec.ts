@@ -15,7 +15,7 @@ describe('AxiosHttpClient', () => {
     fakeAxios = axios as jest.Mocked<typeof axios>
     fakeAxios.get.mockResolvedValue({
       status: 200,
-      data: 'any_data'
+      data: 'any_data',
     })
   })
 

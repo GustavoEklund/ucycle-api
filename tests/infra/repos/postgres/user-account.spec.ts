@@ -54,7 +54,7 @@ describe('PgUserAccountRepository', () => {
       const { id } = await sut.saveWithFacebook({
         email: 'any_email',
         name: 'any_name',
-        facebookId: 'any_fb_id'
+        facebookId: 'any_fb_id',
       })
       const pgUser = await pgUserRepo.findOne({ email: 'any_email' })
 
@@ -66,14 +66,14 @@ describe('PgUserAccountRepository', () => {
       await pgUserRepo.save({
         email: 'any_email',
         name: 'any_name',
-        facebookId: 'any_fb_id'
+        facebookId: 'any_fb_id',
       })
 
       const { id } = await sut.saveWithFacebook({
         id: '1',
         email: 'new_email',
         name: 'new_name',
-        facebookId: 'new_fb_id'
+        facebookId: 'new_fb_id',
       })
       const pgUser = await pgUserRepo.findOne({ id: 1 })
 
@@ -81,7 +81,7 @@ describe('PgUserAccountRepository', () => {
         id: 1,
         email: 'any_email',
         name: 'new_name',
-        facebookId: 'new_fb_id'
+        facebookId: 'new_fb_id',
       })
       expect(id).toBe('1')
     })

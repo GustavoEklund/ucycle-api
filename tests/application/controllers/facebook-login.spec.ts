@@ -25,9 +25,7 @@ describe('FacebookLoginController', () => {
   it('should build Validators correctly', async () => {
     const validators = sut.buildValidators({ token })
 
-    expect(validators).toEqual([
-      new RequiredString('any_token', 'token')
-    ])
+    expect(validators).toEqual([new RequiredString('any_token', 'token')])
   })
 
   it('should call FacebookAuthentication with correct params', async () => {
@@ -44,7 +42,7 @@ describe('FacebookLoginController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 401,
-      data: new UnauthorizedError()
+      data: new UnauthorizedError(),
     })
   })
 
@@ -54,8 +52,8 @@ describe('FacebookLoginController', () => {
     expect(httpResponse).toEqual({
       statusCode: 200,
       data: {
-        accessToken: 'any_value'
-      }
+        accessToken: 'any_value',
+      },
     })
   })
 })

@@ -19,7 +19,7 @@ describe('ExpressRouter', () => {
     controller = mock()
     controller.handle.mockResolvedValue({
       statusCode: 200,
-      data: { data: 'any_data' }
+      data: { data: 'any_data' },
     })
   })
 
@@ -55,7 +55,7 @@ describe('ExpressRouter', () => {
   it('should respond with 204 and empty data', async () => {
     controller.handle.mockResolvedValueOnce({
       statusCode: 204,
-      data: null
+      data: null,
     })
 
     await sut(req, res, next)
@@ -69,7 +69,7 @@ describe('ExpressRouter', () => {
   it('should respond with 400 and correct error', async () => {
     controller.handle.mockResolvedValueOnce({
       statusCode: 400,
-      data: new Error('any_error')
+      data: new Error('any_error'),
     })
 
     await sut(req, res, next)
@@ -83,7 +83,7 @@ describe('ExpressRouter', () => {
   it('should respond with 500 and correct error', async () => {
     controller.handle.mockResolvedValueOnce({
       statusCode: 500,
-      data: new Error('any_error')
+      data: new Error('any_error'),
     })
 
     await sut(req, res, next)

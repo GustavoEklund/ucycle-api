@@ -10,10 +10,11 @@ jest.mock('@/application/validation/composite')
 class ControllerStub extends Controller {
   result: HttpResponse = {
     statusCode: 200,
-    data: 'any_data'
+    data: 'any_data',
   }
 
-  async perform (httpRequest: any): Promise<HttpResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async perform(httpRequest: any): Promise<HttpResponse> {
     return this.result
   }
 }
@@ -28,7 +29,7 @@ describe('Controller', () => {
   it('should return 400 if validation fails', async () => {
     const error = new Error('validation_error')
     const ValidationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
-      validate: jest.fn().mockReturnValueOnce(error)
+      validate: jest.fn().mockReturnValueOnce(error),
     }))
     mocked(ValidationComposite).mockImplementationOnce(ValidationCompositeSpy)
 
@@ -37,7 +38,7 @@ describe('Controller', () => {
     expect(ValidationCompositeSpy).toHaveBeenCalledWith([])
     expect(httpResponse).toEqual({
       statusCode: 400,
-      data: error
+      data: error,
     })
   })
 
@@ -49,7 +50,7 @@ describe('Controller', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 500,
-      data: new ServerError(error)
+      data: new ServerError(error),
     })
   })
 
@@ -60,7 +61,7 @@ describe('Controller', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 500,
-      data: new ServerError()
+      data: new ServerError(),
     })
   })
 

@@ -1,17 +1,25 @@
-import { Validator, AllowedMimeTypes, Extension, MaxFileSize, Required, RequiredBuffer, RequiredString } from '@/application/validation'
+import {
+  Validator,
+  AllowedMimeTypes,
+  Extension,
+  MaxFileSize,
+  Required,
+  RequiredBuffer,
+  RequiredString,
+} from '@/application/validation'
 
 export class ValidationBuilder {
-  private constructor (
+  private constructor(
     private readonly value: any,
     private readonly fieldName?: string,
     private readonly validators: Validator[] = []
   ) {}
 
-  static of ({ value, fieldName }: { value: any, fieldName?: string }): ValidationBuilder {
+  static of({ value, fieldName }: { value: any; fieldName?: string }): ValidationBuilder {
     return new ValidationBuilder(value, fieldName)
   }
 
-  required (): ValidationBuilder {
+  required(): ValidationBuilder {
     if (this.value instanceof Buffer) {
       this.validators.push(new RequiredBuffer(this.value, this.fieldName))
     } else if (typeof this.value === 'string') {
@@ -25,7 +33,13 @@ export class ValidationBuilder {
     return this
   }
 
-  image ({ allowed, maxSizeInMb }: { allowed: Extension[], maxSizeInMb: number }): ValidationBuilder {
+  image({
+    allowed,
+    maxSizeInMb,
+  }: {
+    allowed: Extension[]
+    maxSizeInMb: number
+  }): ValidationBuilder {
     if (this.value.mimeType !== undefined) {
       this.validators.push(new AllowedMimeTypes(allowed, this.value.mimeType))
     }
@@ -35,7 +49,7 @@ export class ValidationBuilder {
     return this
   }
 
-  build (): Validator[] {
+  build(): Validator[] {
     return this.validators
   }
 }

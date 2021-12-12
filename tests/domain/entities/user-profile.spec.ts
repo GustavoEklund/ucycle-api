@@ -13,7 +13,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: 'any_url',
-      initials: undefined
+      initials: undefined,
     })
   })
 
@@ -23,7 +23,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: 'any_url',
-      initials: undefined
+      initials: undefined,
     })
   })
 
@@ -33,7 +33,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: undefined,
-      initials: 'GE'
+      initials: 'GE',
     })
   })
 
@@ -43,7 +43,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: undefined,
-      initials: 'GU'
+      initials: 'GU',
     })
   })
 
@@ -53,7 +53,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: undefined,
-      initials: 'G'
+      initials: 'G',
     })
   })
 
@@ -63,7 +63,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: undefined,
-      initials: undefined
+      initials: undefined,
     })
   })
 
@@ -73,7 +73,7 @@ describe('UserProfile', () => {
     expect(sut).toEqual({
       id: 'any_id',
       pictureUrl: undefined,
-      initials: undefined
+      initials: undefined,
     })
   })
 })

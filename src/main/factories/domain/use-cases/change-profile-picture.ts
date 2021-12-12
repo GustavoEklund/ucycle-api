@@ -3,9 +3,5 @@ import { makeAwsS3FileStorage, makeUniqueId } from '@/main/factories/infra/gatew
 import { makePgUserProfileRepo } from '@/main/factories/infra/repos/postgres'
 
 export const makeChangeProfilePicture = (): ChangeProfilePicture => {
-  return setupChangeProfilePicture(
-    makeAwsS3FileStorage(),
-    makeUniqueId(),
-    makePgUserProfileRepo()
-  )
+  return setupChangeProfilePicture(makeAwsS3FileStorage(), makeUniqueId(), makePgUserProfileRepo())
 }

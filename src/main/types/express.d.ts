@@ -1,4 +1,4 @@
-declare module Express {
+declare namespace Express {
   interface Request {
     locals?: any
   }

@@ -44,7 +44,9 @@ describe('JwtTokenGenerator', () => {
 
     it('should rethrow if sign throws', async () => {
       const error = new Error('token_error')
-      fakeJwt.sign.mockImplementationOnce(() => { throw error })
+      fakeJwt.sign.mockImplementationOnce(() => {
+        throw error
+      })
 
       const promise = sut.generate({ key, expirationInMs })
 
@@ -77,7 +79,9 @@ describe('JwtTokenGenerator', () => {
 
     it('should rethrow if sign throws', async () => {
       const error = new Error('verify_error')
-      fakeJwt.verify.mockImplementationOnce(() => { throw error })
+      fakeJwt.verify.mockImplementationOnce(() => {
+        throw error
+      })
 
       const promise = sut.validate({ token })
 

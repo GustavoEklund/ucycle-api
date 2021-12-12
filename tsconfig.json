@@ -15,8 +15,10 @@
       "@/tests/*": ["../tests/*"]
     },
     "strict": true,
+    "noImplicitOverride": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests", "jest.config.js", "jest.integration.config.js", "ormconfig.js"],
 }

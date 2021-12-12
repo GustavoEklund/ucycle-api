@@ -9,7 +9,7 @@ jest.mock('@/domain/entities/user-profile')
 
 describe('ChangeProfilePicture', () => {
   let uuid: string
-  let file: { buffer: Buffer, mimeType: string }
+  let file: { buffer: Buffer; mimeType: string }
   let buffer: Buffer
   let mimeType: string
   let fileStorage: MockProxy<UploadFile & DeleteFile>
@@ -84,18 +84,19 @@ describe('ChangeProfilePicture', () => {
   })
 
   it('should return correct data on success', async () => {
-    mocked(UserProfile).mockImplementationOnce(id => ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mocked(UserProfile).mockImplementationOnce((id) => ({
       setPicture: jest.fn(),
       id: 'any_id',
       pictureUrl: 'any_url',
-      initials: 'any_initials'
+      initials: 'any_initials',
     }))
 
     const result = await sut({ id: 'any_id', file })
 
     expect(result).toMatchObject({
       pictureUrl: 'any_url',
-      initials: 'any_initials'
+      initials: 'any_initials',
     })
   })
 

@@ -22,7 +22,7 @@ describe('FacebookAuthentication', () => {
     facebookApi.loadUser.mockResolvedValue({
       name: 'any_fb_name',
       email: 'any_fb_email',
-      facebookId: 'any_fb_id'
+      facebookId: 'any_fb_id',
     })
     userAccountRepo = mock()
     userAccountRepo.load.mockResolvedValue(undefined)
@@ -60,7 +60,9 @@ describe('FacebookAuthentication', () => {
   it('should call SaveFacebookAccount with FacebookAccount', async () => {
     await sut({ token })
 
-    expect(userAccountRepo.saveWithFacebook).toHaveBeenCalledWith(mocked(FacebookAccount).mock.instances[0])
+    expect(userAccountRepo.saveWithFacebook).toHaveBeenCalledWith(
+      mocked(FacebookAccount).mock.instances[0]
+    )
     expect(userAccountRepo.saveWithFacebook).toHaveBeenCalledTimes(1)
   })
 
@@ -69,7 +71,7 @@ describe('FacebookAuthentication', () => {
 
     expect(crypto.generate).toHaveBeenCalledWith({
       key: 'any_account_id',
-      expirationInMs: AccessToken.expirationInMs
+      expirationInMs: AccessToken.expirationInMs,
     })
     expect(crypto.generate).toHaveBeenCalledTimes(1)
   })

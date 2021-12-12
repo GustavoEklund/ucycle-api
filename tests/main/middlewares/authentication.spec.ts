@@ -22,9 +22,7 @@ describe('Authentication Middleware', () => {
       res.json(req.locals)
     })
 
-    const { status, body } = await request(app)
-      .get('/fake-route')
-      .set({ authorization })
+    const { status, body } = await request(app).get('/fake-route').set({ authorization })
 
     expect(status).toBe(200)
     expect(body).toEqual({ userId: 'any_user_id' })

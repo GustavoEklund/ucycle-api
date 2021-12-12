@@ -15,8 +15,8 @@ describe('Login Routes', () => {
 
     jest.mock('@/infra/gateways/facebook-api', () => ({
       FacebookApi: jest.fn().mockReturnValue({
-        loadUser: loadUserSpy
-      })
+        loadUser: loadUserSpy,
+      }),
     }))
 
     beforeAll(async () => {
@@ -34,7 +34,11 @@ describe('Login Routes', () => {
     })
 
     it('should return 200 with AccessToken', async () => {
-      loadUserSpy.mockResolvedValueOnce({ facebookId: 'any_id', name: 'any_name', email: 'any_email' })
+      loadUserSpy.mockResolvedValueOnce({
+        facebookId: 'any_id',
+        name: 'any_name',
+        email: 'any_email',
+      })
 
       const { status, body } = await request(app)
         .post('/api/login/facebook')

@@ -4,7 +4,7 @@ import { AllowedMimeTypes, MaxFileSize, Required, RequiredBuffer } from '@/appli
 describe('SaveProfilePictureController', () => {
   let buffer: Buffer
   let mimeType: string
-  let file: { buffer: Buffer, mimeType: string }
+  let file: { buffer: Buffer; mimeType: string }
   let userId: string
   let sut: SaveProfilePictureController
   let changeProfilePicture: jest.Mock
@@ -16,7 +16,7 @@ describe('SaveProfilePictureController', () => {
     userId = 'any_user_id'
     changeProfilePicture = jest.fn().mockResolvedValue({
       initials: 'any_initials',
-      pictureUrl: 'any_url'
+      pictureUrl: 'any_url',
     })
   })
 
@@ -35,7 +35,7 @@ describe('SaveProfilePictureController', () => {
       new Required(file, 'file'),
       new RequiredBuffer(buffer, 'file'),
       new AllowedMimeTypes(['png', 'jpg'], mimeType),
-      new MaxFileSize(5, buffer)
+      new MaxFileSize(5, buffer),
     ])
   })
 
@@ -59,8 +59,8 @@ describe('SaveProfilePictureController', () => {
       statusCode: 200,
       data: {
         initials: 'any_initials',
-        pictureUrl: 'any_url'
-      }
+        pictureUrl: 'any_url',
+      },
     })
   })
 })

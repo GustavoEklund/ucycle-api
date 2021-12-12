@@ -7,10 +7,12 @@ export namespace LoadUserAccount {
     email: string
   }
 
-  export type Output = undefined | {
-    id: string
-    name?: string
-  }
+  export type Output =
+    | undefined
+    | {
+        id: string
+        name?: string
+      }
 }
 
 export interface SaveFacebookAccount {

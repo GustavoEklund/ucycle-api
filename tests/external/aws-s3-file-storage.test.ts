@@ -6,15 +6,12 @@ describe('AWS S3 Integration Tests', () => {
   let sut: AwsS3FileStorage
 
   beforeEach(() => {
-    sut = new AwsS3FileStorage(
-      env.s3.accessKey,
-      env.s3.secret,
-      env.s3.bucket
-    )
+    sut = new AwsS3FileStorage(env.s3.accessKey, env.s3.secret, env.s3.bucket)
   })
 
   it('should upload and delete image from aws s3', async () => {
-    const onePixelImage = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg=='
+    const onePixelImage =
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg=='
     const file = Buffer.from(onePixelImage, 'base64')
     const fileName = 'any_file_name.png'
 

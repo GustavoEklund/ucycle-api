@@ -27,8 +27,8 @@ describe('AwsS3FileStorage', () => {
     expect(config.update).toHaveBeenCalledWith({
       credentials: {
         accessKeyId: accessKey,
-        secretAccessKey: secret
-      }
+        secretAccessKey: secret,
+      },
     })
     expect(config.update).toHaveBeenCalledTimes(1)
   })
@@ -42,7 +42,9 @@ describe('AwsS3FileStorage', () => {
       file = Buffer.from('any_buffer')
       putObjectPromiseSpy = jest.fn()
       putObjectSpy = jest.fn().mockImplementation(() => ({ promise: putObjectPromiseSpy }))
-      mocked(S3).mockImplementation(jest.fn().mockImplementation(() => ({ putObject: putObjectSpy })))
+      mocked(S3).mockImplementation(
+        jest.fn().mockImplementation(() => ({ putObject: putObjectSpy }))
+      )
     })
 
     it('should call putObject with correct input', async () => {
@@ -52,7 +54,7 @@ describe('AwsS3FileStorage', () => {
         Bucket: bucket,
         Key: fileName,
         Body: file,
-        ACL: 'public-read'
+        ACL: 'public-read',
       })
       expect(putObjectSpy).toHaveBeenCalledTimes(1)
       expect(putObjectPromiseSpy).toHaveBeenCalledTimes(1)
@@ -87,7 +89,9 @@ describe('AwsS3FileStorage', () => {
     beforeAll(() => {
       deleteObjectPromiseSpy = jest.fn()
       deleteObjectSpy = jest.fn().mockImplementation(() => ({ promise: deleteObjectPromiseSpy }))
-      mocked(S3).mockImplementation(jest.fn().mockImplementation(() => ({ deleteObject: deleteObjectSpy })))
+      mocked(S3).mockImplementation(
+        jest.fn().mockImplementation(() => ({ deleteObject: deleteObjectSpy }))
+      )
     })
 
     it('should call deleteObject', async () => {
@@ -95,7 +99,7 @@ describe('AwsS3FileStorage', () => {
 
       expect(deleteObjectSpy).toHaveBeenCalledWith({
         Bucket: bucket,
-        Key: fileName
+        Key: fileName,
       })
       expect(deleteObjectSpy).toHaveBeenCalledTimes(1)
       expect(deleteObjectPromiseSpy).toHaveBeenCalledTimes(1)

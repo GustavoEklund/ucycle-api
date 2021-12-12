@@ -7,19 +7,22 @@ type LoadOutput = LoadUserAccount.Output
 type SaveInput = SaveFacebookAccount.Input
 type SaveOutput = SaveFacebookAccount.Output
 
-export class PgUserAccountRepository extends PgRepository implements LoadUserAccount, SaveFacebookAccount {
-  async load ({ email }: LoadInput): Promise<LoadOutput> {
+export class PgUserAccountRepository
+  extends PgRepository
+  implements LoadUserAccount, SaveFacebookAccount
+{
+  async load({ email }: LoadInput): Promise<LoadOutput> {
     const pgUserRepo = this.getRepository(PgUser)
     const pgUser = await pgUserRepo.findOne({ email })
     if (pgUser !== undefined) {
       return {
         id: pgUser.id.toString(),
-        name: pgUser.name ?? undefined
+        name: pgUser.name ?? undefined,
       }
     }
   }
 
-  async saveWithFacebook ({ id, name, email, facebookId }: SaveInput): Promise<SaveOutput> {
+  async saveWithFacebook({ id, name, email, facebookId }: SaveInput): Promise<SaveOutput> {
     const pgUserRepo = this.getRepository(PgUser)
     let resultId: string
     if (id === undefined) {
