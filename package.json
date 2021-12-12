@@ -1,7 +1,7 @@
 {
-  "name": "ucycle-api",
+  "name": "node-typescript-api",
   "version": "0.0.1",
-  "description": "The application for the fashion market will be an environment where it will enable the sale, exchange, or donation of used or pre-existing materials. From textile waste, used clothes, various materials that will go through an evaluation sieve.",
+  "description": "A TypeScript API with Clean Architecture Boilerplate.",
   "keywords": [
     "fashion",
     "clean architecture",
