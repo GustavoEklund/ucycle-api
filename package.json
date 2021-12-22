@@ -23,10 +23,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/GustavoEklund/ucycle-api.git"
+    "url": "https://github.com/GustavoEklund/node-typescript-api.git"
   },
   "bugs": {
-    "url": "https://github.com/GustavoEklund/ucycle-api/issues",
+    "url": "https://github.com/GustavoEklund/node-typescript-api/issues",
     "email": "gustavo.eklund@esattodigital.com"
   },
   "license": "ISC",
