@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  node-api:
+    container_name: node-api
+    build: .
+    restart: always
+    working_dir: /usr/src/app
+    entrypoint: /usr/src/app/.docker/entrypoint.sh
+    depends_on:
+      - postgres-database
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - '8080:8080'
+      - '9222:9222'
+
+  postgres-database:
+    container_name: postgres-database
+    image: postgres:14.1-alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./.docker/database-data:/var/lib/postgresql/data
+    networks:
+      - application-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=application_database
+
+networks:
+  application-network:
+    driver: bridge
