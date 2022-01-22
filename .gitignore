@@ -5,3 +5,4 @@ dist
 coverage
 .env
 .docker/database-data
+.docker/keycloak-data

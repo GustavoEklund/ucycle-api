@@ -10,11 +10,14 @@ services:
     entrypoint: /usr/src/app/.docker/entrypoint.sh
     depends_on:
       - postgres-database
+      - keycloak-auth
+    ports:
+      - '3000:8080'
+      - '9222:9222'
     volumes:
       - ./:/usr/src/app/
-    ports:
-      - '8080:8080'
-      - '9222:9222'
+    networks:
+      - application-network
 
   postgres-database:
     container_name: postgres-database
@@ -29,7 +32,29 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=application_database
+      - POSTGRES_DB=application
+
+  keycloak-auth:
+    container_name: keycloak-auth
+    image: jboss/keycloak:16.1.0
+    depends_on:
+      - postgres-database
+    ports:
+      - 8080:8080
+    volumes:
+      - ./.docker/keycloak-data:/opt/jboss/keycloak/standalone/data
+    networks:
+      - application-network
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=postgres
+      - DB_PORT=5432
+      - DB_ADDR=postgres-database
+      - DB_SCHEMA=public
+      - DB_DATABASE=keycloak
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
 
 networks:
   application-network:

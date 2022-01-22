@@ -1,0 +1,8 @@
+POST http://localhost:8080/auth/realms/application/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=api
+&client_secret=RIj71fplSjSR5eW01nVM8U4ctjKQofUk
+&grant_type=password
+&username=gustavo04616@gmail.com
+&password=123@Mudar
