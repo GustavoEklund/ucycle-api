@@ -15,4 +15,20 @@ export const env = {
   },
   port: process.env.PORT ?? 8080,
   jwtSecret: process.env.JWT_SECRET ?? '',
+
+  session: {
+    secret: process.env.SESSION_SECRET ?? '',
+    cookie: {
+      maxAge: process.env.SESSION_COOKIE_MAX_AGE ?? 3600,
+    },
+  },
+  server: {
+    devMode: process.env.SERVER_DEV_MODE ?? true,
+  },
+
+  keycloak: {
+    realm: process.env.KEYCLOAK_REALM ?? '',
+    authServerUrl: process.env.KEYCLOAK_AUTH_SERVER ?? '',
+    clientId: process.env.KEYCLOAK_CLIENT_ID ?? '',
+  },
 }

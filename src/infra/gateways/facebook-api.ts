@@ -3,7 +3,7 @@ import { LoadFacebookUser } from '@/domain/contracts/gateways'
 
 type AppToken = {
   // eslint-disable-next-line camelcase
-  access_token: string
+  accessToken: string
 }
 
 type DebugToken = {
@@ -39,7 +39,7 @@ export class FacebookApi implements LoadFacebookUser {
 
   private async getAppToken(): Promise<AppToken> {
     return this.httpClient.get({
-      url: `${this.baseUrl}/oauth/access_token`,
+      url: `${this.baseUrl}/oauth/accessToken`,
       params: {
         client_id: this.clientId,
         client_secret: this.clientSecret,
@@ -53,7 +53,7 @@ export class FacebookApi implements LoadFacebookUser {
     return this.httpClient.get({
       url: `${this.baseUrl}/debug_token`,
       params: {
-        access_token: appToken.access_token,
+        accessToken: appToken.accessToken,
         input_token: clientToken,
       },
     })
@@ -65,7 +65,7 @@ export class FacebookApi implements LoadFacebookUser {
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
         fields: ['id', 'name', 'email'].join(','),
-        access_token: clientToken,
+        accessToken: clientToken,
       },
     })
   }

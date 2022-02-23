@@ -7,3 +7,4 @@ coverage
 .docker/database-data
 .docker/keycloak-data
 yarn.lock
+package-lock.json
