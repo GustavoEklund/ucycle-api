@@ -5,7 +5,7 @@ import { FacebookAuthentication } from '@/domain/use-cases'
 import { AuthenticationError } from '@/domain/entities/errors'
 
 type HttpRequest = { token: string }
-type Model = Error | { access_token: string }
+type Model = Error | { accessToken: string }
 
 export class FacebookLoginController extends Controller {
   constructor(private readonly facebookAuthentication: FacebookAuthentication) {
@@ -14,8 +14,8 @@ export class FacebookLoginController extends Controller {
 
   async perform({ token }: HttpRequest): Promise<HttpResponse<Model>> {
     try {
-      const access_token = await this.facebookAuthentication({ token })
-      return ok(access_token)
+      const accessToken = await this.facebookAuthentication({ token })
+      return ok(accessToken)
     } catch (error) {
       if (error instanceof AuthenticationError) return unauthorized()
       throw error
