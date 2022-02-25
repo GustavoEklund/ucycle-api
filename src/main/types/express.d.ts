@@ -3,7 +3,7 @@ declare namespace Express {
     locals?: any
     kauth?: {
       grant: {
-        accessToken: {
+        access_token: {
           content: {
             sub: string
           }

@@ -13,7 +13,7 @@ export const adaptKeycloakProtect =
       if (req.kauth !== undefined) {
         req.locals = {
           ...req.locals,
-          userId: req.kauth.grant?.accessToken?.content?.sub,
+          userId: req.kauth.grant?.access_token?.content?.sub,
         }
       }
       next()
