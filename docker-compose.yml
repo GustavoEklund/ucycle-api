@@ -12,7 +12,7 @@ services:
       - postgres-database
       - keycloak-auth
     ports:
-      - '3000:8080'
+      - '3000:3000'
       - '9222:9222'
     volumes:
       - ./:/usr/src/app/
@@ -21,18 +21,18 @@ services:
 
   postgres-database:
     container_name: postgres-database
-    image: postgres:14.1-alpine
+    build: ./.docker/database
     restart: always
     ports:
       - '5432:5432'
     volumes:
-      - ./.docker/database-data:/var/lib/postgresql/data
+      - database-data:/var/lib/postgresql/data
     networks:
       - application-network
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=application
+      - POSTGRES_MULTIPLE_DATABASES=owl_condomine,keycloak
 
   keycloak-auth:
     container_name: keycloak-auth
@@ -40,9 +40,9 @@ services:
     depends_on:
       - postgres-database
     ports:
-      - 8080:8080
+      - '8080:8080'
     volumes:
-      - ./.docker/keycloak-data:/opt/jboss/keycloak/standalone/data
+      - keycloak-data:/opt/jboss/keycloak/standalone/data
     networks:
       - application-network
     environment:
@@ -59,3 +59,7 @@ services:
 networks:
   application-network:
     driver: bridge
+
+volumes:
+  database-data:
+  keycloak-data:
