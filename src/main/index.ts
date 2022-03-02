@@ -8,6 +8,7 @@ PgConnection.getInstance()
   .connect()
   .then(async () => {
     const { app } = await import('@/main/config/app')
-    app.listen(env.port, () => console.log(`Server running at http://localhost:${env.port}`))
+    const message = `[INFO] Server running at http://localhost:${env.server.port}`
+    app.listen(env.server.port, () => console.log(message))
   })
   .catch(console.error)
