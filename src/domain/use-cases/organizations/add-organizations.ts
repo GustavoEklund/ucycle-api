@@ -1,5 +1,4 @@
 import { SaveOrganization, LoadOrganization } from '@/domain/contracts/repos'
-import { AlreadyExistsError } from '@/domain/entities/errors'
 import { Organization } from '@/domain/entities'
 
 type Input = {
