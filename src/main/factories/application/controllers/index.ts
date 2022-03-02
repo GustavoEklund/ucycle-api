@@ -1,2 +1,3 @@
-export * from './facebook-login'
 export * from './save-profile-picture'
+
+export * from './organizations/add-organizations'
