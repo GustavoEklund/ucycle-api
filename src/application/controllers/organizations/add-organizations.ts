@@ -6,7 +6,7 @@ import { AddOrganizations } from '@/domain/use-cases'
 type HttpRequest = { name: string; address: object; ownerUserId: number }
 type Model = Error | void
 
-export class addOrganizationsController extends Controller {
+export class AddOrganizationsController extends Controller {
   constructor(private readonly addOrganizations: AddOrganizations) {
     super()
   }

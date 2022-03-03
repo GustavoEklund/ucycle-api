@@ -21,7 +21,14 @@ export interface SaveOrganization {
 export namespace SaveOrganization {
   export type Input = {
     name: string
-    address: object
+    address: {
+      city: string
+      state: string
+      country: string
+      street: string
+      neighbourhood: string
+      buildingNumber: number
+    }
     ownerUserId: number
   }
 

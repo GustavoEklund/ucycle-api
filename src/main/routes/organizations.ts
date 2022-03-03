@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { adaptExpressRoute as adapt } from '@/main/adapters'
-import { addOrganizationsController } from '@/main/factories/application/controllers/organizations/add-organizations'
+import { makeAddOrganizationsController } from '@/main/factories/application/controllers'
 
 export default (router: Router): void => {
-  router.post('/organizations', adapt(addOrganizationsController()))
+  router.post('/organizations', adapt(makeAddOrganizationsController()))
 }
