@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { PgUser } from './user'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id!: number
 
   @Column()
@@ -11,6 +12,6 @@ export class PgOrganization {
   @Column()
   address!: object
 
-  @Column()
-  ownerUserId!: number
+  @ManyToOne(() => PgUser, (user) => user.id)
+  ownerUser!: PgUser
 }
