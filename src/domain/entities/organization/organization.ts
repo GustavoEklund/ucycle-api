@@ -1,23 +1,32 @@
+type Address = {
+  city: string
+  state: string
+  country: string
+  street: string
+  neighbourhood: string
+  buildingNumber: number
+}
+
 export class Organization {
-  public readonly id: string | void
+  public readonly id: string | undefined
   public readonly name: string
-  public readonly address: object
+  public readonly address: Address
   public readonly ownerUserId: number
 
   constructor({
     id,
     name,
     address,
-    ownerUserId,
+    userId,
   }: {
     id?: string
     name: string
-    address: object
-    ownerUserId: number
+    address: Address
+    userId: number
   }) {
     this.id = id
     this.name = name
     this.address = address
-    this.ownerUserId = ownerUserId
+    this.ownerUserId = userId
   }
 }
