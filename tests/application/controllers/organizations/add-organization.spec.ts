@@ -37,6 +37,7 @@ describe('AddOrganizationsController', () => {
     userId = 'any_user_id'
 
     AddOrganizationsSpy = jest.fn()
+    AddOrganizationsSpy.mockResolvedValue({ id: 'any_id' })
   })
 
   beforeEach(() => {
@@ -75,6 +76,14 @@ describe('AddOrganizationsController', () => {
     expect(httpResponse).toEqual({
       statusCode: 401,
       data: new UnauthorizedError(),
+    })
+  })
+  it('should return 200 authentication succeeds', async () => {
+    const httpResponse = await sut.handle({ name, address, userId })
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: { id: 'any_id' },
     })
   })
 })
