@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm'
 import { PgUser } from './user'
 
 @Entity({ name: 'organization' })
@@ -14,4 +22,13 @@ export class PgOrganization {
 
   @ManyToOne(() => PgUser, (user) => user.id)
   ownerUser!: PgUser
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @DeleteDateColumn()
+  deletedAt!: Date
 }
