@@ -2,8 +2,8 @@ import { AddOrganizationsController, Controller } from '@/application/controller
 import { AddOrganizations } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { ServerError, UnauthorizedError } from '../../../../src/application/errors/http'
-import { AuthenticationError } from '../../../../src/domain/entities/errors/authentication'
+import { ServerError, UnauthorizedError } from '@/application/errors/http'
+import { AuthenticationError } from '@/domain/entities/errors/authentication'
 
 type Address = {
   city: string
