@@ -44,4 +44,11 @@ describe('AddOrganizationsController', () => {
   it('should extend Controller', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
+
+  it('should call AddOrganizations with correct input', async () => {
+    await sut.handle({ name, address, userId })
+
+    expect(AddOrganizationsSpy).toHaveBeenCalledWith({ name, address, userId })
+    expect(AddOrganizationsSpy).toHaveBeenCalledTimes(1)
+  })
 })
