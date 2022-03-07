@@ -2,7 +2,8 @@ import { AddOrganizationsController, Controller } from '@/application/controller
 import { AddOrganizations } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { ServerError } from '../../../../src/application/errors/http';
+import { ServerError, UnauthorizedError } from '../../../../src/application/errors/http'
+import { AuthenticationError } from '../../../../src/domain/entities/errors/authentication'
 
 type Address = {
   city: string
@@ -53,8 +54,6 @@ describe('AddOrganizationsController', () => {
     expect(AddOrganizationsSpy).toHaveBeenCalledTimes(1)
   })
 
-
-
   it('should return 500 on infra error', async () => {
     const error = new Error('infra_error')
     AddOrganizationsSpy.mockRejectedValueOnce(error)
@@ -64,6 +63,18 @@ describe('AddOrganizationsController', () => {
     expect(httpResponse).toEqual({
       statusCode: 500,
       data: new ServerError(error),
+    })
+  })
+
+  it('should return 401 (UNAUTHORIZED) on Auth error', async () => {
+    const error = new AuthenticationError()
+    AddOrganizationsSpy.mockRejectedValueOnce(error)
+
+    const httpResponse = await sut.handle({ name, address, userId })
+
+    expect(httpResponse).toEqual({
+      statusCode: 401,
+      data: new UnauthorizedError(),
     })
   })
 })
