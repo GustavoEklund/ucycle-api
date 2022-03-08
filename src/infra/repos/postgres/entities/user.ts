@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { PgOrganization } from './organizations'
 
 @Entity({ name: 'user' })
 export class PgUser {
@@ -19,4 +20,7 @@ export class PgUser {
 
   @Column({ nullable: true })
   initials?: string
+
+  @OneToMany(() => PgOrganization, (organization) => organization.ownerUser)
+  organizations?: PgOrganization[]
 }
