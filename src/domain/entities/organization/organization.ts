@@ -11,7 +11,7 @@ export class Organization {
   public readonly id: string | undefined
   public readonly name: string
   public readonly address: Address
-  public readonly ownerUserId: number
+  public readonly ownerUserId: string
 
   constructor({
     id,
@@ -22,7 +22,7 @@ export class Organization {
     id?: string
     name: string
     address: Address
-    userId: number
+    userId: string
   }) {
     this.id = id
     this.name = name

@@ -29,7 +29,7 @@ export namespace SaveOrganization {
       neighbourhood: string
       buildingNumber: number
     }
-    ownerUserId: number
+    ownerUserId: string
   }
 
   export type Output = {
