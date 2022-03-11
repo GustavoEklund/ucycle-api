@@ -8,36 +8,25 @@ export class PgOrganizationRepository
   implements LoadOrganization, SaveOrganization
 {
   public async load({ id }: LoadOrganization.Input): Promise<LoadOrganization.Output> {
-    const orgsRepo = this.getRepository(PgOrganization)
-    const orgs = await orgsRepo.findOne({ id })
-
-    if (orgs !== undefined) {
-      return { id: String(orgs!.id), name: orgs!.name }
+    const organizationRepo = this.getRepository(PgOrganization)
+    const organization = await organizationRepo.findOne({ id })
+    if (organization !== undefined) {
+      return { id: String(organization!.id), name: organization!.name }
     }
   }
 
   public async save(params: SaveOrganization.Input): Promise<SaveOrganization.Output> {
     const userRepo = this.getRepository(PgUser)
-    let user = await userRepo.findOne({ id: params.ownerUserId })
-
-    if (user === undefined) {
+    const pgUser = await userRepo.findOne(params.ownerUserId)
+    if (pgUser === undefined) {
       throw new Error()
     }
-
-    const orgsRepo = this.getRepository(PgOrganization)
-    const pgOrg = orgsRepo.create({
+    const organizationRepo = this.getRepository(PgOrganization)
+    const { id } = await organizationRepo.save({
       name: params.name,
       ...params.address,
-      ownerUser: Promise.resolve(user),
+      ownerUser: pgUser,
     })
-
-    user.organizations = Promise.resolve([pgOrg])
-
-    user = await userRepo.save(user)
-
-    // const id = await orgsRepo.save(pgOrg)
-    const idReturn = (await user.organizations)[0]
-
-    return { id: 'idReturn' }
+    return { id }
   }
 }

@@ -7,8 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-import { PgContact, PgDocument } from '@/infra/repos/postgres/entities'
-import { PgOrganization } from './organizations'
+import { PgContact, PgDocument, PgOrganization } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'user' })
 export class PgUser {

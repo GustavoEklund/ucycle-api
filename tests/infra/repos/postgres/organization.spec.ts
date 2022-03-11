@@ -1,19 +1,16 @@
-import { v4 } from 'uuid'
-import { makeFakeDb } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockOrganization } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
+import { PgOrganization, PgUser, PgDocument, PgContact } from '@/infra/repos/postgres/entities'
+import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
 
-import { PgOrganization, PgUser, PgDocument, PgContact } from '@/infra/repos/postgres/entities'
-import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
-import { mockOrganization } from './mocks/organization'
-
-describe('Organization', () => {
+describe('PgOrganizationRepository', () => {
   let sut: PgOrganizationRepository
   let connection: PgConnection
-  let PgOrganizationRepo: Repository<PgOrganization>
+  let pgOrganizationRepo: Repository<PgOrganization>
   let pgUserRepo: Repository<PgUser>
   let backup: IBackup
 
@@ -21,7 +18,7 @@ describe('Organization', () => {
     connection = PgConnection.getInstance()
     const db = await makeFakeDb([PgOrganization, PgUser, PgDocument, PgContact])
     backup = db.backup()
-    PgOrganizationRepo = connection.getRepository(PgOrganization)
+    pgOrganizationRepo = connection.getRepository(PgOrganization)
     pgUserRepo = connection.getRepository(PgUser)
   })
 
@@ -38,36 +35,37 @@ describe('Organization', () => {
     expect(sut).toBeInstanceOf(PgRepository)
   })
 
-  // describe('save', () => {
-  //   it('should save organization', async () => {
-  //     const organization = mockOrganization()
-  //     const pgUser = pgUserRepo.create({
-  //       firstName: 'any_name',
-  //       lastName: 'any_last_name',
-  //       firstAccess: true,
-  //       documents: Promise.resolve([]),
-  //       contacts: Promise.resolve([
-  //         { verified: false, type: 'EMAIL', value: { type: 'PRIMARY', address: 'new_email' } },
-  //       ]),
-  //     })
+  describe('save', () => {
+    it('should save organization', async () => {
+      let pgUser = pgUserRepo.create({
+        firstName: 'any_name',
+        lastName: 'any_last_name',
+        firstAccess: true,
+        documents: Promise.resolve([]),
+        contacts: Promise.resolve([
+          { verified: false, type: 'EMAIL', value: { type: 'PRIMARY', address: 'new_email' } },
+        ]),
+        organizations: Promise.resolve([]),
+      })
+      pgUser = await pgUserRepo.save(pgUser)
+      const organization = mockOrganization()
 
-  //     const { id: existingId } = await pgUserRepo.save(pgUser)
-  //     pgUser.id = existingId
+      const { id: organizationId } = await sut.save({
+        name: organization.name,
+        address: { ...organization.address },
+        ownerUserId: pgUser.id,
+      })
 
-  //     const { id: organizationId } = await sut.save({
-  //       name: organization.name,
-  //       address: { ...organization.address },
-  //       ownerUserId: existingId,
-  //     })
-
-  //     const pgOrganization = await PgOrganizationRepo.findOne(organizationId)
-
-  //     expect(pgOrganization).toMatchObject({
-  //       id: organizationId,
-  //       name: organization.name,
-  //       ...organization.address,
-  //       ownerUser: pgUser,
-  //     })
-  //   })
-  // })
+      const pgOrganization = await pgOrganizationRepo.findOne({
+        where: { id: organizationId },
+        relations: ['ownerUser'],
+      })
+      expect(pgOrganization).toMatchObject({
+        id: organizationId,
+        name: organization.name,
+        ...organization.address,
+        ownerUser: pgUser,
+      })
+    })
+  })
 })

@@ -36,8 +36,8 @@ export class PgOrganization {
   @Column()
   buildingNumber!: number
 
-  @ManyToOne(() => PgUser, (user) => user.id)
-  ownerUser!: Promise<PgUser>
+  @ManyToOne(() => PgUser, (user) => user.organizations)
+  ownerUser!: PgUser
 
   @CreateDateColumn()
   createdAt!: Date
