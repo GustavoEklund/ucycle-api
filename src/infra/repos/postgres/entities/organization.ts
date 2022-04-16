@@ -7,20 +7,36 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
+
 import { PgUser } from './user'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
   @PrimaryGeneratedColumn('uuid')
-  id!: number
+  id!: string
 
   @Column()
   name!: string
 
   @Column()
-  address!: object
+  city!: string
 
-  @ManyToOne(() => PgUser, (user) => user.id)
+  @Column()
+  state!: string
+
+  @Column()
+  country!: string
+
+  @Column()
+  street!: string
+
+  @Column()
+  neighbourhood!: string
+
+  @Column()
+  buildingNumber!: number
+
+  @ManyToOne(() => PgUser, (user) => user.organizations)
   ownerUser!: PgUser
 
   @CreateDateColumn()

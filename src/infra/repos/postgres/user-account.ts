@@ -1,37 +1,47 @@
-import { PgRepository } from '@/infra/repos/postgres/repository'
-import { LoadUserAccount, SaveFacebookAccount } from '@/domain/contracts/repos'
-import { PgUser } from '@/infra/repos/postgres/entities'
+import { SaveUserAccount } from '@/domain/contracts/repos/user-account'
+import { PgRepository } from './repository'
+import { PgUser } from './entities/user'
+import { PgDocument } from './entities/document'
+import { PgContact } from './entities/contact'
 
-type LoadInput = LoadUserAccount.Input
-type LoadOutput = LoadUserAccount.Output
-type SaveInput = SaveFacebookAccount.Input
-type SaveOutput = SaveFacebookAccount.Output
-
-export class PgUserAccountRepository
-  extends PgRepository
-  implements LoadUserAccount, SaveFacebookAccount
-{
-  async load({ email }: LoadInput): Promise<LoadOutput> {
+export class PgUserAccountRepository extends PgRepository implements SaveUserAccount {
+  public async save({
+    id,
+    firstName,
+    lastName,
+    firstAccess,
+    contacts,
+    documents,
+  }: SaveUserAccount.Input): Promise<SaveUserAccount.Output> {
     const pgUserRepo = this.getRepository(PgUser)
-    const pgUser = await pgUserRepo.findOne({ email })
-    if (pgUser !== undefined) {
-      return {
-        id: pgUser.id.toString(),
-        name: pgUser.name ?? undefined,
-      }
+    if (id !== undefined) {
+      await pgUserRepo.update({ id }, { firstName, lastName, firstAccess })
+      return { id }
     }
-  }
-
-  async saveWithFacebook({ id, name, email, facebookId }: SaveInput): Promise<SaveOutput> {
-    const pgUserRepo = this.getRepository(PgUser)
-    let resultId: string
-    if (id === undefined) {
-      const pgUser = await pgUserRepo.save({ email, name, facebookId })
-      resultId = pgUser.id.toString()
-    } else {
-      resultId = id
-      await pgUserRepo.update({ id: parseInt(id) }, { name, facebookId })
-    }
-    return { id: resultId }
+    let pgUser = pgUserRepo.create({
+      firstName,
+      lastName,
+      firstAccess,
+    })
+    pgUser = await pgUserRepo.save(pgUser)
+    const documentsWithUser = documents.map((document) => {
+      const pgDocument = new PgDocument()
+      pgDocument.user = Promise.resolve(pgUser)
+      pgDocument.type = document.type
+      pgDocument.number = document.number
+      return pgDocument
+    })
+    pgUser.documents = Promise.resolve(documentsWithUser)
+    const contactsWithUser = contacts.map((contact) => {
+      const pgContact = new PgContact()
+      pgContact.user = Promise.resolve(pgUser)
+      pgContact.verified = contact.verified
+      pgContact.type = contact.type
+      pgContact.value = contact.value
+      return pgContact
+    })
+    pgUser.contacts = Promise.resolve(contactsWithUser)
+    await pgUserRepo.save(pgUser)
+    return { id: pgUser.id }
   }
 }
