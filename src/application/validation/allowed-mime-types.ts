@@ -1,7 +1,7 @@
 import { InvalidMimeTypeError } from '@/application/errors'
 import { Validator } from '@/application/validation/validator'
 
-export type Extension = 'png' | 'jpg'
+export type Extension = 'png' | 'jpg' | 'csv'
 
 export class AllowedMimeTypes implements Validator {
   constructor(private readonly allowed: Extension[], private readonly mimeType: string) {}
@@ -10,6 +10,7 @@ export class AllowedMimeTypes implements Validator {
     let isValid = false
     if (this.isPng()) isValid = true
     else if (this.isJpg()) isValid = true
+    else if (this.isCsv()) isValid = true
     if (!isValid) return new InvalidMimeTypeError(this.allowed)
   }
 
@@ -19,5 +20,9 @@ export class AllowedMimeTypes implements Validator {
 
   private isJpg(): boolean {
     return this.allowed.includes('jpg') && /image\/jpe?g/.test(this.mimeType)
+  }
+
+  private isCsv(): boolean {
+    return this.allowed.includes('csv') && this.mimeType === 'text/csv'
   }
 }
