@@ -1,4 +1,4 @@
-import { LoadMyOrganizationsController } from '@/application/controllers'
+import { Controller, LoadMyOrganizationsController } from '@/application/controllers'
 import { LoadMyOrganizations } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -26,6 +26,10 @@ describe('LoadMyOrganizationsController', () => {
       },
     ])
     sut = new LoadMyOrganizationsController(loadMyOrganizationsSpy)
+  })
+
+  it('should extend Controller', () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
 
   it('should call LoadMyOrganizations with correct input', async () => {
