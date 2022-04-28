@@ -2,6 +2,7 @@ import { Controller, LoadMyOrganizationsController } from '@/application/control
 import { LoadMyOrganizations } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import { RequiredString } from '@/application/validation'
 
 describe('LoadMyOrganizationsController', () => {
   let userId: string
@@ -30,6 +31,14 @@ describe('LoadMyOrganizationsController', () => {
 
   it('should extend Controller', () => {
     expect(sut).toBeInstanceOf(Controller)
+  })
+
+  it('should build validators correctly', () => {
+    const expectedValidators = [new RequiredString('any_user_id', 'userId')]
+
+    const validators = sut.buildValidators({ userId })
+
+    expect(validators).toEqual(expectedValidators)
   })
 
   it('should call LoadMyOrganizations with correct input', async () => {
