@@ -14,9 +14,13 @@ export namespace LoadMyOrganizations {
     neighbourhood: string
     buildingNumber: number
   }
+  type Picture = {
+    url: string
+  }
   export type Output = {
     id: string
     name: string
     address: Address
+    pictures: Picture[]
   }[]
 }

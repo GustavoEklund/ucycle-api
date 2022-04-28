@@ -24,6 +24,11 @@ describe('LoadMyOrganizationsController', () => {
           neighbourhood: 'any_neighbourhood',
           buildingNumber: 72,
         },
+        pictures: [
+          {
+            url: 'any_url',
+          },
+        ],
       },
     ])
     sut = new LoadMyOrganizationsController(loadMyOrganizationsSpy)
@@ -64,6 +69,11 @@ describe('LoadMyOrganizationsController', () => {
             neighbourhood: 'any_neighbourhood',
             buildingNumber: 72,
           },
+          pictures: [
+            {
+              url: 'any_url',
+            },
+          ],
         },
       ],
       statusCode: 200,
