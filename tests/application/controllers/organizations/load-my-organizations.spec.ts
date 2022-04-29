@@ -31,6 +31,9 @@ describe('LoadMyOrganizationsController', () => {
         ],
       },
     ])
+  })
+
+  beforeEach(() => {
     sut = new LoadMyOrganizationsController(loadMyOrganizationsSpy)
   })
 
