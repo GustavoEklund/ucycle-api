@@ -39,17 +39,18 @@ export class PgOrganizationRepository
     return Promise.all(
       pgOrganizations.map(async (pgOrganization) => {
         const pictures = await pgOrganization.pictures
+        const address = pgOrganization.address
         return {
           id: pgOrganization.id,
           name: pgOrganization.name,
           address: {
-            city: pgOrganization.address.city,
-            buildingNumber: pgOrganization.address.buildingNumber,
-            street: pgOrganization.address.street,
-            postalCode: pgOrganization.address.postalCode,
-            neighbourhood: pgOrganization.address.neighbourhood,
-            country: pgOrganization.address.country,
-            state: pgOrganization.address.state,
+            city: address.city,
+            buildingNumber: address.buildingNumber,
+            street: address.street,
+            postalCode: address.postalCode,
+            neighbourhood: address.neighbourhood,
+            country: address.country,
+            state: address.state,
           },
           pictures: pictures.map((picture) => ({
             url: picture.url,
