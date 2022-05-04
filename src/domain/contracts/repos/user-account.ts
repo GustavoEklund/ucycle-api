@@ -24,7 +24,8 @@ export interface LoadUserAccount {
 
 export namespace LoadUserAccount {
   export type Input = {
-    email: string
+    id?: string
+    email?: string
   }
 
   export type Output =
