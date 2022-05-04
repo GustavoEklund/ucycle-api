@@ -1,5 +1,5 @@
 import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
-import { UserAccountNotFoundError } from '@/domain/entities/errors'
+import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 
 export interface ApplyToJoinOrganization {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>
@@ -19,7 +19,10 @@ export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
     if (userAccount === undefined) {
       throw new UserAccountNotFoundError(userId)
     }
-    await this.organizationRepository.load({ id: organizationId })
+    const organization = await this.organizationRepository.load({ id: organizationId })
+    if (organization === undefined) {
+      throw new OrganizationNotFoundError(organizationId)
+    }
   }
 }
 
