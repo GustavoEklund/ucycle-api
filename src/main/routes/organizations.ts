@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { adaptExpressRoute as adapt } from '@/main/adapters'
+import { env } from '@/main/config/env'
+import { adaptExpressRoute as adapt, adaptKeycloakProtect } from '@/main/adapters'
 import {
   makeAddOrganizationsController,
   makeLoadMyOrganizationsController,
@@ -7,5 +8,9 @@ import {
 
 export default (router: Router): void => {
   router.post('/organizations', adapt(makeAddOrganizationsController()))
-  router.get('/users/:userId/organizations', adapt(makeLoadMyOrganizationsController()))
+  router.get(
+    '/users/:userId/organizations',
+    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adapt(makeLoadMyOrganizationsController())
+  )
 }
