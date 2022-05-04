@@ -1,4 +1,4 @@
-import { LoadUserAccount } from '@/domain/contracts/repos'
+import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
 import { UserAccountNotFoundError } from '@/domain/entities/errors'
 
 export interface ApplyToJoinOrganization {
@@ -6,15 +6,20 @@ export interface ApplyToJoinOrganization {
 }
 
 export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
-  public constructor(private readonly userAccountRepository: LoadUserAccount) {}
+  public constructor(
+    private readonly userAccountRepository: LoadUserAccount,
+    private readonly organizationRepository: LoadOrganization
+  ) {}
 
   public async perform({
     userId,
+    organizationId,
   }: ApplyToJoinOrganization.Input): Promise<ApplyToJoinOrganization.Output> {
     const userAccount = await this.userAccountRepository.load({ id: userId })
     if (userAccount === undefined) {
       throw new UserAccountNotFoundError(userId)
     }
+    await this.organizationRepository.load({ id: organizationId })
   }
 }
 
