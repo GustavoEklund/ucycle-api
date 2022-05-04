@@ -2,7 +2,7 @@ import {
   ApplyToJoinOrganization,
   ApplyToJoinOrganizationUseCase,
 } from '@/domain/use-cases/organizations'
-import { LoadUserAccount } from '@/domain/contracts/repos'
+import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
 import { UserAccountNotFoundError } from '@/domain/entities/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -10,6 +10,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 describe('ApplyToJoinOrganizationUseCace', () => {
   let sut: ApplyToJoinOrganization
   let userAccountRepoSpy: MockProxy<LoadUserAccount>
+  let organizationRepoSpy: MockProxy<LoadOrganization>
 
   beforeAll(() => {
     userAccountRepoSpy = mock()
@@ -17,10 +18,11 @@ describe('ApplyToJoinOrganizationUseCace', () => {
       id: 'any_user_id',
       name: 'any_user_name',
     })
+    organizationRepoSpy = mock()
   })
 
   beforeEach(() => {
-    sut = new ApplyToJoinOrganizationUseCase(userAccountRepoSpy)
+    sut = new ApplyToJoinOrganizationUseCase(userAccountRepoSpy, organizationRepoSpy)
   })
 
   it('should call LoadUserAccount with correct input', async () => {
@@ -31,10 +33,17 @@ describe('ApplyToJoinOrganizationUseCace', () => {
   })
 
   it('should throw UserAccountNotFoundError if user account not found', async () => {
-    userAccountRepoSpy.load.mockResolvedValue(undefined)
+    userAccountRepoSpy.load.mockResolvedValueOnce(undefined)
 
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
     await expect(promise).rejects.toThrowError(new UserAccountNotFoundError('any_user_id'))
+  })
+
+  it('should call LoadOrganization with correct input', async () => {
+    await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    expect(organizationRepoSpy.load).toHaveBeenCalledTimes(1)
+    expect(organizationRepoSpy.load).toHaveBeenCalledWith({ id: 'any_organization_id' })
   })
 })
