@@ -1,55 +1,63 @@
 import {
-  Validator,
   AllowedMimeTypes,
   Extension,
   MaxFileSize,
   Required,
   RequiredBuffer,
+  RequiredInteger,
   RequiredString,
+  Validator,
 } from '@/application/validation'
+
+export enum RequiredType {
+  any = 'any',
+  string = 'string',
+  buffer = 'buffer',
+  integer = 'integer',
+}
 
 export class ValidationBuilder {
   private constructor(
     private readonly value: any,
-    private readonly fieldName?: string,
+    private readonly fieldName: string,
     private readonly validators: Validator[] = []
   ) {}
 
-  static of({ value, fieldName }: { value: any; fieldName?: string }): ValidationBuilder {
+  public static of({ value, fieldName }: { value: any; fieldName: string }): ValidationBuilder {
     return new ValidationBuilder(value, fieldName)
   }
 
-  required(): ValidationBuilder {
-    if (this.value instanceof Buffer) {
-      this.validators.push(new RequiredBuffer(this.value, this.fieldName))
-    } else if (typeof this.value === 'string') {
-      this.validators.push(new RequiredString(this.value, this.fieldName))
-    } else {
-      this.validators.push(new Required(this.value, this.fieldName))
-      if (this.value.buffer !== undefined) {
-        this.validators.push(new RequiredBuffer(this.value.buffer, this.fieldName))
-      }
+  public required(type: RequiredType): ValidationBuilder {
+    switch (type) {
+      case RequiredType.string:
+        this.validators.push(new RequiredString(this.value, this.fieldName))
+        return this
+      case RequiredType.buffer:
+        this.validators.push(new RequiredBuffer(this.value?.buffer, this.fieldName))
+        return this
+      case RequiredType.integer:
+        this.validators.push(new RequiredInteger(this.value, this.fieldName))
+        return this
+      case RequiredType.any:
+      default:
+        this.validators.push(new Required(this.value, this.fieldName))
+        return this
     }
-    return this
   }
 
-  image({
-    allowed,
+  public file({
+    allowedExtensions,
     maxSizeInMb,
   }: {
-    allowed: Extension[]
+    allowedExtensions: Extension[]
     maxSizeInMb: number
   }): ValidationBuilder {
-    if (this.value.mimeType !== undefined) {
-      this.validators.push(new AllowedMimeTypes(allowed, this.value.mimeType))
-    }
-    if (this.value.buffer !== undefined) {
-      this.validators.push(new MaxFileSize(maxSizeInMb, this.value.buffer))
-    }
+    this.validators.push(new AllowedMimeTypes(allowedExtensions, this.value?.mimeType))
+    this.validators.push(new MaxFileSize(maxSizeInMb, this.value?.buffer))
     return this
   }
 
-  build(): Validator[] {
+  public build(): Validator[] {
     return this.validators
   }
 }

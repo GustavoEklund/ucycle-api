@@ -4,11 +4,13 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgUser } from './user'
+import { PgAddress, PgUser } from '@/infra/repos/postgres/entities'
+import { PgImage } from '@/infra/repos/postgres/entities/image'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
@@ -18,23 +20,11 @@ export class PgOrganization {
   @Column()
   name!: string
 
-  @Column()
-  city!: string
+  @ManyToOne(() => PgAddress, (address) => address.organizations)
+  address!: PgAddress
 
-  @Column()
-  state!: string
-
-  @Column()
-  country!: string
-
-  @Column()
-  street!: string
-
-  @Column()
-  neighbourhood!: string
-
-  @Column()
-  buildingNumber!: number
+  @OneToMany(() => PgImage, (image) => image.organization)
+  pictures!: Promise<PgImage[]>
 
   @ManyToOne(() => PgUser, (user) => user.organizations)
   ownerUser!: PgUser
