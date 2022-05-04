@@ -1,9 +1,5 @@
 import { AddOrganizationsController, Controller } from '@/application/controllers'
-import { AddOrganizations } from '@/domain/use-cases'
-
-import { mock, MockProxy } from 'jest-mock-extended'
-import { ServerError, UnauthorizedError } from '@/application/errors/http'
-import { AuthenticationError } from '@/domain/entities/errors/authentication'
+import { RequiredInteger, RequiredString } from '@/application/validation'
 
 type Address = {
   city: string
@@ -14,70 +10,60 @@ type Address = {
   buildingNumber: number
 }
 
-const MockBeforeAllAddress = {
-  city: 'any_city',
-  state: 'any_state',
-  country: 'any_country',
-  street: 'any_street',
-  neighbourhood: 'any_neighbourhood',
-  buildingNumber: 0,
-}
-
 describe('AddOrganizationsController', () => {
   let address: Address
   let name: string
   let userId: string
-
   let sut: AddOrganizationsController
-  let AddOrganizationsSpy: jest.Mock
+  let addOrganizationsSpy: jest.Mock
 
   beforeAll(() => {
-    address = MockBeforeAllAddress
+    address = {
+      city: 'any_city',
+      state: 'any_state',
+      country: 'any_country',
+      street: 'any_street',
+      neighbourhood: 'any_neighbourhood',
+      buildingNumber: 72,
+    }
     name = 'any_name'
     userId = 'any_user_id'
-
-    AddOrganizationsSpy = jest.fn()
-    AddOrganizationsSpy.mockResolvedValue({ id: 'any_id' })
+    addOrganizationsSpy = jest.fn()
+    addOrganizationsSpy.mockResolvedValue({ id: 'any_id' })
   })
 
   beforeEach(() => {
-    sut = new AddOrganizationsController(AddOrganizationsSpy)
+    sut = new AddOrganizationsController(addOrganizationsSpy)
   })
 
   it('should extend Controller', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
 
+  it('should build validators correctly', () => {
+    const expectedValidators = [
+      new RequiredString('any_user_id', 'userId'),
+      new RequiredString('any_name', 'name'),
+      new RequiredString('any_city', 'address.city'),
+      new RequiredString('any_state', 'address.state'),
+      new RequiredString('any_country', 'address.country'),
+      new RequiredString('any_street', 'address.street'),
+      new RequiredString('any_neighbourhood', 'address.neighbourhood'),
+      new RequiredInteger(72, 'address.buildingNumber'),
+    ]
+
+    const validators = sut.buildValidators({ name, address, userId })
+
+    expect(validators).toEqual(expectedValidators)
+  })
+
   it('should call AddOrganizations with correct input', async () => {
     await sut.handle({ name, address, userId })
 
-    expect(AddOrganizationsSpy).toHaveBeenCalledWith({ name, address, userId })
-    expect(AddOrganizationsSpy).toHaveBeenCalledTimes(1)
+    expect(addOrganizationsSpy).toHaveBeenCalledWith({ name, address, userId })
+    expect(addOrganizationsSpy).toHaveBeenCalledTimes(1)
   })
 
-  it('should return 500 on infra error', async () => {
-    const error = new Error('infra_error')
-    AddOrganizationsSpy.mockRejectedValueOnce(error)
-
-    const httpResponse = await sut.handle({ name, address, userId })
-
-    expect(httpResponse).toEqual({
-      statusCode: 500,
-      data: new ServerError(error),
-    })
-  })
-
-  it('should return 401 (UNAUTHORIZED) on Auth error', async () => {
-    const error = new AuthenticationError()
-    AddOrganizationsSpy.mockRejectedValueOnce(error)
-
-    const httpResponse = await sut.handle({ name, address, userId })
-
-    expect(httpResponse).toEqual({
-      statusCode: 401,
-      data: new UnauthorizedError(),
-    })
-  })
   it('should return 200 authentication succeeds', async () => {
     const httpResponse = await sut.handle({ name, address, userId })
 

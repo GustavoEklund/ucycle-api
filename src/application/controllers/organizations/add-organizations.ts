@@ -1,7 +1,7 @@
-import { HttpResponse, ok, unauthorized } from '@/application/helpers'
+import { HttpResponse, ok } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
-import { AuthenticationError } from '@/domain/entities/errors'
 import { AddOrganizations } from '@/domain/use-cases'
+import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
 
 type Address = {
   city: string
@@ -11,25 +11,45 @@ type Address = {
   neighbourhood: string
   buildingNumber: number
 }
-type HttpRequest = { name: string; address: Address; userId: number }
+type HttpRequest = { name: string; address: Address; userId: string }
 type Model = Error | { id: string }
 
 export class AddOrganizationsController extends Controller {
-  constructor(private readonly addOrganizations: AddOrganizations) {
+  public constructor(private readonly addOrganizations: AddOrganizations) {
     super()
   }
 
-  async perform({ name, address, userId }: HttpRequest): Promise<HttpResponse<Model>> {
-    try {
-      const response = await this.addOrganizations({
-        name,
-        address,
-        userId,
-      })
-      return ok(response)
-    } catch (error) {
-      if (error instanceof AuthenticationError) return unauthorized()
-      throw error
-    }
+  public async perform({ userId, name, address }: HttpRequest): Promise<HttpResponse<Model>> {
+    const response = await this.addOrganizations({
+      name,
+      address,
+      userId,
+    })
+    return ok(response)
+  }
+
+  public override buildValidators({ userId, name, address }: HttpRequest): Validator[] {
+    return [
+      ...Builder.of({ fieldName: 'userId', value: userId }).required(RequiredType.string).build(),
+      ...Builder.of({ fieldName: 'name', value: name }).required(RequiredType.string).build(),
+      ...Builder.of({ fieldName: 'address.city', value: address?.city })
+        .required(RequiredType.string)
+        .build(),
+      ...Builder.of({ fieldName: 'address.state', value: address?.state })
+        .required(RequiredType.string)
+        .build(),
+      ...Builder.of({ fieldName: 'address.country', value: address?.country })
+        .required(RequiredType.string)
+        .build(),
+      ...Builder.of({ fieldName: 'address.street', value: address?.street })
+        .required(RequiredType.string)
+        .build(),
+      ...Builder.of({ fieldName: 'address.neighbourhood', value: address?.neighbourhood })
+        .required(RequiredType.string)
+        .build(),
+      ...Builder.of({ fieldName: 'address.buildingNumber', value: address?.buildingNumber })
+        .required(RequiredType.string)
+        .build(),
+    ]
   }
 }

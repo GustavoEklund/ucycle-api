@@ -14,6 +14,33 @@ export namespace LoadOrganization {
       }
 }
 
+export interface LoadOrganizations {
+  loadAll: (input: LoadOrganizations.Input) => Promise<LoadOrganizations.Output>
+}
+
+export namespace LoadOrganizations {
+  export type Input = {
+    userId: string
+  }
+  type Address = {
+    city: string
+    state: string
+    country: string
+    street: string
+    neighbourhood: string
+    buildingNumber: number
+  }
+  type Picture = {
+    url: string
+  }
+  export type Output = {
+    id: string
+    name: string
+    address: Address
+    pictures: Picture[]
+  }[]
+}
+
 export interface SaveOrganization {
   save: (params: SaveOrganization.Input) => Promise<SaveOrganization.Output>
 }

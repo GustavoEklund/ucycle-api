@@ -1,24 +1,34 @@
-import { makeFakeDb, mockOrganization } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockOrganization, mockUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import { PgOrganization, PgUser, PgDocument, PgContact } from '@/infra/repos/postgres/entities'
+import {
+  PgAddress,
+  PgContact,
+  PgDocument,
+  PgImage,
+  PgOrganization,
+  PgUser,
+} from '@/infra/repos/postgres/entities'
 import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
+import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
 
 describe('PgOrganizationRepository', () => {
   let sut: PgOrganizationRepository
   let connection: PgConnection
   let pgOrganizationRepo: Repository<PgOrganization>
+  let pgAddressRepo: Repository<PgAddress>
   let pgUserRepo: Repository<PgUser>
   let backup: IBackup
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([PgOrganization, PgUser, PgDocument, PgContact])
+    const db = await makeFakeDb([PgOrganization, PgUser, PgDocument, PgContact, PgAddress, PgImage])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
+    pgAddressRepo = connection.getRepository(PgAddress)
     pgUserRepo = connection.getRepository(PgUser)
   })
 
@@ -48,11 +58,12 @@ describe('PgOrganizationRepository', () => {
         organizations: Promise.resolve([]),
       })
       pgUser = await pgUserRepo.save(pgUser)
-      const organization = mockOrganization()
+      const organization = mockOrganization({})
+      const address = mockAddress()
 
       const { id: organizationId } = await sut.save({
         name: organization.name,
-        address: { ...organization.address },
+        address: address,
         ownerUserId: pgUser.id,
       })
 
@@ -66,6 +77,38 @@ describe('PgOrganizationRepository', () => {
         ...organization.address,
         ownerUser: pgUser,
       })
+    })
+  })
+
+  describe('loadAll', () => {
+    it('should load all organizations', async () => {
+      const pgAddress = await pgAddressRepo.save(mockAddress())
+      await pgAddressRepo.save(pgAddress)
+      const pgOrganization = pgOrganizationRepo.create(mockOrganization({}))
+      pgOrganization.address = pgAddress
+      await pgOrganizationRepo.save(pgOrganization)
+      const pgUser = pgUserRepo.create(mockUser())
+      pgUser.organizations = Promise.resolve([pgOrganization])
+      await pgUserRepo.save(pgUser)
+
+      const organizations = await sut.loadAll({ userId: pgUser.id })
+
+      expect(organizations).toEqual([
+        {
+          id: pgOrganization.id,
+          name: 'any_name',
+          pictures: [],
+          address: {
+            buildingNumber: 76,
+            city: 'any_city',
+            country: 'any_country',
+            neighbourhood: 'any_neighbourhood',
+            postalCode: 'any_postal_code',
+            state: 'any_state',
+            street: 'any_street',
+          },
+        },
+      ])
     })
   })
 })

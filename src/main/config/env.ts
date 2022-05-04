@@ -3,13 +3,17 @@ import { ConnectionOptions } from 'typeorm'
 
 loadDotEnv()
 
-const srcDir = process.env.TS_NODE_DEV === undefined ? 'dist/src' : 'src'
+const srcDir = process.env.TS_NODE_DEV === undefined ? 'dist' : 'src'
 const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000
 
 export const env = {
   server: {
     devMode: process.env.TS_NODE_DEV !== undefined,
     port: process.env.PORT ?? 3000,
+    healthCheck: {
+      enabled: Number(process.env.HEALTH_CHECK_ENABLED) === 1,
+    },
+    mainWebsiteUrl: process.env.MAIN_WEBSITE ?? 'https://owlcondomine.com.br',
   },
   session: {
     secret: process.env.SESSION_SECRET ?? '',
@@ -20,7 +24,9 @@ export const env = {
   keycloak: {
     realm: process.env.KEYCLOAK_REALM ?? 'homologation',
     authServerUrl: process.env.KEYCLOAK_AUTH_SERVER_URL ?? 'http://localhost:8080/auth',
-    clientId: process.env.KEYCLOAK_CLIENT_ID ?? 'owl-condomine-service',
+    clientId: process.env.KEYCLOAK_CLIENT_ID ?? 'condo-api',
+    protectClientId: process.env.KEYCLOAK_PROTECT_CLIENT_ID ?? 'condo-react-native',
+    clientSecret: process.env.KEYCLOAK_CLIENT_SECRET ?? '',
   },
   facebookApi: {
     clientId: process.env.FB_CLIENT_ID ?? '',
@@ -45,7 +51,7 @@ export const env = {
     port: Number(process.env.TYPEORM_PORT ?? 5432),
     username: process.env.TYPEORM_USERNAME ?? 'postgres',
     password: process.env.TYPEORM_PASSWORD ?? 'postgres',
-    database: process.env.TYPEORM_DATABASE ?? 'owl_condomine',
+    database: process.env.TYPEORM_DATABASE ?? 'condo_app',
     entities: [`${srcDir}/infra/repos/postgres/entities/index.{js,ts}`],
     migrations: [`${srcDir}/infra/repos/postgres/migrations/*.{js,ts}`],
     migrationsTableName: process.env.TYPEORM_MIGRATIONS_TABLE_NAME ?? 'migrations',
