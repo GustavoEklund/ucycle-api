@@ -3,7 +3,7 @@ import {
   ApplyToJoinOrganizationUseCase,
 } from '@/domain/use-cases/organizations'
 import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
-import { UserAccountNotFoundError } from '@/domain/entities/errors'
+import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -19,6 +19,10 @@ describe('ApplyToJoinOrganizationUseCace', () => {
       name: 'any_user_name',
     })
     organizationRepoSpy = mock()
+    organizationRepoSpy.load.mockResolvedValue({
+      id: 'any_organization_id',
+      name: 'any_organization_name',
+    })
   })
 
   beforeEach(() => {
@@ -45,5 +49,13 @@ describe('ApplyToJoinOrganizationUseCace', () => {
 
     expect(organizationRepoSpy.load).toHaveBeenCalledTimes(1)
     expect(organizationRepoSpy.load).toHaveBeenCalledWith({ id: 'any_organization_id' })
+  })
+
+  it('should throw OrganizationNotFoundError if organization not found', async () => {
+    organizationRepoSpy.load.mockResolvedValueOnce(undefined)
+
+    const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    await expect(promise).rejects.toThrowError(new OrganizationNotFoundError('any_organization_id'))
   })
 })
