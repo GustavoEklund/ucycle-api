@@ -2,7 +2,12 @@ import {
   ApplyToJoinOrganization,
   ApplyToJoinOrganizationUseCase,
 } from '@/domain/use-cases/organizations'
-import { LoadOrganization, LoadUserAccount, SaveAdmissionProposal } from '@/domain/contracts/repos'
+import {
+  LoadAdmissionProposals,
+  LoadOrganization,
+  LoadUserAccount,
+  SaveAdmissionProposal,
+} from '@/domain/contracts/repos'
 import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -11,7 +16,7 @@ describe('ApplyToJoinOrganizationUseCace', () => {
   let sut: ApplyToJoinOrganization
   let userAccountRepoSpy: MockProxy<LoadUserAccount>
   let organizationRepoSpy: MockProxy<LoadOrganization>
-  let admissionProposalRepoSpy: MockProxy<SaveAdmissionProposal>
+  let admissionProposalRepoSpy: MockProxy<SaveAdmissionProposal & LoadAdmissionProposals>
 
   beforeAll(() => {
     userAccountRepoSpy = mock()
@@ -63,6 +68,16 @@ describe('ApplyToJoinOrganizationUseCace', () => {
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
     await expect(promise).rejects.toThrowError(new OrganizationNotFoundError('any_organization_id'))
+  })
+
+  it('should call LoadAdmissionProposal with correct input', async () => {
+    await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    expect(admissionProposalRepoSpy.load).toHaveBeenCalledTimes(1)
+    expect(admissionProposalRepoSpy.load).toHaveBeenCalledWith({
+      userId: 'any_user_id',
+      organizationId: 'any_organization_id',
+    })
   })
 
   it('should call SaveAdmissionProposal with correct input', async () => {
