@@ -1,4 +1,9 @@
-import { LoadOrganization, LoadUserAccount, SaveAdmissionProposal } from '@/domain/contracts/repos'
+import {
+  LoadAdmissionProposals,
+  LoadOrganization,
+  LoadUserAccount,
+  SaveAdmissionProposal,
+} from '@/domain/contracts/repos'
 import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 
 export interface ApplyToJoinOrganization {
@@ -9,7 +14,7 @@ export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
   public constructor(
     private readonly userAccountRepo: LoadUserAccount,
     private readonly organizationRepo: LoadOrganization,
-    private readonly admissionProposalRepo: SaveAdmissionProposal
+    private readonly admissionProposalRepo: SaveAdmissionProposal & LoadAdmissionProposals
   ) {}
 
   public async perform({
@@ -24,6 +29,7 @@ export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
     if (organization === undefined) {
       throw new OrganizationNotFoundError(organizationId)
     }
+    await this.admissionProposalRepo.load({ userId, organizationId })
     await this.admissionProposalRepo.save({
       userId,
       organizationId,
