@@ -11,6 +11,9 @@ export namespace LoadOrganization {
     | {
         id: string
         name: string
+        ownerUser: {
+          id: string
+        }
       }
 }
 

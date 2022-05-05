@@ -7,6 +7,7 @@ import {
 import {
   AlreadyAppliedToJoinOrganizationError,
   OrganizationNotFoundError,
+  TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
 
@@ -26,17 +27,14 @@ export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
     organizationId,
   }: ApplyToJoinOrganization.Input): Promise<ApplyToJoinOrganization.Output> {
     const userAccount = await this.userAccountRepo.load({ id: userId })
-    if (userAccount === undefined) {
-      throw new UserAccountNotFoundError(userId)
-    }
+    if (userAccount === undefined) throw new UserAccountNotFoundError(userId)
     const organization = await this.organizationRepo.load({ id: organizationId })
-    if (organization === undefined) {
-      throw new OrganizationNotFoundError(organizationId)
-    }
+    if (organization === undefined) throw new OrganizationNotFoundError(organizationId)
+    if (organization.ownerUser.id === userAccount.id)
+      throw new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
     const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
-    if (admissionProposals.length > 0) {
+    if (admissionProposals.length > 0)
       throw new AlreadyAppliedToJoinOrganizationError(organizationId)
-    }
     await this.admissionProposalRepo.save({
       userId,
       organizationId,
