@@ -8,7 +8,11 @@ import {
   LoadUserAccount,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
-import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
+import {
+  AlreadyAppliedToJoinOrganizationError,
+  OrganizationNotFoundError,
+  UserAccountNotFoundError,
+} from '@/domain/entities/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -30,6 +34,7 @@ describe('ApplyToJoinOrganizationUseCace', () => {
       name: 'any_organization_name',
     })
     admissionProposalRepoSpy = mock()
+    admissionProposalRepoSpy.load.mockResolvedValue([])
   })
 
   beforeEach(() => {
@@ -78,6 +83,28 @@ describe('ApplyToJoinOrganizationUseCace', () => {
       userId: 'any_user_id',
       organizationId: 'any_organization_id',
     })
+  })
+
+  it('should throw AlreadyAppliedToJoinOrganizationError if user already applied to join organization', async () => {
+    admissionProposalRepoSpy.load.mockResolvedValueOnce([
+      {
+        id: 'any_admission_proposal_id',
+        user: {
+          id: 'any_user_id',
+          name: 'any_user_name',
+        },
+        organization: {
+          id: 'any_organization_id',
+          name: 'any_organization_name',
+        },
+      },
+    ])
+
+    const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    await expect(promise).rejects.toThrowError(
+      new AlreadyAppliedToJoinOrganizationError('any_organization_id')
+    )
   })
 
   it('should call SaveAdmissionProposal with correct input', async () => {
