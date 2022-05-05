@@ -4,7 +4,11 @@ import {
   LoadUserAccount,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
-import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
+import {
+  AlreadyAppliedToJoinOrganizationError,
+  OrganizationNotFoundError,
+  UserAccountNotFoundError,
+} from '@/domain/entities/errors'
 
 export interface ApplyToJoinOrganization {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>
@@ -29,7 +33,10 @@ export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
     if (organization === undefined) {
       throw new OrganizationNotFoundError(organizationId)
     }
-    await this.admissionProposalRepo.load({ userId, organizationId })
+    const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
+    if (admissionProposals.length > 0) {
+      throw new AlreadyAppliedToJoinOrganizationError(organizationId)
+    }
     await this.admissionProposalRepo.save({
       userId,
       organizationId,
