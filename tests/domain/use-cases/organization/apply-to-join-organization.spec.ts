@@ -11,6 +11,7 @@ import {
 import {
   AlreadyAppliedToJoinOrganizationError,
   OrganizationNotFoundError,
+  TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
 
@@ -32,6 +33,9 @@ describe('ApplyToJoinOrganizationUseCace', () => {
     organizationRepoSpy.load.mockResolvedValue({
       id: 'any_organization_id',
       name: 'any_organization_name',
+      ownerUser: {
+        id: 'any_owner_user_id',
+      },
     })
     admissionProposalRepoSpy = mock()
     admissionProposalRepoSpy.load.mockResolvedValue([])
@@ -73,6 +77,20 @@ describe('ApplyToJoinOrganizationUseCace', () => {
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
     await expect(promise).rejects.toThrowError(new OrganizationNotFoundError('any_organization_id'))
+  })
+
+  it('should throw TheOrganizationOwnerCanNotApplyToJoinOrganizationError if user is the owner of the organization', async () => {
+    organizationRepoSpy.load.mockResolvedValueOnce({
+      id: 'any_organization_id',
+      name: 'any_organization_name',
+      ownerUser: { id: 'any_user_id' },
+    })
+
+    const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    await expect(promise).rejects.toThrowError(
+      new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
+    )
   })
 
   it('should call LoadAdmissionProposal with correct input', async () => {
