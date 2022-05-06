@@ -3,8 +3,11 @@ import { ApplyToJoinOrganization } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { RequiredString } from '@/application/validation'
-import { UserAccountNotFoundError } from '@/domain/entities/errors'
-import { notFound } from '@/application/helpers'
+import {
+  TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
+  UserAccountNotFoundError,
+} from '@/domain/entities/errors'
+import { conflict, notFound } from '@/application/helpers'
 
 describe('ApplyToJoinOrganizationController', () => {
   let sut: ApplyToJoinOrganizationController
@@ -62,6 +65,19 @@ describe('ApplyToJoinOrganizationController', () => {
   it('should return 404 if ApplyToJoinOrganization throw OrganizationNotFoundError', async () => {
     const expectedError = new UserAccountNotFoundError('any_organization_id')
     const expectedHttpResponse = notFound(expectedError)
+    applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
+
+    const httpResponse = await sut.handle({
+      userId: 'any_user_id',
+      organizationId: 'any_organization_id',
+    })
+
+    expect(httpResponse).toEqual(expectedHttpResponse)
+  })
+
+  it('should return 409 if ApplyToJoinOrganization throw TheOrganizationOwnerCanNotApplyToJoinOrganizationError', async () => {
+    const expectedError = new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
+    const expectedHttpResponse = conflict(expectedError)
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle({
