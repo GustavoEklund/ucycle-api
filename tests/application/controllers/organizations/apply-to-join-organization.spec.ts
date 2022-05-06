@@ -1,4 +1,4 @@
-import { ApplyToJoinOrganizationController } from '@/application/controllers'
+import { ApplyToJoinOrganizationController, Controller } from '@/application/controllers'
 import { ApplyToJoinOrganization } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -13,6 +13,10 @@ describe('ApplyToJoinOrganizationController', () => {
 
   beforeEach(() => {
     sut = new ApplyToJoinOrganizationController(applyToJoinOrganizationSpy)
+  })
+
+  it('should extend Controller', () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
 
   it('should call ApplyToJoinOrganization with correct input', async () => {
