@@ -3,6 +3,8 @@ import { ApplyToJoinOrganization } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { RequiredString } from '@/application/validation'
+import { UserAccountNotFoundError } from '@/domain/entities/errors'
+import { notFound } from '@/application/helpers'
 
 describe('ApplyToJoinOrganizationController', () => {
   let sut: ApplyToJoinOrganizationController
@@ -42,5 +44,19 @@ describe('ApplyToJoinOrganizationController', () => {
       userId: 'any_user_id',
       organizationId: 'any_organization_id',
     })
+  })
+
+  it('should return 404 if ApplyToJoinOrganization throw UserAccountNotFoundError', async () => {
+    const expectedHttpResponse = notFound()
+    applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(
+      new UserAccountNotFoundError('any_user_id')
+    )
+
+    const httpResponse = await sut.handle({
+      userId: 'any_user_id',
+      organizationId: 'any_organization_id',
+    })
+
+    expect(httpResponse).toEqual(expectedHttpResponse)
   })
 })
