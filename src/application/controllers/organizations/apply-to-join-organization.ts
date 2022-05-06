@@ -1,7 +1,8 @@
 import { ApplyToJoinOrganization } from '@/domain/use-cases'
 import { Controller } from '@/application/controllers'
-import { HttpResponse, ok } from '@/application/helpers'
+import { created, HttpResponse, notFound } from '@/application/helpers'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
+import { UserAccountNotFoundError } from '@/domain/entities/errors'
 
 type HttpRequest = {
   userId: string
@@ -16,9 +17,14 @@ export class ApplyToJoinOrganizationController extends Controller {
   public override async perform({
     userId,
     organizationId,
-  }: HttpRequest): Promise<HttpResponse<string>> {
-    await this.applyToJoinOrganization.perform({ userId, organizationId })
-    return ok('')
+  }: HttpRequest): Promise<HttpResponse<Error | undefined>> {
+    try {
+      await this.applyToJoinOrganization.perform({ userId, organizationId })
+    } catch (error) {
+      if (error instanceof UserAccountNotFoundError) return notFound()
+      throw error
+    }
+    return created(undefined)
   }
 
   public override buildValidators({ userId, organizationId }: HttpRequest): Validator[] {
