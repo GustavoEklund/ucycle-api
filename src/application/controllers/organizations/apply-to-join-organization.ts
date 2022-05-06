@@ -3,6 +3,7 @@ import { Controller } from '@/application/controllers'
 import { conflict, created, HttpResponse, notFound } from '@/application/helpers'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
 import {
+  AlreadyAppliedToJoinOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
@@ -27,7 +28,10 @@ export class ApplyToJoinOrganizationController extends Controller {
     } catch (error) {
       if (error instanceof UserAccountNotFoundError || error instanceof OrganizationNotFoundError)
         return notFound(error)
-      if (error instanceof TheOrganizationOwnerCanNotApplyToJoinOrganizationError)
+      if (
+        error instanceof TheOrganizationOwnerCanNotApplyToJoinOrganizationError ||
+        error instanceof AlreadyAppliedToJoinOrganizationError
+      )
         return conflict(error)
       throw error
     }
