@@ -47,10 +47,22 @@ describe('ApplyToJoinOrganizationController', () => {
   })
 
   it('should return 404 if ApplyToJoinOrganization throw UserAccountNotFoundError', async () => {
-    const expectedHttpResponse = notFound()
-    applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(
-      new UserAccountNotFoundError('any_user_id')
-    )
+    const expectedError = new UserAccountNotFoundError('any_user_id')
+    const expectedHttpResponse = notFound(expectedError)
+    applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
+
+    const httpResponse = await sut.handle({
+      userId: 'any_user_id',
+      organizationId: 'any_organization_id',
+    })
+
+    expect(httpResponse).toEqual(expectedHttpResponse)
+  })
+
+  it('should return 404 if ApplyToJoinOrganization throw OrganizationNotFoundError', async () => {
+    const expectedError = new UserAccountNotFoundError('any_organization_id')
+    const expectedHttpResponse = notFound(expectedError)
+    applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle({
       userId: 'any_user_id',
