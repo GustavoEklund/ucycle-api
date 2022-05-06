@@ -1,8 +1,12 @@
 import { ApplyToJoinOrganization } from '@/domain/use-cases'
 import { Controller } from '@/application/controllers'
-import { created, HttpResponse, notFound } from '@/application/helpers'
+import { conflict, created, HttpResponse, notFound } from '@/application/helpers'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
-import { OrganizationNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
+import {
+  OrganizationNotFoundError,
+  TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
+  UserAccountNotFoundError,
+} from '@/domain/entities/errors'
 
 type HttpRequest = {
   userId: string
@@ -23,6 +27,8 @@ export class ApplyToJoinOrganizationController extends Controller {
     } catch (error) {
       if (error instanceof UserAccountNotFoundError || error instanceof OrganizationNotFoundError)
         return notFound(error)
+      if (error instanceof TheOrganizationOwnerCanNotApplyToJoinOrganizationError)
+        return conflict(error)
       throw error
     }
     return created(undefined)

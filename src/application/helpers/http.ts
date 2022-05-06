@@ -35,6 +35,11 @@ export const notFound = (error?: Error): HttpResponse<Error> => ({
   data: error ?? new NotFoundError(),
 })
 
+export const conflict = (error: Error): HttpResponse<Error> => ({
+  statusCode: 409,
+  data: error,
+})
+
 export const serverError = (error: unknown): HttpResponse<Error> => ({
   statusCode: 500,
   data: new ServerError(error instanceof Error ? error : undefined),
