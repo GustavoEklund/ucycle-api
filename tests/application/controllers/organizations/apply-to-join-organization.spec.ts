@@ -8,7 +8,7 @@ import {
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
-import { conflict, notFound } from '@/application/helpers'
+import { conflict, created, notFound } from '@/application/helpers'
 
 describe('ApplyToJoinOrganizationController', () => {
   let sut: ApplyToJoinOrganizationController
@@ -93,6 +93,17 @@ describe('ApplyToJoinOrganizationController', () => {
     const expectedError = new AlreadyAppliedToJoinOrganizationError('any_organization_id')
     const expectedHttpResponse = conflict(expectedError)
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
+
+    const httpResponse = await sut.handle({
+      userId: 'any_user_id',
+      organizationId: 'any_organization_id',
+    })
+
+    expect(httpResponse).toEqual(expectedHttpResponse)
+  })
+
+  it('should return 201 on success', async () => {
+    const expectedHttpResponse = created(undefined)
 
     const httpResponse = await sut.handle({
       userId: 'any_user_id',
