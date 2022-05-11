@@ -14,7 +14,11 @@ export class PgOrganizationRepository
       return {
         id: String(organization.id),
         name: organization.name,
-        ownerUser: organization.ownerUser,
+        documents: [],
+        ownerUser: {
+          id: organization.ownerUser.id,
+          contacts: await organization.ownerUser.contacts,
+        },
       }
     }
   }

@@ -10,17 +10,23 @@ import {
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
+import { Publisher } from '@/domain/events'
+import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
+import { makeContacts } from '@/domain/value-objects/contact'
+import { Document } from '@/domain/value-objects/document'
 
-export interface ApplyToJoinOrganization {
+export interface ApplyToJoinOrganization extends Publisher {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>
 }
 
-export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
+export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyToJoinOrganization {
   public constructor(
     private readonly userAccountRepo: LoadUserAccount,
     private readonly organizationRepo: LoadOrganization,
     private readonly admissionProposalRepo: SaveAdmissionProposal & LoadAdmissionProposals
-  ) {}
+  ) {
+    super()
+  }
 
   public async perform({
     userId,
@@ -39,6 +45,23 @@ export class ApplyToJoinOrganizationUseCase implements ApplyToJoinOrganization {
       userId,
       organizationId,
     })
+    const event = new ApplicationToJoinOrganizationSent({
+      user: {
+        id: userAccount.id,
+        name: userAccount.name ?? '',
+        documents: userAccount.documents.map((document) => new Document(document.number)),
+        contacts: makeContacts(userAccount.contacts),
+      },
+      organization: {
+        id: organization.id,
+        name: organization.name,
+        ownerUser: {
+          id: organization.ownerUser.id,
+          contacts: makeContacts(organization.ownerUser.contacts),
+        },
+      },
+    })
+    this.notify(event)
   }
 }
 
