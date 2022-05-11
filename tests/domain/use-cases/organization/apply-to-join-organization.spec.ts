@@ -14,27 +14,33 @@ import {
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
+import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
-describe('ApplyToJoinOrganizationUseCace', () => {
+describe('ApplyToJoinOrganizationUseCase', () => {
   let sut: ApplyToJoinOrganization
   let userAccountRepoSpy: MockProxy<LoadUserAccount>
   let organizationRepoSpy: MockProxy<LoadOrganization>
   let admissionProposalRepoSpy: MockProxy<SaveAdmissionProposal & LoadAdmissionProposals>
 
   beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2022-01-01'))
     userAccountRepoSpy = mock()
     userAccountRepoSpy.load.mockResolvedValue({
       id: 'any_user_id',
       name: 'any_user_name',
+      contacts: [],
+      documents: [],
     })
     organizationRepoSpy = mock()
     organizationRepoSpy.load.mockResolvedValue({
       id: 'any_organization_id',
       name: 'any_organization_name',
+      documents: [],
       ownerUser: {
         id: 'any_owner_user_id',
+        contacts: [],
       },
     })
     admissionProposalRepoSpy = mock()
@@ -83,7 +89,11 @@ describe('ApplyToJoinOrganizationUseCace', () => {
     organizationRepoSpy.load.mockResolvedValueOnce({
       id: 'any_organization_id',
       name: 'any_organization_name',
-      ownerUser: { id: 'any_user_id' },
+      documents: [],
+      ownerUser: {
+        id: 'any_user_id',
+        contacts: [],
+      },
     })
 
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
@@ -123,6 +133,31 @@ describe('ApplyToJoinOrganizationUseCace', () => {
     await expect(promise).rejects.toThrowError(
       new AlreadyAppliedToJoinOrganizationError('any_organization_id')
     )
+  })
+
+  it('should call notify with correct input', async () => {
+    const expectedEvent = new ApplicationToJoinOrganizationSent({
+      user: {
+        id: 'any_user_id',
+        name: 'any_user_name',
+        documents: [],
+        contacts: [],
+      },
+      organization: {
+        id: 'any_organization_id',
+        name: 'any_organization_name',
+        ownerUser: {
+          id: 'any_owner_user_id',
+          contacts: [],
+        },
+      },
+    })
+    const notifySpy = jest.spyOn(sut, 'notify')
+
+    await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    expect(notifySpy).toHaveBeenCalledTimes(1)
+    expect(notifySpy.mock.calls[0][0].equals(expectedEvent)).toBeTruthy()
   })
 
   it('should call SaveAdmissionProposal with correct input', async () => {
