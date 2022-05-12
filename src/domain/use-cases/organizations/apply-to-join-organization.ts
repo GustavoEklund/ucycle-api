@@ -41,11 +41,12 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
     if (admissionProposals.length > 0)
       throw new AlreadyAppliedToJoinOrganizationError(organizationId)
-    await this.admissionProposalRepo.save({
+    const { id: admissionProposalId } = await this.admissionProposalRepo.save({
       userId,
       organizationId,
     })
     const event = new ApplicationToJoinOrganizationSent({
+      admissionProposalId,
       user: {
         id: userAccount.id,
         name: userAccount.name ?? '',

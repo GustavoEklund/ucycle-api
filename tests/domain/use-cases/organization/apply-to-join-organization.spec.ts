@@ -45,6 +45,9 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     })
     admissionProposalRepoSpy = mock()
     admissionProposalRepoSpy.load.mockResolvedValue([])
+    admissionProposalRepoSpy.save.mockResolvedValue({
+      id: 'any_admission_proposal_id',
+    })
   })
 
   beforeEach(() => {
@@ -137,6 +140,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
 
   it('should call notify with correct input', async () => {
     const expectedEvent = new ApplicationToJoinOrganizationSent({
+      admissionProposalId: 'any_admission_proposal_id',
       user: {
         id: 'any_user_id',
         name: 'any_user_name',
