@@ -3,9 +3,9 @@ import { Document } from '@/domain/value-objects'
 import { Contact } from '@/domain/value-objects/contact'
 
 export class ApplicationToJoinOrganizationSent extends DomainEvent {
-  public admissionProposalId: string
+  public readonly admissionProposalId: string
 
-  public organization: {
+  public readonly organization: {
     id: string
     name: string
     ownerUser: {
@@ -14,7 +14,7 @@ export class ApplicationToJoinOrganizationSent extends DomainEvent {
     }
   }
 
-  private readonly user: {
+  public readonly user: {
     id: string
     name: string
     documents: Document[]

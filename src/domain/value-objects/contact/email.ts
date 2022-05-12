@@ -18,6 +18,12 @@ export class Email extends Contact {
     this.value = { address: clearEmail }
   }
 
+  public static getPrimary(contacts: Contact[]): Email | undefined {
+    return contacts.find((contact: Contact) => {
+      return contact instanceof Email && contact.label === EmailType.primary
+    })
+  }
+
   private static format(email: string): string {
     return email.toLowerCase().trim()
   }
