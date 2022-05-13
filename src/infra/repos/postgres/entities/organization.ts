@@ -9,8 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgAddress, PgUser } from '@/infra/repos/postgres/entities'
-import { PgImage } from '@/infra/repos/postgres/entities/image'
+import { PgAddress, PgAdmissionProposal, PgImage, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
@@ -25,6 +24,9 @@ export class PgOrganization {
 
   @OneToMany(() => PgImage, (image) => image.organization)
   pictures!: Promise<PgImage[]>
+
+  @OneToMany(() => PgAdmissionProposal, (admissionProposal) => admissionProposal.organization)
+  admissionProposals!: Promise<PgAdmissionProposal[]>
 
   @ManyToOne(() => PgUser, (user) => user.organizations)
   ownerUser!: PgUser

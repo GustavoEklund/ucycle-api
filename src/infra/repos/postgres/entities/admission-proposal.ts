@@ -10,15 +10,15 @@ import {
 
 import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
-@Entity({ name: 'image' })
-export class PgImage {
+@Entity({ name: 'admission_proposal' })
+export class PgAdmissionProposal {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
   @Column()
-  url!: string
+  status!: string
 
-  @ManyToOne(() => PgOrganization, (organization) => organization.pictures)
+  @ManyToOne(() => PgOrganization, (organization) => organization.admissionProposals)
   organization!: PgOrganization
 
   @ManyToOne(() => PgUser, (user) => user.organizations)

@@ -6,6 +6,7 @@ export namespace SaveAdmissionProposal {
   export type Input = {
     userId: string
     organizationId: string
+    status: string
   }
   export type Output = {
     id: string

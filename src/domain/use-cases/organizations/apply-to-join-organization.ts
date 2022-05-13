@@ -14,6 +14,7 @@ import { Publisher } from '@/domain/events'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
 import { makeContacts } from '@/domain/value-objects/contact'
 import { Document } from '@/domain/value-objects/document'
+import { AdmissionProposalStatus } from '@/domain/entities/organization'
 
 export interface ApplyToJoinOrganization {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>
@@ -44,6 +45,7 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     const { id: admissionProposalId } = await this.admissionProposalRepo.save({
       userId,
       organizationId,
+      status: AdmissionProposalStatus.pending,
     })
     const event = new ApplicationToJoinOrganizationSent({
       admissionProposalId,
