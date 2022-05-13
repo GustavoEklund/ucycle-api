@@ -10,11 +10,10 @@ import {
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
-import { Observer, Publisher } from '@/domain/events'
+import { Publisher } from '@/domain/events'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
-import { Email, makeContacts } from '@/domain/value-objects/contact'
+import { makeContacts } from '@/domain/value-objects/contact'
 import { Document } from '@/domain/value-objects/document'
-import { Mailer } from '@/domain/contracts/gateways'
 
 export interface ApplyToJoinOrganization {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>
@@ -73,32 +72,4 @@ export namespace ApplyToJoinOrganization {
     organizationId: string
   }
   export type Output = void
-}
-
-export class ApplicationToJoinOrganizationSentCommunicatorUseCase extends Observer {
-  public constructor(private readonly mailer: Mailer) {
-    super({ domainEvents: ['APPLICATION_TO_JOIN_ORGANIZATION_SENT'] })
-  }
-
-  public async handle({
-    admissionProposalId,
-    user,
-    organization,
-  }: ApplicationToJoinOrganizationSent): Promise<void> {
-    await this.mailer.sendWithTemplate({
-      recipient: {
-        email: Email.getPrimary(organization.ownerUser.contacts)?.value.address ?? '',
-      },
-      template: {
-        id: 'd-e2679264028841579b0eb21a65e0a9d0',
-        data: {
-          userId: user.id,
-          userName: user.name,
-          userEmail: Email.getPrimary(user.contacts)?.value.address ?? '',
-          organizationName: organization.name,
-          admissionProposalId,
-        },
-      },
-    })
-  }
 }
