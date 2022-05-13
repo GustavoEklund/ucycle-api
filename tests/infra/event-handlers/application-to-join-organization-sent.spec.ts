@@ -8,6 +8,23 @@ import { Document } from '@/domain/value-objects'
 describe('ApplicationToJoinOrganizationSentHandler', () => {
   let sut: ApplicationToJoinOrganizationSentHandler
   let mailerSpy: MockProxy<Mailer>
+  const event = new ApplicationToJoinOrganizationSent({
+    admissionProposalId: 'any_admission_proposal_id',
+    user: {
+      id: 'any_user_id',
+      name: 'any_user_name',
+      documents: [new Document('342.444.198-88')],
+      contacts: [new Email('any@mail.com', EmailType.primary)],
+    },
+    organization: {
+      id: 'any_organization_id',
+      name: 'any_organization_name',
+      ownerUser: {
+        id: 'any_owner_user_id',
+        contacts: [new Email('any.other@mail.com', EmailType.primary)],
+      },
+    },
+  })
 
   beforeAll(() => {
     mailerSpy = mock()
@@ -18,24 +35,6 @@ describe('ApplicationToJoinOrganizationSentHandler', () => {
   })
 
   it('it should call Mailer with correct input', async () => {
-    const event = new ApplicationToJoinOrganizationSent({
-      admissionProposalId: 'any_admission_proposal_id',
-      user: {
-        id: 'any_user_id',
-        name: 'any_user_name',
-        documents: [new Document('342.444.198-88')],
-        contacts: [new Email('any@mail.com', EmailType.primary)],
-      },
-      organization: {
-        id: 'any_organization_id',
-        name: 'any_organization_name',
-        ownerUser: {
-          id: 'any_owner_user_id',
-          contacts: [new Email('any.other@mail.com', EmailType.primary)],
-        },
-      },
-    })
-
     await sut.handle(event)
 
     expect(mailerSpy.sendWithTemplate).toHaveBeenCalledTimes(1)
@@ -54,5 +53,13 @@ describe('ApplicationToJoinOrganizationSentHandler', () => {
         },
       },
     })
+  })
+
+  it('should not throw if Mailer throws', async () => {
+    mailerSpy.sendWithTemplate.mockRejectedValueOnce(new Error('any_infra_error'))
+
+    const promise = sut.handle(event)
+
+    await expect(promise).resolves.toBeUndefined()
   })
 })
