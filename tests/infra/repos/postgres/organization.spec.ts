@@ -3,6 +3,7 @@ import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
+  PgAdmissionProposal,
   PgContact,
   PgDocument,
   PgImage,
@@ -25,7 +26,15 @@ describe('PgOrganizationRepository', () => {
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([PgOrganization, PgUser, PgDocument, PgContact, PgAddress, PgImage])
+    const db = await makeFakeDb([
+      PgOrganization,
+      PgUser,
+      PgDocument,
+      PgContact,
+      PgAddress,
+      PgImage,
+      PgAdmissionProposal,
+    ])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
     pgAddressRepo = connection.getRepository(PgAddress)

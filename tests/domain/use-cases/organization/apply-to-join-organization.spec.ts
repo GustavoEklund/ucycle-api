@@ -12,6 +12,7 @@ import {
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
+import { AdmissionProposalStatus } from '@/domain/entities/organization'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -168,6 +169,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     expect(admissionProposalRepoSpy.save).toHaveBeenCalledWith({
       userId: 'any_user_id',
       organizationId: 'any_organization_id',
+      status: AdmissionProposalStatus.pending,
     })
   })
 })

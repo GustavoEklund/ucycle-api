@@ -13,4 +13,5 @@ export const mockOrganization = ({
   ownerUser,
   pictures: Promise.resolve(pictures),
   address,
+  admissionProposals: Promise.resolve([]),
 })
