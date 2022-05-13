@@ -13,20 +13,22 @@ export class ApplicationToJoinOrganizationSentHandler extends Observer {
     user,
     organization,
   }: ApplicationToJoinOrganizationSent): Promise<void> {
-    await this.mailer.sendWithTemplate({
-      recipient: {
-        email: Email.getPrimary(organization.ownerUser.contacts)?.value.address ?? '',
-      },
-      template: {
-        id: 'd-e2679264028841579b0eb21a65e0a9d0',
-        data: {
-          userId: user.id,
-          userName: user.name,
-          userEmail: Email.getPrimary(user.contacts)?.value.address ?? '',
-          organizationName: organization.name,
-          admissionProposalId,
+    try {
+      await this.mailer.sendWithTemplate({
+        recipient: {
+          email: Email.getPrimary(organization.ownerUser.contacts)?.value.address ?? '',
         },
-      },
-    })
+        template: {
+          id: 'd-e2679264028841579b0eb21a65e0a9d0',
+          data: {
+            userId: user.id,
+            userName: user.name,
+            userEmail: Email.getPrimary(user.contacts)?.value.address ?? '',
+            organizationName: organization.name,
+            admissionProposalId,
+          },
+        },
+      })
+    } catch (error) {}
   }
 }
