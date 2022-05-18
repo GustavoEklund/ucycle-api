@@ -41,7 +41,6 @@ export class AddPersonsController extends Controller {
     specialNeeds,
     specialNeedsDescription,
   }: HttpRequest): Promise<HttpResponse<Model>> {
-    try {
       const response = await this.addPersons({
         firstName,
         lastName,
@@ -57,9 +56,5 @@ export class AddPersonsController extends Controller {
         specialNeedsDescription,
       })
       return ok(response)
-    } catch (error) {
-      if (error instanceof AuthenticationError) return unauthorized()
-      throw error
-    }
   }
 }
