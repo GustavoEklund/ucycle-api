@@ -11,4 +11,8 @@ describe('AuthenticationError', () => {
     expect(sut).toBeInstanceOf(Error)
   })
 
+  it('should return correct message', () => {
+    expect(sut.message).toBe('authentication failed')
+  })
+
 })
