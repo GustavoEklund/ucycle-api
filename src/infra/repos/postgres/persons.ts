@@ -6,10 +6,10 @@ import { PgPersons } from '@/infra/repos/postgres/entities'
 export class PgPersonsRepository extends PgRepository implements LoadPersons, SavePersons {
   public async load({ id }: LoadPersons.Input): Promise<LoadPersons.Output> {
     const personsRepo = this.getRepository(PgPersons)
-    const persons = await personsRepo.findOne({ id: Number(id) })
+    const persons = await personsRepo.findOne({ id: id })
 
     if (persons !== undefined) {
-      return { id: String(persons!.id) }
+      return { id: persons!.id }
     }
   }
 
