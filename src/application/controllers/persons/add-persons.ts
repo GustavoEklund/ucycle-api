@@ -12,7 +12,7 @@ type HttpRequest = {
   // document: Address;
   // contact: number;
 
-  birthDate?: number
+  birthDate?: string
   professional?: string
   marriedStatus?: string
 

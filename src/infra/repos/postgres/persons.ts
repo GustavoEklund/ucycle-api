@@ -9,7 +9,7 @@ export class PgPersonsRepository extends PgRepository implements LoadPersons, Sa
     const persons = await personsRepo.findOne({ id: Number(id) })
 
     if (persons !== undefined) {
-      return { id: String(persons!.id), name: persons!.name }
+      return { id: String(persons!.id) }
     }
   }
 
