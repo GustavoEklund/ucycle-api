@@ -1,4 +1,5 @@
 import { Document, DocumentType } from '@/domain/value-objects'
+import { InvalidDocumentError } from '@/domain/entities/errors'
 
 describe('Document', () => {
   it('should be a valid cpf document', () => {
@@ -13,5 +14,9 @@ describe('Document', () => {
 
     expect(sut.type).toBe(DocumentType.cnpj)
     expect(sut.number).toBe('32063364000107')
+  })
+
+  it('should throw InvalidDocumentError when document is invalid', () => {
+    expect(() => new Document('123')).toThrow(new InvalidDocumentError())
   })
 })
