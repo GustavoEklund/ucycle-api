@@ -4,7 +4,7 @@ import { RequiredInteger, RequiredString } from '@/application/validation'
 describe('AddPersonsController', () => {
   let firstName: string
   let lastName: string
-  
+
   let birthDate: string
   let professional: string
   let marriedStatus: string
@@ -36,5 +36,28 @@ describe('AddPersonsController', () => {
 
   it('should extend Controller', () => {
     expect(sut).toBeInstanceOf(Controller)
+  })
+
+  it('should call AddPersons with correct input', async () => {
+    await sut.handle({
+      firstName,
+      lastName,
+      birthDate,
+      professional,
+      marriedStatus,
+      specialNeeds,
+      specialNeedsDescription,
+    })
+
+    expect(addPersonsSpy).toHaveBeenCalledWith({
+      firstName,
+      lastName,
+      birthDate,
+      professional,
+      marriedStatus,
+      specialNeeds,
+      specialNeedsDescription,
+    })
+    expect(addPersonsSpy).toHaveBeenCalledTimes(1)
   })
 })
