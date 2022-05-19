@@ -6,7 +6,6 @@ import { PgPersonsRepository } from '@/infra/repos/postgres'
 
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
-import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
 
 describe('PgPersonsRepository', () => {
   let sut: PgPersonsRepository
