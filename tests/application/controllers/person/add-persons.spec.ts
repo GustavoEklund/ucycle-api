@@ -60,4 +60,21 @@ describe('AddPersonsController', () => {
     })
     expect(addPersonsSpy).toHaveBeenCalledTimes(1)
   })
+
+  it('should return 200 authentication succeeds', async () => {
+    const httpResponse = await sut.handle({
+      firstName,
+      lastName,
+      birthDate,
+      professional,
+      marriedStatus,
+      specialNeeds,
+      specialNeedsDescription,
+    })
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: { id: 'any_id' },
+    })
+  })
 })
