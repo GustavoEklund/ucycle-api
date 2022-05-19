@@ -14,4 +14,8 @@ describe('AlreadyExistsError', () => {
   it('should return correct message', () => {
     expect(sut.message).toBe('any_entity with id any_id already exists')
   })
+
+  it('should return correct name', () => {
+    expect(sut.name).toBe('AlreadyExistsError')
+  })
 })
