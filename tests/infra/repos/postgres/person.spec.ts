@@ -36,5 +36,18 @@ describe('PgPersonsRepository', () => {
     expect(sut).toBeInstanceOf(PgRepository)
   })
 
+  describe('save', () => {
+    it('should save person', async () => {
+      const person = mockPerson()
 
+      const { id: personId } = await sut.save({ ...person })
+
+      const PgPersons = await PgPersonsRepo.findOne({
+        where: { id: personId }
+      })
+      expect(PgPersons).toMatchObject({
+        id: personId
+      })
+    })
+  })
 })
