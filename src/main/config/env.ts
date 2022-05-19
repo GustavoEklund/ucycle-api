@@ -33,6 +33,13 @@ export const env = {
     clientSecret: process.env.FB_CLIENT_SECRET ?? '',
     accessToken: process.env.FB_ACCESS_TOKEN ?? '',
   },
+  sendgrid: {
+    apiKey: process.env.SENDGRID_APIKEY ?? '',
+    sender: {
+      email: process.env.SENDGRID_SENDER_EMAIL ?? '',
+      name: process.env.SENDGRID_SENDER_NAME ?? '',
+    },
+  },
   s3: {
     accessKey: process.env.AWS_S3_ACCESS_KEY ?? '',
     secret: process.env.AWS_S3_SECRET ?? '',

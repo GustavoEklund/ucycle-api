@@ -1,10 +1,10 @@
 import { Mailer } from '@/domain/contracts/gateways'
 import SendGridSdk from '@sendgrid/mail'
 
-export abstract class SendGridMailer implements Mailer {
+export class SendGridMailer implements Mailer {
   public readonly sender: { email: string; name: string }
 
-  protected constructor({
+  public constructor({
     apiKey,
     sender,
   }: {
