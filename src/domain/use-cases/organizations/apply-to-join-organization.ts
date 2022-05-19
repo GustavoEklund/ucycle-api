@@ -51,7 +51,7 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
       admissionProposalId,
       user: {
         id: userAccount.id,
-        name: userAccount.name ?? '',
+        name: userAccount.firstName,
         documents: userAccount.documents.map((document) => new Document(document.number)),
         contacts: makeContacts(userAccount.contacts),
       },
@@ -64,7 +64,7 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
         },
       },
     })
-    this.notify(event)
+    await this.notify(event)
   }
 }
 

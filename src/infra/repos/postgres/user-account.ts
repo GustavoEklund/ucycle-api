@@ -1,47 +1,26 @@
-import { SaveUserAccount } from '@/domain/contracts/repos/user-account'
+import { LoadUserAccount } from '@/domain/contracts/repos/user-account'
 import { PgRepository } from './repository'
-import { PgUser } from './entities/user'
-import { PgDocument } from './entities/document'
-import { PgContact } from './entities/contact'
+import { PgUser } from '@/infra/repos/postgres/entities'
 
-export class PgUserAccountRepository extends PgRepository implements SaveUserAccount {
-  public async save({
-    id,
-    firstName,
-    lastName,
-    firstAccess,
-    contacts,
-    documents,
-  }: SaveUserAccount.Input): Promise<SaveUserAccount.Output> {
+export class PgUserAccountRepository extends PgRepository implements LoadUserAccount {
+  public async load({ id, email }: LoadUserAccount.Input): Promise<LoadUserAccount.Output> {
     const pgUserRepo = this.getRepository(PgUser)
-    if (id !== undefined) {
-      await pgUserRepo.update({ id }, { firstName, lastName, firstAccess })
-      return { id }
+    const pgUserQueryBuilder = pgUserRepo.createQueryBuilder('user')
+    if (id !== undefined) pgUserQueryBuilder.andWhere('user.id = :id', { id })
+    if (email !== undefined) {
+      pgUserQueryBuilder
+        .leftJoinAndSelect('user.contacts', 'contact')
+        .andWhere('contact.value = :value', { value: email })
     }
-    let pgUser = pgUserRepo.create({
-      firstName,
-      lastName,
-      firstAccess,
-    })
-    pgUser = await pgUserRepo.save(pgUser)
-    const documentsWithUser = documents.map((document) => {
-      const pgDocument = new PgDocument()
-      pgDocument.user = Promise.resolve(pgUser)
-      pgDocument.type = document.type
-      pgDocument.number = document.number
-      return pgDocument
-    })
-    pgUser.documents = Promise.resolve(documentsWithUser)
-    const contactsWithUser = contacts.map((contact) => {
-      const pgContact = new PgContact()
-      pgContact.user = Promise.resolve(pgUser)
-      pgContact.verified = contact.verified
-      pgContact.type = contact.type
-      pgContact.value = contact.value
-      return pgContact
-    })
-    pgUser.contacts = Promise.resolve(contactsWithUser)
-    await pgUserRepo.save(pgUser)
-    return { id: pgUser.id }
+    const pgUser = await pgUserQueryBuilder.getOne()
+    if (pgUser !== undefined) {
+      return {
+        id: pgUser.id,
+        firstName: pgUser.firstName,
+        lastName: pgUser.lastName,
+        documents: await pgUser.documents,
+        contacts: await pgUser.contacts,
+      }
+    }
   }
 }

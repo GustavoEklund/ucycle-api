@@ -13,6 +13,7 @@ import {
 } from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
 import { AdmissionProposalStatus } from '@/domain/entities/organization'
+import { Document } from '@/domain/value-objects'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -27,9 +28,10 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     userAccountRepoSpy = mock()
     userAccountRepoSpy.load.mockResolvedValue({
       id: 'any_user_id',
-      name: 'any_user_name',
+      firstName: 'any_user_name',
+      lastName: 'any_user_last_name',
       contacts: [],
-      documents: [],
+      documents: [{ number: '34244419888' }],
     })
     organizationRepoSpy = mock()
     organizationRepoSpy.load.mockResolvedValue({
@@ -142,7 +144,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
       user: {
         id: 'any_user_id',
         name: 'any_user_name',
-        documents: [],
+        documents: [new Document('34244419888')],
         contacts: [],
       },
       organization: {

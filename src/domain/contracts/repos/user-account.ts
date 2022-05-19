@@ -32,7 +32,8 @@ export namespace LoadUserAccount {
     | undefined
     | {
         id: string
-        name?: string
+        firstName: string
+        lastName: string
         documents: { number: string }[]
         contacts: {
           value: string

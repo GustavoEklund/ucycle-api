@@ -26,17 +26,12 @@ export class ApplyToJoinOrganizationController extends Controller {
     try {
       await this.applyToJoinOrganization.perform({ userId, organizationId })
     } catch (error) {
-      if (!(error instanceof Error)) throw error
-      switch (error.constructor) {
-        case UserAccountNotFoundError:
-        case OrganizationNotFoundError:
-          return notFound(error)
-        case TheOrganizationOwnerCanNotApplyToJoinOrganizationError:
-        case AlreadyAppliedToJoinOrganizationError:
-          return conflict(error)
-        default:
-          throw error
-      }
+      if (error instanceof UserAccountNotFoundError) return notFound(error)
+      if (error instanceof OrganizationNotFoundError) return notFound(error)
+      if (error instanceof AlreadyAppliedToJoinOrganizationError) return conflict(error)
+      if (error instanceof TheOrganizationOwnerCanNotApplyToJoinOrganizationError)
+        return conflict(error)
+      throw error
     }
     return created(undefined)
   }
