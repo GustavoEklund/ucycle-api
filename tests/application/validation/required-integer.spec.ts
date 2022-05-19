@@ -1,4 +1,4 @@
-import { InvalidFieldError } from '@/application/errors'
+import { InvalidFieldError, RequiredFieldError } from '@/application/errors'
 import { Required, RequiredInteger } from '@/application/validation'
 
 describe('RequiredInteger', () => {
@@ -6,6 +6,14 @@ describe('RequiredInteger', () => {
     const sut = new RequiredInteger('')
 
     expect(sut).toBeInstanceOf(Required)
+  })
+
+  it('should return RequiredFieldError if validate returns RequiredFieldError', () => {
+    const sut = new RequiredInteger(undefined, 'any_field')
+
+    const error = sut.validate()
+
+    expect(error).toEqual(new RequiredFieldError('any_field'))
   })
 
   it('should return InvalidFieldError if value is not an Integer', () => {

@@ -24,14 +24,23 @@ export interface LoadUserAccount {
 
 export namespace LoadUserAccount {
   export type Input = {
-    email: string
+    id?: string
+    email?: string
   }
 
   export type Output =
     | undefined
     | {
         id: string
-        name?: string
+        firstName: string
+        lastName: string
+        documents: { number: string }[]
+        contacts: {
+          value: string
+          type: string
+          label: string
+          verified: boolean
+        }[]
       }
 }
 
@@ -48,23 +57,6 @@ export namespace SaveUserAccount {
     documents: Document[]
     contacts: Contact[]
   }
-  export type Output = {
-    id: string
-  }
-}
-
-export interface SaveFacebookAccount {
-  saveWithFacebook: (params: SaveFacebookAccount.Input) => Promise<SaveFacebookAccount.Output>
-}
-
-export namespace SaveFacebookAccount {
-  export type Input = {
-    id?: string
-    facebookId: string
-    name: string
-    email: string
-  }
-
   export type Output = {
     id: string
   }

@@ -1,3 +1,9 @@
 export * from './authentication'
-
 export * from './already-exists'
+export * from './user-account-not-found'
+export * from './organization-not-found'
+export * from './already-applied-to-join-organization'
+export * from './the-organization-owner-can-not-apply-to-join-organization'
+export * from './invalid-document'
+export * from './invalid-email'
+export * from './invalid-contact-type'

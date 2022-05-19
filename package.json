@@ -51,6 +51,7 @@
     "migration:run": "npm run build && ts-node-dev -r tsconfig-paths/register ./node_modules/.bin/typeorm -f ormconfig.ts migration:run"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.6.2",
     "aws-sdk": "^2.1035.0",
     "axios": "^0.24.0",
     "cors": "^2.8.5",

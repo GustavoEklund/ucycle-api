@@ -3,6 +3,7 @@ import {
   MaxFileSize,
   Required,
   RequiredBuffer,
+  RequiredInteger,
   RequiredString,
   RequiredType,
   ValidationBuilder,
@@ -75,5 +76,16 @@ describe('ValidationBuilder', () => {
       new AllowedMimeTypes(['png'], 'image/png'),
       new MaxFileSize(6, buffer),
     ])
+  })
+
+  it('should return correct integer validator', () => {
+    const validators = ValidationBuilder.of({
+      value: 5,
+      fieldName: 'integer',
+    })
+      .required(RequiredType.integer)
+      .build()
+
+    expect(validators).toEqual([new RequiredInteger(5, 'integer')])
   })
 })

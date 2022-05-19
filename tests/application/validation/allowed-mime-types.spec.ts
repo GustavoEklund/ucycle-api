@@ -33,4 +33,12 @@ describe('AllowedMimeTypes', () => {
 
     expect(error).toBeUndefined()
   })
+
+  it('should return undefined if value is valid', () => {
+    const sut = new AllowedMimeTypes(['csv'], 'text/csv')
+
+    const error = sut.validate()
+
+    expect(error).toBeUndefined()
+  })
 })

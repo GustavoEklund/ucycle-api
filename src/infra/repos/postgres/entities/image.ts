@@ -1,5 +1,3 @@
-import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
-
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
+
+import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'image' })
 export class PgImage {

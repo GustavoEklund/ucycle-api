@@ -11,6 +11,16 @@ export namespace LoadOrganization {
     | {
         id: string
         name: string
+        documents: { number: string }[]
+        ownerUser: {
+          id: string
+          contacts: {
+            value: string
+            type: string
+            label: string
+            verified: boolean
+          }[]
+        }
       }
 }
 
