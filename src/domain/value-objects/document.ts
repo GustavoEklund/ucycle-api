@@ -52,7 +52,7 @@ export class Document {
   private static isCnpj(number: string): boolean {
     const basis = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
     number = Document.removeNonNumbers(number)
-    if (number.length !== 14) return false
+    if (number.length !== 14 || number === '00000000000000') return false
     let n = 0
     for (let i = 0; i < 12; ++i) n += Number(number[i]) * basis[i + 1]
     if (Number(number[12]) !== ((n %= 11) < 2 ? 0 : 11 - n)) return false
