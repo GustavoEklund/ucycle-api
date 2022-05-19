@@ -14,14 +14,11 @@ export abstract class Publisher {
 
   public unsubscribe(observer: Observer): void {
     const index = this.observers.indexOf(observer)
-    if (index > -1) {
-      this.observers.splice(index, 1)
-    }
+    if (index > -1) this.observers.splice(index, 1)
   }
 
-  public notify(event: DomainEvent): void {
-    this.observers.forEach((observer) => {
-      if (observer.isSubscribedTo(event)) observer.handle(event)
-    })
+  public async notify(event: DomainEvent): Promise<void> {
+    for (const observer of this.observers)
+      if (observer.isSubscribedTo(event)) await observer.handle(event)
   }
 }
