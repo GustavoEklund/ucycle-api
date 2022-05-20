@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -13,7 +12,7 @@ import {
 @Entity({ name: 'persons' })
 export class PgPersons {
   @PrimaryGeneratedColumn('uuid')
-  id!: number
+  id!: string
 
   @Column()
   firstName!: string
@@ -22,23 +21,18 @@ export class PgPersons {
 
   // document: Address;
   // contact: number;
+
   @Column()
-  birthDate?: number
+  birthDate?: string
   @Column()
   professional?: string
   @Column()
   marriedStatus?: string
 
-  @Column()
+  @Column({ type: 'boolean', default: false })
   specialNeeds!: boolean
   @Column()
   specialNeedsDescription?: string
-
-  @Column()
-  name!: string
-
-  @Column()
-  address!: object
 
   @CreateDateColumn()
   createdAt!: Date

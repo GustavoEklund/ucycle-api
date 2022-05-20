@@ -10,7 +10,6 @@ export namespace LoadPersons {
     | undefined
     | {
         id: string
-        name: string
     }
 }
 
@@ -26,7 +25,7 @@ export namespace SavePersons {
     // document: Address;
     // contact: number;
 
-    birthDate?: number
+    birthDate?: string
     professional?: string
     marriedStatus?: string
 

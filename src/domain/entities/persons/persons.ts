@@ -7,7 +7,7 @@ export class Persons {
   // public readonly document: Address;
   // public readonly contact: number;
 
-  public readonly birthDate?: number
+  public readonly birthDate?: string
   public readonly professional?: string
   public readonly marriedStatus?: string
 
@@ -35,7 +35,7 @@ export class Persons {
     // document: Address;
     // contact: number;
 
-    birthDate?: number
+    birthDate?: string
     professional?: string
     marriedStatus?: string
 
