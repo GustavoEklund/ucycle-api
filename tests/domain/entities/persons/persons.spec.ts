@@ -1,4 +1,4 @@
-import { Persons } from '@/domain/entities/persons';
+import { Person } from '@/domain/entities/persons';
 
 
 let personsData = {
@@ -14,10 +14,10 @@ let personsData = {
 }
 
 describe('Entity Persons', () => {
-    let sut: Persons
+    let sut: Person
 
     beforeEach(() => {
-        sut = new Persons(personsData)
+        sut = new Person(personsData)
     })
 
     test('should be instantiated with proper values', () => {

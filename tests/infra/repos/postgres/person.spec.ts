@@ -35,15 +35,15 @@ describe('PgPersonsRepository', () => {
 
   describe('save', () => {
     it('should save person', async () => {
-      const person = mockPerson()
+      const person = [mockPerson()]
 
-      const { id: personId } = await sut.save({ ...person })
+      const sutReturn = await sut.save(person)
 
       const PgPersons = await PgPersonsRepo.findOne({
-        where: { id: personId },
+        where: [{ id: sutReturn[0].id }],
       })
       expect(PgPersons).toMatchObject({
-        id: personId,
+        id: sutReturn[0].id,
       })
     })
   })

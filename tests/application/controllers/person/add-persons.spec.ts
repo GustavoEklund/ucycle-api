@@ -1,5 +1,4 @@
 import { AddPersonsController, Controller } from '@/application/controllers'
-import { RequiredInteger, RequiredString } from '@/application/validation'
 
 const personsData = {
   firstName: 'any_first_name',
@@ -21,7 +20,7 @@ describe('AddPersonsController', () => {
     personsData
 
     addPersonsSpy = jest.fn()
-    addPersonsSpy.mockResolvedValue({ id: 'any_id' })
+    addPersonsSpy.mockResolvedValue([{ id: 'any_id' }])
   })
 
   beforeEach(() => {
@@ -32,25 +31,21 @@ describe('AddPersonsController', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
 
-  it('should call AddPersons with correct input', async () => {
-    await sut.handle({
-      ...personsData,
-    })
+it('should call addPersons with correct values', async () => {
+  const person = [personsData]
+  await sut.handle(person)
 
-    expect(addPersonsSpy).toHaveBeenCalledWith({
-      ...personsData,
-    })
-    expect(addPersonsSpy).toHaveBeenCalledTimes(1)
-  })
+  expect(addPersonsSpy).toHaveBeenCalledWith(person)
+  expect(addPersonsSpy).toHaveBeenCalledTimes(1)
+})
 
-  it('should return 200 authentication succeeds', async () => {
-    const httpResponse = await sut.handle({
-      ...personsData,
-    })
+  it('should return an id on success', async () => {
+    const person = [personsData]
+    const response = await sut.handle(person)
 
-    expect(httpResponse).toEqual({
+    expect(response).toEqual({
       statusCode: 200,
-      data: { id: 'any_id' },
+      data: [{ id: 'any_id' }],
     })
   })
 })

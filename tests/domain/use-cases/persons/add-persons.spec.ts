@@ -1,26 +1,32 @@
 import { AddPersons, setupAddPersons } from '@/domain/use-cases/persons/add-persons'
-import { Persons } from '@/domain/entities/persons/persons'
+import { Person } from '@/domain/entities/persons/persons'
 import { mockPerson } from '../../../infra/repos/postgres/mocks/person'
 import { SavePersons } from '@/domain/contracts/repos/persons/persons'
 import { mock, MockProxy } from 'jest-mock-extended'
 
-let generatePerson = () => {
-  const persons = new Persons(mockPerson())
+let generatePerson = (number: number = 1) => {
+  let returnPerson = []
 
-  return {
-    firstName: persons.firstName,
-    lastName: persons.lastName,
+  for (let i = 0; i < number; i++) {
+    const persons = new Person(mockPerson())
 
-    // document: persons.document,
-    // contact: persons.contact,
+    returnPerson.push({
+      firstName: persons.firstName,
+      lastName: persons.lastName,
 
-    birthDate: persons.birthDate,
-    professional: persons.professional,
-    marriedStatus: persons.marriedStatus,
+      // document: persons.document,
+      // contact: persons.contact,
 
-    specialNeeds: persons.specialNeeds,
-    specialNeedsDescription: persons.specialNeedsDescription,
+      birthDate: persons.birthDate,
+      professional: persons.professional,
+      marriedStatus: persons.marriedStatus,
+
+      specialNeeds: persons.specialNeeds,
+      specialNeedsDescription: persons.specialNeedsDescription,
+    })
   }
+
+  return returnPerson
 }
 
 jest.mock('@/domain/entities/persons/persons')
@@ -31,7 +37,7 @@ describe('use-cases add-persons', () => {
 
   beforeAll(() => {
     mockAddPersonsContract = mock()
-    mockAddPersonsContract.save.mockResolvedValue({ id: '1' })
+    mockAddPersonsContract.save.mockResolvedValue([{ id: '1' }])
   })
 
   beforeEach(() => {
@@ -47,10 +53,16 @@ describe('use-cases add-persons', () => {
 
   it('should return an id on success', async () => {
     let person = generatePerson()
-
     const response = await sut(person)
 
-    expect(response).toEqual({ id: '1' })
+    expect(response).toEqual([{ id: '1' }])
+  })
+  it('should return an list id on success', async () => {
+    let person = generatePerson(2)
+    mockAddPersonsContract.save.mockResolvedValue([{ id: '1' }, { id: '2' }])
+    const response = await sut(person)
+
+    expect(response).toEqual([{ id: '1' }, { id: '2' }])
   })
 
   it('should throw if personsRepo throws', async () => {
