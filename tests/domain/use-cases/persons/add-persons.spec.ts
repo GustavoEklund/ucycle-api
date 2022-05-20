@@ -52,4 +52,12 @@ describe('use-cases add-persons', () => {
 
     expect(response).toEqual({ id: '1' })
   })
+
+  it('should throw if personsRepo throws', async () => {
+    mockAddPersonsContract.save.mockRejectedValueOnce(new Error('any_error'))
+
+    let person = generatePerson()
+
+    await expect(sut(person)).rejects.toThrow()
+  })
 })
