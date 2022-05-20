@@ -44,4 +44,12 @@ describe('use-cases add-persons', () => {
 
     expect(mockAddPersonsContract.save).toHaveBeenCalledWith(person)
   })
+
+  it('should return an id on success', async () => {
+    let person = generatePerson()
+
+    const response = await sut(person)
+
+    expect(response).toEqual({ id: '1' })
+  })
 })
