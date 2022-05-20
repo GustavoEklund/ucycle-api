@@ -1,6 +1,21 @@
 //TODO: create document and contact repository
 
-export class Persons {
+type personsData = {
+  firstName: string
+  lastName: string
+
+  // document: Address;
+  // contact: number;
+
+  birthDate?: string
+  professional?: string
+  marriedStatus?: string
+
+  specialNeeds: boolean
+  specialNeedsDescription?: string
+}
+
+export class Person {
   public readonly firstName: string
   public readonly lastName: string
 
@@ -13,7 +28,6 @@ export class Persons {
 
   public readonly specialNeeds: boolean
   public readonly specialNeedsDescription?: string
-
 
   constructor({
     firstName,
@@ -28,20 +42,7 @@ export class Persons {
 
     specialNeeds,
     specialNeedsDescription
-  }: {
-    firstName: string
-    lastName: string
-
-    // document: Address;
-    // contact: number;
-
-    birthDate?: string
-    professional?: string
-    marriedStatus?: string
-
-    specialNeeds: boolean
-    specialNeedsDescription?: string
-  }) {
+  }: personsData) {
     this.firstName = firstName,
     this.lastName = lastName,
 
