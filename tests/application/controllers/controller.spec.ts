@@ -21,24 +21,31 @@ class ControllerStub extends Controller {
 
 describe('Controller', () => {
   let sut: ControllerStub
+  let ValidationCompositeSpy: jest.Mock
+  let validateSpy: jest.Mock
+
+  beforeAll(() => {
+    validateSpy = jest.fn().mockReturnValue([])
+    ValidationCompositeSpy = jest.fn().mockImplementation(() => ({
+      validate: validateSpy,
+    }))
+    mocked(ValidationComposite).mockImplementation(ValidationCompositeSpy)
+  })
 
   beforeEach(() => {
     sut = new ControllerStub()
   })
 
   it('should return 400 if validation fails', async () => {
-    const error = new Error('validation_error')
-    const ValidationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
-      validate: jest.fn().mockReturnValueOnce(error),
-    }))
-    mocked(ValidationComposite).mockImplementationOnce(ValidationCompositeSpy)
+    const errors = [new Error('validation_error')]
+    validateSpy.mockReturnValueOnce(errors)
 
     const httpResponse = await sut.handle('any_value')
 
     expect(ValidationCompositeSpy).toHaveBeenCalledWith([])
     expect(httpResponse).toEqual({
       statusCode: 400,
-      data: error,
+      data: errors,
     })
   })
 
@@ -50,7 +57,7 @@ describe('Controller', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 500,
-      data: new ServerError(error),
+      data: [new ServerError(error)],
     })
   })
 
@@ -61,7 +68,7 @@ describe('Controller', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 500,
-      data: new ServerError(),
+      data: [new ServerError()],
     })
   })
 

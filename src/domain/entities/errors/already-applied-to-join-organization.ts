@@ -1,6 +1,10 @@
-export class AlreadyAppliedToJoinOrganizationError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class AlreadyAppliedToJoinOrganizationError extends Exception {
   public constructor(organizationId: string) {
-    super(`you have already applied to join organization ${organizationId}`)
-    this.name = 'AlreadyAppliedToJoinOrganizationError'
+    super(
+      'AlreadyAppliedToJoinOrganizationError',
+      `you have already applied to join organization ${organizationId}`
+    )
   }
 }

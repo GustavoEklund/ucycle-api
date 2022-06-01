@@ -8,7 +8,7 @@ describe('HttpHelpers', () => {
 
       expect(sut).toEqual({
         statusCode: 401,
-        data: new UnauthorizedError(),
+        data: [new UnauthorizedError()],
       })
     })
   })
@@ -19,15 +19,15 @@ describe('HttpHelpers', () => {
 
       const sut = notFound()
 
-      expect(sut.data).toEqual(expectedError)
+      expect(sut.data).toEqual([expectedError])
     })
 
     it('should be correct error when provided', () => {
       const expectedError = new Error('any_error')
 
-      const sut = notFound(expectedError)
+      const sut = notFound([expectedError])
 
-      expect(sut.data).toEqual(expectedError)
+      expect(sut.data).toEqual([expectedError])
     })
   })
 })

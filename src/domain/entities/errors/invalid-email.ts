@@ -1,6 +1,7 @@
-export class InvalidEmailError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class InvalidEmailError extends Exception {
   public constructor() {
-    super(`invalid email`)
-    this.name = 'InvalidEmailError'
+    super('InvalidEmailError', `invalid email`)
   }
 }

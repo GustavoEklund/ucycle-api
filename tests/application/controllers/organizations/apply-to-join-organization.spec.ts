@@ -53,7 +53,7 @@ describe('ApplyToJoinOrganizationController', () => {
 
   it('should return 404 if ApplyToJoinOrganization throw UserAccountNotFoundError', async () => {
     const expectedError = new UserAccountNotFoundError('any_user_id')
-    const expectedHttpResponse = notFound(expectedError)
+    const expectedHttpResponse = notFound([expectedError])
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle({
@@ -66,7 +66,7 @@ describe('ApplyToJoinOrganizationController', () => {
 
   it('should return 404 if ApplyToJoinOrganization throw OrganizationNotFoundError', async () => {
     const expectedError = new OrganizationNotFoundError('any_organization_id')
-    const expectedHttpResponse = notFound(expectedError)
+    const expectedHttpResponse = notFound([expectedError])
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle({
@@ -79,7 +79,7 @@ describe('ApplyToJoinOrganizationController', () => {
 
   it('should return 409 if ApplyToJoinOrganization throw TheOrganizationOwnerCanNotApplyToJoinOrganizationError', async () => {
     const expectedError = new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
-    const expectedHttpResponse = conflict(expectedError)
+    const expectedHttpResponse = conflict([expectedError])
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle({
@@ -92,7 +92,7 @@ describe('ApplyToJoinOrganizationController', () => {
 
   it('should return 409 if ApplyToJoinOrganization throw AlreadyAppliedToJoinOrganizationError', async () => {
     const expectedError = new AlreadyAppliedToJoinOrganizationError('any_organization_id')
-    const expectedHttpResponse = conflict(expectedError)
+    const expectedHttpResponse = conflict([expectedError])
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle({

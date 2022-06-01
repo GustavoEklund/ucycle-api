@@ -22,15 +22,15 @@ export class ApplyToJoinOrganizationController extends Controller {
   public override async perform({
     userId,
     organizationId,
-  }: HttpRequest): Promise<HttpResponse<Error | undefined>> {
+  }: HttpRequest): Promise<HttpResponse<Error[] | undefined>> {
     try {
       await this.applyToJoinOrganization.perform({ userId, organizationId })
     } catch (error) {
-      if (error instanceof UserAccountNotFoundError) return notFound(error)
-      if (error instanceof OrganizationNotFoundError) return notFound(error)
-      if (error instanceof AlreadyAppliedToJoinOrganizationError) return conflict(error)
+      if (error instanceof UserAccountNotFoundError) return notFound([error])
+      if (error instanceof OrganizationNotFoundError) return notFound([error])
+      if (error instanceof AlreadyAppliedToJoinOrganizationError) return conflict([error])
       if (error instanceof TheOrganizationOwnerCanNotApplyToJoinOrganizationError)
-        return conflict(error)
+        return conflict([error])
       throw error
     }
     return created(undefined)

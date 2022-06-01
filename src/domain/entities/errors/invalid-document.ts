@@ -1,6 +1,7 @@
-export class InvalidDocumentError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class InvalidDocumentError extends Exception {
   public constructor() {
-    super(`invalid document`)
-    this.name = 'InvalidDocumentError'
+    super('InvalidDocumentError', `invalid document`)
   }
 }

@@ -1,6 +1,7 @@
-export class AuthenticationError extends Error {
-  constructor() {
-    super('authentication failed')
-    this.name = 'AuthenticationError'
+import { Exception } from '@/domain/entities/errors'
+
+export class AuthenticationError extends Exception {
+  public constructor() {
+    super('AuthenticationError', 'authentication failed')
   }
 }

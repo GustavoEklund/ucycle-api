@@ -15,32 +15,32 @@ export const created = <T = any>(data: T): HttpResponse<T> => ({
   data,
 })
 
-export const badRequest = (error: Error): HttpResponse<Error> => ({
+export const badRequest = (error: Error[]): HttpResponse<Error[]> => ({
   statusCode: 400,
   data: error,
 })
 
-export const unauthorized = (): HttpResponse<Error> => ({
+export const unauthorized = (): HttpResponse<Error[]> => ({
   statusCode: 401,
-  data: new UnauthorizedError(),
+  data: [new UnauthorizedError()],
 })
 
-export const forbidden = (): HttpResponse<Error> => ({
+export const forbidden = (): HttpResponse<Error[]> => ({
   statusCode: 403,
-  data: new ForbiddenError(),
+  data: [new ForbiddenError()],
 })
 
-export const notFound = (error?: Error): HttpResponse<Error> => ({
+export const notFound = (error?: Error[]): HttpResponse<Error[]> => ({
   statusCode: 404,
-  data: error ?? new NotFoundError(),
+  data: error ?? [new NotFoundError()],
 })
 
-export const conflict = (error: Error): HttpResponse<Error> => ({
+export const conflict = (error: Error[]): HttpResponse<Error[]> => ({
   statusCode: 409,
   data: error,
 })
 
-export const serverError = (error: unknown): HttpResponse<Error> => ({
+export const serverError = (error: unknown): HttpResponse<Error[]> => ({
   statusCode: 500,
-  data: new ServerError(error instanceof Error ? error : undefined),
+  data: [new ServerError(error instanceof Error ? error : undefined)],
 })

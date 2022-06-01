@@ -1,6 +1,7 @@
-export class UserAccountNotFoundError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class UserAccountNotFoundError extends Exception {
   public constructor(id: string) {
-    super(`user account with id ${id} not found`)
-    this.name = 'UserAccountNotFoundError'
+    super('UserAccountNotFoundError', `user account with id ${id} not found`)
   }
 }

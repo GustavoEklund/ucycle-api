@@ -5,24 +5,24 @@ describe('Required', () => {
   it('should return RequiredFieldError if value is null', () => {
     const sut = new Required(null as any, 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new RequiredFieldError('any_field'))
+    expect(errors).toEqual([new RequiredFieldError('any_field')])
   })
 
   it('should return RequiredFieldError if value is undefined', () => {
     const sut = new Required(undefined as any, 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new RequiredFieldError('any_field'))
+    expect(errors).toEqual([new RequiredFieldError('any_field')])
   })
 
-  it('should return undefined if value is not empty', () => {
+  it('should return an empty array if value is not empty', () => {
     const sut = new Required('any_value', 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 })

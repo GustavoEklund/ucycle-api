@@ -2,13 +2,13 @@ import { RequiredFieldError } from '@/application/errors'
 import { Required } from '@/application/validation/required'
 
 export class RequiredBuffer extends Required {
-  constructor(override readonly value: Buffer, override readonly fieldName?: string) {
+  public constructor(override readonly value: Buffer, override readonly fieldName?: string) {
     super(value, fieldName)
   }
 
-  override validate(): Error | undefined {
-    if (super.validate() !== undefined || this.value.length === 0) {
-      return new RequiredFieldError(this.fieldName)
-    }
+  public override validate(): Error[] {
+    const errors = super.validate()
+    if (this.value.length === 0) errors.push(new RequiredFieldError(this.fieldName))
+    return errors
   }
 }

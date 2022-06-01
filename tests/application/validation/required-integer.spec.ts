@@ -11,32 +11,35 @@ describe('RequiredInteger', () => {
   it('should return RequiredFieldError if validate returns RequiredFieldError', () => {
     const sut = new RequiredInteger(undefined, 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new RequiredFieldError('any_field'))
+    expect(errors).toEqual([
+      new RequiredFieldError('any_field'),
+      new InvalidFieldError('any_field'),
+    ])
   })
 
   it('should return InvalidFieldError if value is not an Integer', () => {
     const sut = new RequiredInteger('invalid_value', 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new InvalidFieldError('any_field'))
+    expect(errors).toEqual([new InvalidFieldError('any_field')])
   })
 
   it('should return InvalidFieldError if value is not an Integer', () => {
     const sut = new RequiredInteger(1.1, 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new InvalidFieldError('any_field'))
+    expect(errors).toEqual([new InvalidFieldError('any_field')])
   })
 
-  it('should return undefined if value is not empty', () => {
+  it('should return an empty array if value is not empty', () => {
     const sut = new RequiredInteger(1, 'any_field')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 })
