@@ -4,6 +4,7 @@ import {
 } from '@/domain/use-cases/organizations'
 import {
   makePgAdmissionProposalRepo,
+  makePgOrganizationMemberRepo,
   makePgOrganizationRepo,
   makePgUserAccountRepo,
 } from '@/main/factories/infra/repos/postgres'
@@ -13,7 +14,8 @@ export const makeApplyToJoinOrganizationUseCase = (): ApplyToJoinOrganization =>
   const applyToJoinOrganization = new ApplyToJoinOrganizationUseCase(
     makePgUserAccountRepo(),
     makePgOrganizationRepo(),
-    makePgAdmissionProposalRepo()
+    makePgAdmissionProposalRepo(),
+    makePgOrganizationMemberRepo()
   )
   applyToJoinOrganization.subscribe(makeApplicationToJoinOrganizationSentHandler())
   return applyToJoinOrganization

@@ -8,7 +8,6 @@ import {
   PgOrganization,
   PgUser,
 } from '@/infra/repos/postgres/entities'
-import { IBackup } from 'pg-mem'
 import {
   makeFakeDb,
   mockContact,
@@ -17,8 +16,10 @@ import {
   mockUser,
 } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
-import { PgOrganizationMemberRepository } from '@/infra/repos/postgres/organization-member'
+import { PgOrganizationMemberRepository } from '@/infra/repos/postgres'
+
 import { Repository } from 'typeorm'
+import { IBackup } from 'pg-mem'
 
 describe('PgOrganizationMemberRepository', () => {
   let sut: PgOrganizationMemberRepository
