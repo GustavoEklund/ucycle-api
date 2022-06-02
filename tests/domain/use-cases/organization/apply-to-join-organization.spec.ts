@@ -2,11 +2,13 @@ import { ApplyToJoinOrganizationUseCase } from '@/domain/use-cases/organizations
 import {
   LoadAdmissionProposals,
   LoadOrganization,
+  LoadOrganizationMember,
   LoadUserAccount,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import {
   AlreadyAppliedToJoinOrganizationError,
+  AlreadyMemberOfOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
@@ -22,6 +24,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   let userAccountRepoSpy: MockProxy<LoadUserAccount>
   let organizationRepoSpy: MockProxy<LoadOrganization>
   let admissionProposalRepoSpy: MockProxy<SaveAdmissionProposal & LoadAdmissionProposals>
+  let organizationMemberRepoSpy: MockProxy<LoadOrganizationMember>
 
   beforeAll(() => {
     jest.useFakeTimers().setSystemTime(new Date('2022-01-01'))
@@ -48,13 +51,15 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     admissionProposalRepoSpy.save.mockResolvedValue({
       id: 'any_admission_proposal_id',
     })
+    organizationMemberRepoSpy = mock()
   })
 
   beforeEach(() => {
     sut = new ApplyToJoinOrganizationUseCase(
       userAccountRepoSpy,
       organizationRepoSpy,
-      admissionProposalRepoSpy
+      admissionProposalRepoSpy,
+      organizationMemberRepoSpy
     )
   })
 
@@ -103,6 +108,32 @@ describe('ApplyToJoinOrganizationUseCase', () => {
 
     await expect(promise).rejects.toThrowError(
       new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
+    )
+  })
+
+  it('should call LoadOrganizationMember with correct input', async () => {
+    await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    expect(organizationMemberRepoSpy.load).toHaveBeenCalledTimes(1)
+    expect(organizationMemberRepoSpy.load).toHaveBeenCalledWith({
+      user: { id: 'any_user_id' },
+      organization: { id: 'any_organization_id' },
+    })
+  })
+
+  it('should throw AlreadyMemberOfOrganizationError if user is member of organization', async () => {
+    organizationMemberRepoSpy.load.mockResolvedValueOnce({
+      id: 'any_organization_id',
+      firstName: 'any_user_name',
+      lastName: 'any_user_last_name',
+      documents: [],
+      contacts: [],
+    })
+
+    const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
+
+    await expect(promise).rejects.toThrowError(
+      new AlreadyMemberOfOrganizationError('any_organization_id')
     )
   })
 
