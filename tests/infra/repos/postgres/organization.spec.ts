@@ -97,7 +97,7 @@ describe('PgOrganizationRepository', () => {
       pgOrganization.address = pgAddress
       await pgOrganizationRepo.save(pgOrganization)
       const pgUser = pgUserRepo.create(mockUser())
-      pgUser.organizations = Promise.resolve([pgOrganization])
+      pgUser.organizationsOwned = Promise.resolve([pgOrganization])
       await pgUserRepo.save(pgUser)
 
       const organizations = await sut.loadAll({ userId: pgUser.id })

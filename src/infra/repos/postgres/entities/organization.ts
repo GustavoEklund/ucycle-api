@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -28,7 +30,11 @@ export class PgOrganization {
   @OneToMany(() => PgAdmissionProposal, (admissionProposal) => admissionProposal.organization)
   admissionProposals!: Promise<PgAdmissionProposal[]>
 
-  @ManyToOne(() => PgUser, (user) => user.organizations)
+  @ManyToMany(() => PgUser, (user) => user.organizations)
+  @JoinTable({ name: 'organization_members' })
+  members!: Promise<PgUser[]>
+
+  @ManyToOne(() => PgUser, (user) => user.organizationsOwned)
   ownerUser!: PgUser
 
   @CreateDateColumn()

@@ -17,6 +17,8 @@ jest.mock('typeorm', () => ({
   UpdateDateColumn: jest.fn(),
   OneToMany: jest.fn(),
   ManyToOne: jest.fn(),
+  ManyToMany: jest.fn(),
+  JoinTable: jest.fn(),
   createConnection: jest.fn(),
   getConnection: jest.fn(),
   getConnectionManager: jest.fn(),

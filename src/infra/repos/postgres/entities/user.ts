@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,6 +38,9 @@ export class PgUser {
   contacts!: Promise<PgContact[]>
 
   @OneToMany(() => PgOrganization, (organization) => organization.ownerUser)
+  organizationsOwned!: Promise<PgOrganization[]>
+
+  @ManyToMany(() => PgOrganization, (organization) => organization.members)
   organizations!: Promise<PgOrganization[]>
 
   @CreateDateColumn()
