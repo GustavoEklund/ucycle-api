@@ -1,11 +1,13 @@
 import {
   LoadAdmissionProposals,
   LoadOrganization,
+  LoadOrganizationMember,
   LoadUserAccount,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import {
   AlreadyAppliedToJoinOrganizationError,
+  AlreadyMemberOfOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
@@ -24,7 +26,8 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
   public constructor(
     private readonly userAccountRepo: LoadUserAccount,
     private readonly organizationRepo: LoadOrganization,
-    private readonly admissionProposalRepo: SaveAdmissionProposal & LoadAdmissionProposals
+    private readonly admissionProposalRepo: SaveAdmissionProposal & LoadAdmissionProposals,
+    private readonly organizationMemberRepo: LoadOrganizationMember
   ) {
     super()
   }
@@ -42,6 +45,11 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
     if (admissionProposals.length > 0)
       throw new AlreadyAppliedToJoinOrganizationError(organizationId)
+    const organizationMember = await this.organizationMemberRepo.load({
+      user: { id: userId },
+      organization: { id: organizationId },
+    })
+    if (organizationMember !== undefined) throw new AlreadyMemberOfOrganizationError(organizationId)
     const { id: admissionProposalId } = await this.admissionProposalRepo.save({
       userId,
       organizationId,
