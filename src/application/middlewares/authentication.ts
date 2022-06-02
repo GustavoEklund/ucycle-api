@@ -3,11 +3,16 @@ import { forbidden, HttpResponse, ok } from '@/application/helpers'
 import { Middleware } from '@/application/middlewares'
 
 type HttpRequest = { authorization: string }
-type Model = Error | { userId: string }
+type Model = Error[] | { userId: string }
 type Authorize = (params: { token: string }) => Promise<string>
 
 export class AuthenticationMiddleware implements Middleware {
   constructor(private readonly authorize: Authorize) {}
+
+  private static validate({ authorization }: HttpRequest): boolean {
+    const errors = new RequiredString(authorization, 'authorization').validate()
+    return errors.length === 0
+  }
 
   async handle({ authorization }: HttpRequest): Promise<HttpResponse<Model>> {
     if (!AuthenticationMiddleware.validate({ authorization })) return forbidden()
@@ -17,10 +22,5 @@ export class AuthenticationMiddleware implements Middleware {
     } catch {
       return forbidden()
     }
-  }
-
-  private static validate({ authorization }: HttpRequest): boolean {
-    const error = new RequiredString(authorization, 'authorization').validate()
-    return error === undefined
   }
 }

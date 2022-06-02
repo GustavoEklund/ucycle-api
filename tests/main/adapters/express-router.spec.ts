@@ -2,8 +2,9 @@ import { adaptExpressRoute } from '@/main/adapters'
 import { Controller } from '@/application/controllers'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { RequestHandler, Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { getMockReq, getMockRes } from '@jest-mock/express'
+import { ServerError } from '@/application/errors'
 
 describe('ExpressRouter', () => {
   let req: Request
@@ -76,21 +77,25 @@ describe('ExpressRouter', () => {
 
     expect(res.status).toHaveBeenCalledWith(400)
     expect(res.status).toHaveBeenCalledTimes(1)
-    expect(res.json).toHaveBeenCalledWith({ error: 'any_error' })
+    expect(res.json).toHaveBeenCalledWith({
+      errors: [{ code: 'UNKNOWN_ERROR', message: 'an unknown error has occurred' }],
+    })
     expect(res.json).toHaveBeenCalledTimes(1)
   })
 
   it('should respond with 500 and correct error', async () => {
     controller.handle.mockResolvedValueOnce({
       statusCode: 500,
-      data: new Error('any_error'),
+      data: new ServerError(new Error('any_error')),
     })
 
     await sut(req, res, next)
 
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.status).toHaveBeenCalledTimes(1)
-    expect(res.json).toHaveBeenCalledWith({ error: 'any_error' })
+    expect(res.json).toHaveBeenCalledWith({
+      errors: [{ code: 'SERVER_ERROR', message: 'server failed, try again soon' }],
+    })
     expect(res.json).toHaveBeenCalledTimes(1)
   })
 })

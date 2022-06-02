@@ -25,7 +25,7 @@ export namespace LoadPersons {
     | undefined
     | {
         id: string
-    }
+      }
 }
 
 

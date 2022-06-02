@@ -5,32 +5,40 @@ describe('AllowedMimeTypes', () => {
   it('should return InvalidMimeTypeError if value is invalid', () => {
     const sut = new AllowedMimeTypes(['png'], 'image/jpg')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new InvalidMimeTypeError(['png']))
+    expect(errors).toEqual([new InvalidMimeTypeError(['png'])])
   })
 
-  it('should return undefined if value is valid', () => {
+  it('should return an empty array if value is valid', () => {
     const sut = new AllowedMimeTypes(['png'], 'image/png')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 
-  it('should return undefined if value is valid', () => {
+  it('should return an empty array if value is valid', () => {
     const sut = new AllowedMimeTypes(['jpg'], 'image/jpg')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 
-  it('should return undefined if value is valid', () => {
+  it('should return an empty array if value is valid', () => {
     const sut = new AllowedMimeTypes(['jpg'], 'image/jpeg')
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
+  })
+
+  it('should return an empty array if value is valid', () => {
+    const sut = new AllowedMimeTypes(['csv'], 'text/csv')
+
+    const errors = sut.validate()
+
+    expect(errors.length).toBe(0)
   })
 })

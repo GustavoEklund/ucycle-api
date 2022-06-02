@@ -28,7 +28,7 @@ type organizationReturnDataType = {
   ownerUserId: string
 }
 
-let organizationData = {
+const organizationData = {
   id: 'any_id',
   name: 'any_name',
   address: {
@@ -43,8 +43,8 @@ let organizationData = {
 
 describe('Organization', () => {
   let sut: Organization
-  let organizationSutData: organizationDataType = { ...organizationData, userId: 'any_user_id' }
-  let organizationReturnData: organizationReturnDataType = {
+  const organizationSutData: organizationDataType = { ...organizationData, userId: 'any_user_id' }
+  const organizationReturnData: organizationReturnDataType = {
     ...organizationData,
     ownerUserId: 'any_user_id',
   }

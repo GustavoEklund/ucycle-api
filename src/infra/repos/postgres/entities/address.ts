@@ -9,8 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgUser } from './user'
-import { PgOrganization } from '@/infra/repos/postgres/entities/organization'
+import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'address' })
 export class PgAddress {

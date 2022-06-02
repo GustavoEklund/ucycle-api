@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
+
 import { PgContact, PgDocument, PgOrganization } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'user' })
@@ -36,6 +38,9 @@ export class PgUser {
   contacts!: Promise<PgContact[]>
 
   @OneToMany(() => PgOrganization, (organization) => organization.ownerUser)
+  organizationsOwned!: Promise<PgOrganization[]>
+
+  @ManyToMany(() => PgOrganization, (organization) => organization.members)
   organizations!: Promise<PgOrganization[]>
 
   @CreateDateColumn()

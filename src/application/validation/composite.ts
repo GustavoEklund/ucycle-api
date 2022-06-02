@@ -1,15 +1,14 @@
 import { Validator } from '@/application/validation'
 
 export class ValidationComposite implements Validator {
-  constructor(private readonly validators: Validator[]) {}
+  public constructor(private readonly validators: Validator[]) {}
 
-  validate(): Error | undefined {
+  public validate(): Error[] {
+    const errors: Error[] = []
     for (const validator of this.validators) {
       const error = validator.validate()
-      if (error !== undefined) {
-        return error
-      }
+      if (error !== undefined) errors.push(...error)
     }
-    return undefined
+    return errors
   }
 }

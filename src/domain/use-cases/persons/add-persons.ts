@@ -1,4 +1,4 @@
-//TODO: create document and contact repository
+// TODO: create document and contact repository
 import { SavePersons, LoadPersons } from '@/domain/contracts/repos'
 import { Person } from '@/domain/entities'
 
@@ -31,14 +31,11 @@ export const setupAddPersons: Setup = (personsRepo) => {
       return {
         firstName: person.firstName,
         lastName: person.lastName,
-
         // document: person.document,
         // contact: person.contact,
-
         birthDate: person.birthDate,
         professional: person.professional,
         marriedStatus: person.marriedStatus,
-
         specialNeeds: person.specialNeeds,
         specialNeedsDescription: person.specialNeedsDescription,
       }

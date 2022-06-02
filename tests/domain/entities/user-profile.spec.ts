@@ -1,4 +1,4 @@
-import { UserProfile } from '@/domain/entities'
+import { UserProfile } from '@/domain/entities/user'
 
 describe('UserProfile', () => {
   let sut: UserProfile

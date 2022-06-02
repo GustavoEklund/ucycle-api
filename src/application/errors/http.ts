@@ -1,28 +1,26 @@
-export class ServerError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class ServerError extends Exception {
   public constructor(error?: Error) {
-    super('server failed, try again soon')
-    this.name = 'ServerError'
+    super('ServerError', 'server failed, try again soon')
     this.stack = error?.stack
   }
 }
 
-export class UnauthorizedError extends Error {
+export class UnauthorizedError extends Exception {
   public constructor() {
-    super('unauthorized')
-    this.name = 'UnauthorizedError'
+    super('UnauthorizedError', 'unauthorized')
   }
 }
 
-export class ForbiddenError extends Error {
+export class ForbiddenError extends Exception {
   public constructor() {
-    super('access denied')
-    this.name = 'UnauthorizedError'
+    super('ForbiddenError', 'access denied')
   }
 }
 
-export class NotFoundError extends Error {
+export class NotFoundError extends Exception {
   public constructor() {
-    super('resource not found')
-    this.name = 'NotFoundError'
+    super('NotFoundError', 'resource not found')
   }
 }

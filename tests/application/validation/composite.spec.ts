@@ -9,9 +9,9 @@ describe('ValidationComposite', () => {
 
   beforeAll(() => {
     validator1 = mock()
-    validator1.validate.mockReturnValue(undefined)
+    validator1.validate.mockReturnValue([])
     validator2 = mock()
-    validator2.validate.mockReturnValue(undefined)
+    validator2.validate.mockReturnValue([])
     validators = [validator1, validator2]
   })
 
@@ -19,26 +19,26 @@ describe('ValidationComposite', () => {
     sut = new ValidationComposite(validators)
   })
 
-  it('should return undefined if all validators return undefined', () => {
-    const error = sut.validate()
+  it('should return an empty array if all validators return undefined', () => {
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 
-  it('should return the first error', () => {
-    validator1.validate.mockReturnValueOnce(new Error('error_1'))
-    validator2.validate.mockReturnValueOnce(new Error('error_2'))
+  it('should return all errors', () => {
+    validator1.validate.mockReturnValueOnce([new Error('error_1')])
+    validator2.validate.mockReturnValueOnce([new Error('error_2')])
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new Error('error_1'))
+    expect(errors).toEqual([new Error('error_1'), new Error('error_2')])
   })
 
   it('should return the error', () => {
-    validator2.validate.mockReturnValueOnce(new Error('error_2'))
+    validator2.validate.mockReturnValueOnce([new Error('error_2')])
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new Error('error_2'))
+    expect(errors).toEqual([new Error('error_2')])
   })
 })

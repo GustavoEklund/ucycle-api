@@ -7,18 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-import { PgUser } from '@/infra/repos/postgres/entities/user'
 
-type Email = {
-  type: string
-  address: string
-}
-type Phone = {
-  type: string
-  number: string
-  countryCode: string
-  areaCode: string
-}
+import { PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'contact' })
 export class PgContact {
@@ -31,8 +21,11 @@ export class PgContact {
   @Column({ nullable: false })
   type!: string
 
-  @Column({ type: 'jsonb', nullable: false })
-  value!: Email | Phone
+  @Column({ nullable: false })
+  label!: string
+
+  @Column({ type: 'varchar', nullable: false })
+  value!: string
 
   @ManyToOne(() => PgUser, (user) => user.contacts, {
     cascade: ['insert'],

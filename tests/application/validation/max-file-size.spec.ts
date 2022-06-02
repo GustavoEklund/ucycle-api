@@ -6,26 +6,26 @@ describe('MaxFileSize', () => {
     const invalidBuffer = Buffer.from(new ArrayBuffer(5.01 * 1024 * 1024))
     const sut = new MaxFileSize(5, invalidBuffer)
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new MaxFileSizeError(5))
+    expect(errors).toEqual([new MaxFileSizeError(5)])
   })
 
-  it('should return undefined if value is valid', () => {
+  it('should return an empty array if value is valid', () => {
     const validBuffer = Buffer.from(new ArrayBuffer(4.99 * 1024 * 1024))
     const sut = new MaxFileSize(5, validBuffer)
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 
-  it('should return undefined if value is equal to limit', () => {
+  it('should return an empty array if value is equal to limit', () => {
     const validBuffer = Buffer.from(new ArrayBuffer(5 * 1024 * 1024))
     const sut = new MaxFileSize(5, validBuffer)
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 })

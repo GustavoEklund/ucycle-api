@@ -1,4 +1,4 @@
-import { makeFakeDb, mockPerson, mockUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockPerson } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import { PgPersons } from '@/infra/repos/postgres/entities'

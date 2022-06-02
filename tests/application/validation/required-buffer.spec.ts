@@ -11,16 +11,16 @@ describe('RequiredBuffer', () => {
   it('should return RequiredFieldError if value is empty', () => {
     const sut = new RequiredBuffer(Buffer.from(''))
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toEqual(new RequiredFieldError())
+    expect(errors).toEqual([new RequiredFieldError()])
   })
 
-  it('should return undefined if value is not empty', () => {
+  it('should return an empty array if value is not empty', () => {
     const sut = new RequiredBuffer(Buffer.from('any_buffer'))
 
-    const error = sut.validate()
+    const errors = sut.validate()
 
-    expect(error).toBeUndefined()
+    expect(errors.length).toBe(0)
   })
 })

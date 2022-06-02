@@ -20,7 +20,7 @@ describe('AuthenticationMiddleware', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 403,
-      data: new ForbiddenError(),
+      data: [new ForbiddenError()],
     })
   })
 
@@ -29,7 +29,7 @@ describe('AuthenticationMiddleware', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 403,
-      data: new ForbiddenError(),
+      data: [new ForbiddenError()],
     })
   })
 
@@ -38,7 +38,7 @@ describe('AuthenticationMiddleware', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 403,
-      data: new ForbiddenError(),
+      data: [new ForbiddenError()],
     })
   })
 
@@ -56,7 +56,7 @@ describe('AuthenticationMiddleware', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 403,
-      data: new ForbiddenError(),
+      data: [new ForbiddenError()],
     })
   })
 

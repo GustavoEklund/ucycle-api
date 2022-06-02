@@ -1,6 +1,7 @@
-export class AlreadyExistsError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class AlreadyExistsError extends Exception {
   public constructor(id: string, entity: string) {
-    super(`${entity} with id ${id} already exists`)
-    this.name = 'AlreadyExistsError'
+    super('AlreadyExistsError', `${entity} with id ${id} already exists`)
   }
 }

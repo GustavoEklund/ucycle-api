@@ -1,8 +1,8 @@
-import { HttpResponse, ok, unauthorized } from '@/application/helpers'
+import { HttpResponse, ok } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
 import { AddPersons } from '@/domain/use-cases'
 
-//TODO: create document and contact repository
+// TODO: create document and contact repository
 
 type HttpRequest = {
   firstName: string
@@ -38,7 +38,6 @@ export class AddPersonsController extends Controller {
         specialNeedsDescription: personData.specialNeedsDescription,
       }
     })
-
     const response = await this.addPersons(persons)
     return ok(response)
   }

@@ -3,14 +3,15 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgAddress, PgUser } from '@/infra/repos/postgres/entities'
-import { PgImage } from '@/infra/repos/postgres/entities/image'
+import { PgAddress, PgAdmissionProposal, PgImage, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
@@ -26,7 +27,14 @@ export class PgOrganization {
   @OneToMany(() => PgImage, (image) => image.organization)
   pictures!: Promise<PgImage[]>
 
-  @ManyToOne(() => PgUser, (user) => user.organizations)
+  @OneToMany(() => PgAdmissionProposal, (admissionProposal) => admissionProposal.organization)
+  admissionProposals!: Promise<PgAdmissionProposal[]>
+
+  @ManyToMany(() => PgUser, (user) => user.organizations)
+  @JoinTable({ name: 'organization_members' })
+  members!: Promise<PgUser[]>
+
+  @ManyToOne(() => PgUser, (user) => user.organizationsOwned)
   ownerUser!: PgUser
 
   @CreateDateColumn()

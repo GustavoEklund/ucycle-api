@@ -4,8 +4,10 @@ import { DbTransaction } from '@/application/contracts'
 import {
   Connection,
   createConnection,
+  EntityManager,
   getConnection,
   getConnectionManager,
+  getManager,
   getRepository,
   ObjectType,
   QueryRunner,
@@ -36,6 +38,11 @@ export class PgConnection implements DbTransaction {
     await getConnection().close()
     this.query = undefined
     this.connection = undefined
+  }
+
+  public getEntityManager(): EntityManager {
+    if (this.connection === undefined) throw new ConnectionNotFoundError()
+    return getManager()
   }
 
   async openTransaction(): Promise<void> {
