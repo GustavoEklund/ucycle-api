@@ -5,6 +5,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 import { RequiredString } from '@/application/validation'
 import {
   AlreadyAppliedToJoinOrganizationError,
+  AlreadyMemberOfOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
   UserAccountNotFoundError,
@@ -92,6 +93,19 @@ describe('ApplyToJoinOrganizationController', () => {
 
   it('should return 409 if ApplyToJoinOrganization throw AlreadyAppliedToJoinOrganizationError', async () => {
     const expectedError = new AlreadyAppliedToJoinOrganizationError('any_organization_id')
+    const expectedHttpResponse = conflict([expectedError])
+    applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
+
+    const httpResponse = await sut.handle({
+      userId: 'any_user_id',
+      organizationId: 'any_organization_id',
+    })
+
+    expect(httpResponse).toEqual(expectedHttpResponse)
+  })
+
+  it('should return 409 if ApplyToJoinOrganization throw AlreadyMemberOfOrganizationError', async () => {
+    const expectedError = new AlreadyMemberOfOrganizationError('any_organization_id')
     const expectedHttpResponse = conflict([expectedError])
     applyToJoinOrganizationSpy.perform.mockRejectedValueOnce(expectedError)
 
