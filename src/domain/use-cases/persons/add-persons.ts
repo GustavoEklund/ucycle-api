@@ -1,4 +1,4 @@
-//TODO: create document and contact repository
+// TODO: create document and contact repository
 import { SavePersons, LoadPersons } from '@/domain/contracts/repos'
 import { Persons } from '@/domain/entities'
 
@@ -37,7 +37,7 @@ export const setupAddPersons: Setup = (personsRepo) => {
     marriedStatus,
 
     specialNeeds,
-    specialNeedsDescription
+    specialNeedsDescription,
   }) => {
     const persons = new Persons({
       firstName,
@@ -51,7 +51,7 @@ export const setupAddPersons: Setup = (personsRepo) => {
       marriedStatus,
 
       specialNeeds,
-      specialNeedsDescription
+      specialNeedsDescription,
     })
 
     const response = await personsRepo.save({
@@ -66,7 +66,7 @@ export const setupAddPersons: Setup = (personsRepo) => {
       marriedStatus: persons.marriedStatus,
 
       specialNeeds: persons.specialNeeds,
-      specialNeedsDescription: persons.specialNeedsDescription
+      specialNeedsDescription: persons.specialNeedsDescription,
     })
 
     return response

@@ -1,5 +1,4 @@
 import { AddPersonsController, Controller } from '@/application/controllers'
-import { RequiredInteger, RequiredString } from '@/application/validation'
 
 const personsData = {
   firstName: 'any_first_name',
@@ -18,8 +17,6 @@ describe('AddPersonsController', () => {
   let addPersonsSpy: jest.Mock
 
   beforeAll(() => {
-    personsData
-
     addPersonsSpy = jest.fn()
     addPersonsSpy.mockResolvedValue({ id: 'any_id' })
   })

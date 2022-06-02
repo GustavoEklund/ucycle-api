@@ -1,9 +1,8 @@
-import { HttpResponse, ok, unauthorized } from '@/application/helpers'
+import { HttpResponse, ok } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
-import { AuthenticationError } from '@/domain/entities/errors'
 import { AddPersons } from '@/domain/use-cases'
 
-//TODO: create document and contact repository
+// TODO: create document and contact repository
 
 type HttpRequest = {
   firstName: string
@@ -41,20 +40,20 @@ export class AddPersonsController extends Controller {
     specialNeeds,
     specialNeedsDescription,
   }: HttpRequest): Promise<HttpResponse<Model>> {
-      const response = await this.addPersons({
-        firstName,
-        lastName,
+    const response = await this.addPersons({
+      firstName,
+      lastName,
 
-        // document,
-        // contact,
+      // document,
+      // contact,
 
-        birthDate,
-        professional,
-        marriedStatus,
+      birthDate,
+      professional,
+      marriedStatus,
 
-        specialNeeds,
-        specialNeedsDescription,
-      })
-      return ok(response)
+      specialNeeds,
+      specialNeedsDescription,
+    })
+    return ok(response)
   }
 }

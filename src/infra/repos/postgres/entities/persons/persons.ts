@@ -1,4 +1,4 @@
-//TODO: create document and contact repository
+// TODO: create document and contact repository
 
 import {
   Column,
@@ -16,6 +16,7 @@ export class PgPersons {
 
   @Column()
   firstName!: string
+
   @Column()
   lastName!: string
 
@@ -24,13 +25,16 @@ export class PgPersons {
 
   @Column()
   birthDate?: string
+
   @Column()
   professional?: string
+
   @Column()
   marriedStatus?: string
 
   @Column({ type: 'boolean', default: false })
   specialNeeds!: boolean
+
   @Column()
   specialNeedsDescription?: string
 

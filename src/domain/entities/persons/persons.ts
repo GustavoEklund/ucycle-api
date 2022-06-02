@@ -1,4 +1,4 @@
-//TODO: create document and contact repository
+// TODO: create document and contact repository
 
 export class Persons {
   public readonly firstName: string
@@ -14,7 +14,6 @@ export class Persons {
   public readonly specialNeeds: boolean
   public readonly specialNeedsDescription?: string
 
-
   constructor({
     firstName,
     lastName,
@@ -27,7 +26,7 @@ export class Persons {
     marriedStatus,
 
     specialNeeds,
-    specialNeedsDescription
+    specialNeedsDescription,
   }: {
     firstName: string
     lastName: string
@@ -42,17 +41,17 @@ export class Persons {
     specialNeeds: boolean
     specialNeedsDescription?: string
   }) {
-    this.firstName = firstName,
-    this.lastName = lastName,
+    this.firstName = firstName
+    this.lastName = lastName
 
     // this.document = document,
     // this.contact = contact,
 
-    this.birthDate = birthDate,
-    this.professional = professional,
-    this.marriedStatus = marriedStatus,
+    this.birthDate = birthDate
+    this.professional = professional
+    this.marriedStatus = marriedStatus
 
-    this.specialNeeds = specialNeeds,
+    this.specialNeeds = specialNeeds
     this.specialNeedsDescription = specialNeedsDescription
   }
 }

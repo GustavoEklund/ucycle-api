@@ -10,7 +10,7 @@ export namespace LoadPersons {
     | undefined
     | {
         id: string
-    }
+      }
 }
 
 export interface SavePersons {
