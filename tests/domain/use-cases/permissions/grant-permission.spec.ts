@@ -23,16 +23,23 @@ describe('GrantPermissionUseCase', () => {
   })
 
   it('should call LoadUserAccount with correct input', async () => {
-    await sut.perform({ userId: 'any_user_id' })
+    await sut.perform({ userId: 'any_user_id', targetUserId: 'any_target_user_id' })
 
-    expect(userRepo.load).toHaveBeenCalledWith({ id: 'any_user_id' })
+    expect(userRepo.load.mock.calls[0][0]).toEqual({ id: 'any_user_id' })
   })
 
-  it('should throw UserAccountNotFoundError if LoadUserAccount returns undefined', async () => {
+  it('should return UserAccountNotFoundError if LoadUserAccount returns undefined', async () => {
     userRepo.load.mockResolvedValueOnce(undefined)
 
-    const promise = sut.perform({ userId: 'any_user_id' })
+    const output = await sut.perform({ userId: 'any_user_id', targetUserId: 'any_target_user_id' })
 
-    await expect(promise).rejects.toThrow(new UserAccountNotFoundError('any_user_id'))
+    expect(output).toEqual(new UserAccountNotFoundError('any_user_id'))
+  })
+
+  it('should call LoadUserAccount with correct input for target user', async () => {
+    await sut.perform({ userId: 'any_user_id', targetUserId: 'any_target_user_id' })
+
+    expect(userRepo.load.mock.calls[1][0]).toEqual({ id: 'any_target_user_id' })
+    expect(userRepo.load).toHaveBeenCalledTimes(2)
   })
 })
