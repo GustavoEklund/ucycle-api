@@ -42,4 +42,20 @@ describe('GrantPermissionUseCase', () => {
     expect(userRepo.load.mock.calls[1][0]).toEqual({ id: 'any_target_user_id' })
     expect(userRepo.load).toHaveBeenCalledTimes(2)
   })
+
+  it('should return UserAccountNotFoundError if LoadUserAccount returns undefined for target user', async () => {
+    userRepo.load
+      .mockResolvedValueOnce({
+        id: 'any_user_id',
+        lastName: 'any_last_name',
+        firstName: 'any_first_name',
+        contacts: [],
+        documents: [],
+      })
+      .mockResolvedValueOnce(undefined)
+
+    const output = await sut.perform({ userId: 'any_user_id', targetUserId: 'any_target_user_id' })
+
+    expect(output).toEqual(new UserAccountNotFoundError('any_target_user_id'))
+  })
 })
