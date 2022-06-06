@@ -14,7 +14,8 @@ export class GrantPermissionUseCase implements GrantPermission {
   }: GrantPermission.Input): Promise<GrantPermission.Output> {
     const user = await this.userRepo.load({ id: userId })
     if (user === undefined) return new UserAccountNotFoundError(userId)
-    await this.userRepo.load({ id: targetUserId })
+    const targetUser = await this.userRepo.load({ id: targetUserId })
+    if (targetUser === undefined) return new UserAccountNotFoundError(targetUserId)
   }
 }
 
