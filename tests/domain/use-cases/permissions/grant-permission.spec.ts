@@ -32,6 +32,7 @@ describe('GrantPermissionUseCase', () => {
       documents: [],
     })
     permissionRepoSpy = mock()
+    permissionRepoSpy.save.mockResolvedValue({ id: 'any_permission_id' })
   })
 
   beforeEach(() => {
@@ -92,5 +93,11 @@ describe('GrantPermissionUseCase', () => {
       moduleId: 'any_module_id',
       resourceId: 'any_resource_id',
     })
+  })
+
+  it('should return correct output on success', async () => {
+    const output = await sut.perform(grantPermissionInput)
+
+    expect(output).toEqual({ id: 'any_permission_id' })
   })
 })
