@@ -8,15 +8,20 @@ export interface GrantPermission {
 export class GrantPermissionUseCase implements GrantPermission {
   public constructor(private readonly userRepo: LoadUserAccount) {}
 
-  public async perform({ userId }: GrantPermission.Input): Promise<GrantPermission.Output> {
+  public async perform({
+    userId,
+    targetUserId,
+  }: GrantPermission.Input): Promise<GrantPermission.Output> {
     const user = await this.userRepo.load({ id: userId })
-    if (user === undefined) throw new UserAccountNotFoundError(userId)
+    if (user === undefined) return new UserAccountNotFoundError(userId)
+    await this.userRepo.load({ id: targetUserId })
   }
 }
 
 export namespace GrantPermission {
   export type Input = {
     userId: string
+    targetUserId: string
   }
-  export type Output = void
+  export type Output = undefined | UserAccountNotFoundError
 }
