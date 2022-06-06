@@ -16,7 +16,8 @@ export class GrantPermissionUseCase implements GrantPermission {
     if (user === undefined) return new UserAccountNotFoundError(input.grantById)
     const targetUser = await this.userRepo.load({ id: input.grantToId })
     if (targetUser === undefined) return new UserAccountNotFoundError(input.grantToId)
-    await this.permissionRepo.save(input)
+    const { id: permissionId } = await this.permissionRepo.save(input)
+    return { id: permissionId }
   }
 }
 
@@ -34,5 +35,5 @@ export namespace GrantPermission {
     moduleId: string
     resourceId: string
   }
-  export type Output = undefined | UserAccountNotFoundError
+  export type Output = { id: string } | UserAccountNotFoundError
 }
