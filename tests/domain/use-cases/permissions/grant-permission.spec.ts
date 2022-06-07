@@ -1,12 +1,12 @@
 import { LoadBasePermission, LoadUserAccount, SavePermission } from '@/domain/contracts/repos'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { GrantPermission, GrantPermissionUseCase } from '@/domain/use-cases/permissions'
-import { UserAccountNotFoundError } from '@/domain/entities/errors'
+import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 
 describe('GrantPermissionUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
   let permissionRepoSpy: MockProxy<SavePermission>
-  let basePermissionSpy: MockProxy<LoadBasePermission>
+  let basePermissionRepoSpy: MockProxy<LoadBasePermission>
   let grantPermissionInput: GrantPermission.Input
   let sut: GrantPermissionUseCase
 
@@ -30,13 +30,23 @@ describe('GrantPermissionUseCase', () => {
       contacts: [],
       documents: [],
     })
-    basePermissionSpy = mock()
+    basePermissionRepoSpy = mock()
+    basePermissionRepoSpy.load.mockResolvedValue({
+      id: 'any_base_permission_id',
+      code: 'any_permission_code',
+      read: true,
+      write: true,
+      owner: false,
+      name: 'any_permission_name',
+      description: 'any_permission_description',
+      moduleId: 'any_module_id',
+    })
     permissionRepoSpy = mock()
     permissionRepoSpy.save.mockResolvedValue({ id: 'any_permission_id' })
   })
 
   beforeEach(() => {
-    sut = new GrantPermissionUseCase(userRepoSpy, basePermissionSpy, permissionRepoSpy)
+    sut = new GrantPermissionUseCase(userRepoSpy, basePermissionRepoSpy, permissionRepoSpy)
   })
 
   it('should call LoadUserAccount with correct input', async () => {
@@ -79,8 +89,16 @@ describe('GrantPermissionUseCase', () => {
   it('should call LoadBasePermission with correct input', async () => {
     await sut.perform(grantPermissionInput)
 
-    expect(basePermissionSpy.load).toHaveBeenCalledTimes(1)
-    expect(basePermissionSpy.load).toHaveBeenCalledWith({ code: 'any_permission_code' })
+    expect(basePermissionRepoSpy.load).toHaveBeenCalledTimes(1)
+    expect(basePermissionRepoSpy.load).toHaveBeenCalledWith({ code: 'any_permission_code' })
+  })
+
+  it('should return BasePermissionNotFoundError if LoadBasePermission returns undefined', async () => {
+    basePermissionRepoSpy.load.mockResolvedValueOnce(undefined)
+
+    const output = await sut.perform(grantPermissionInput)
+
+    expect(output).toEqual(new BasePermissionNotFoundError('any_permission_code'))
   })
 
   it('should call SavePermission with correct input', async () => {
