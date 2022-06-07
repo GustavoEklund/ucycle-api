@@ -1,4 +1,4 @@
-import { LoadUserAccount, SavePermission } from '@/domain/contracts/repos'
+import { LoadBasePermission, LoadUserAccount, SavePermission } from '@/domain/contracts/repos'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { GrantPermission, GrantPermissionUseCase } from '@/domain/use-cases/permissions'
 import { UserAccountNotFoundError } from '@/domain/entities/errors'
@@ -6,6 +6,7 @@ import { UserAccountNotFoundError } from '@/domain/entities/errors'
 describe('GrantPermissionUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
   let permissionRepoSpy: MockProxy<SavePermission>
+  let basePermissionSpy: MockProxy<LoadBasePermission>
   let grantPermissionInput: GrantPermission.Input
   let sut: GrantPermissionUseCase
 
@@ -13,9 +14,7 @@ describe('GrantPermissionUseCase', () => {
     grantPermissionInput = {
       grantById: 'any_user_id',
       grantToId: 'any_target_user_id',
-      resourceCode: 'any_resource_code',
-      resourceName: 'any_resource_name',
-      description: 'any_resource_description',
+      code: 'any_permission_code',
       write: true,
       read: true,
       owner: false,
@@ -31,12 +30,13 @@ describe('GrantPermissionUseCase', () => {
       contacts: [],
       documents: [],
     })
+    basePermissionSpy = mock()
     permissionRepoSpy = mock()
     permissionRepoSpy.save.mockResolvedValue({ id: 'any_permission_id' })
   })
 
   beforeEach(() => {
-    sut = new GrantPermissionUseCase(userRepoSpy, permissionRepoSpy)
+    sut = new GrantPermissionUseCase(userRepoSpy, basePermissionSpy, permissionRepoSpy)
   })
 
   it('should call LoadUserAccount with correct input', async () => {
@@ -76,6 +76,13 @@ describe('GrantPermissionUseCase', () => {
     expect(output).toEqual(new UserAccountNotFoundError('any_target_user_id'))
   })
 
+  it('should call LoadBasePermission with correct input', async () => {
+    await sut.perform(grantPermissionInput)
+
+    expect(basePermissionSpy.load).toHaveBeenCalledTimes(1)
+    expect(basePermissionSpy.load).toHaveBeenCalledWith({ code: 'any_permission_code' })
+  })
+
   it('should call SavePermission with correct input', async () => {
     await sut.perform(grantPermissionInput)
 
@@ -83,9 +90,7 @@ describe('GrantPermissionUseCase', () => {
     expect(permissionRepoSpy.save).toHaveBeenCalledWith({
       grantById: 'any_user_id',
       grantToId: 'any_target_user_id',
-      resourceCode: 'any_resource_code',
-      resourceName: 'any_resource_name',
-      description: 'any_resource_description',
+      code: 'any_permission_code',
       read: true,
       write: true,
       owner: false,
