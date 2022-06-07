@@ -1,4 +1,4 @@
-import { LoadUserAccount, SavePermission } from '@/domain/contracts/repos'
+import { LoadBasePermission, LoadUserAccount, SavePermission } from '@/domain/contracts/repos'
 import { UserAccountNotFoundError } from '@/domain/entities/errors'
 
 export interface GrantPermission {
@@ -8,6 +8,7 @@ export interface GrantPermission {
 export class GrantPermissionUseCase implements GrantPermission {
   public constructor(
     private readonly userRepo: LoadUserAccount,
+    private readonly basePermissionRepo: LoadBasePermission,
     private readonly permissionRepo: SavePermission
   ) {}
 
@@ -16,6 +17,7 @@ export class GrantPermissionUseCase implements GrantPermission {
     if (user === undefined) return new UserAccountNotFoundError(input.grantById)
     const targetUser = await this.userRepo.load({ id: input.grantToId })
     if (targetUser === undefined) return new UserAccountNotFoundError(input.grantToId)
+    await this.basePermissionRepo.load({ code: input.code })
     const { id: permissionId } = await this.permissionRepo.save(input)
     return { id: permissionId }
   }
@@ -25,9 +27,7 @@ export namespace GrantPermission {
   export type Input = {
     grantById: string
     grantToId: string
-    resourceCode: string
-    resourceName: string
-    description: string
+    code: string
     read: boolean
     write: boolean
     owner: boolean

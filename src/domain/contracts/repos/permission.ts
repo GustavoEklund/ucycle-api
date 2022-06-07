@@ -6,9 +6,7 @@ export namespace SavePermission {
   export type Input = {
     grantById: string
     grantToId: string
-    resourceCode: string
-    resourceName: string
-    description: string
+    code: string
     read: boolean
     write: boolean
     owner: boolean
