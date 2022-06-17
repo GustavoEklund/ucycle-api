@@ -19,13 +19,21 @@
     "prettier"
   ],
   "rules": {
+    "@typescript-eslint/quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/return-await": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": ["error"],
+    "no-useless-constructor": "off",
     "camelcase": "off"
   }
 }
