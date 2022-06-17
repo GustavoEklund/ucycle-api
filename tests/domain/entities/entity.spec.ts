@@ -7,12 +7,23 @@ class ChildEntity extends Entity {
 }
 
 describe('Entity', () => {
-  it('should return true if entities are equal', () => {
-    const entity1 = new ChildEntity({ id: 'any_id' })
-    const entity2 = new ChildEntity({ id: 'any_id' })
+  describe('equals', () => {
+    it('should return true if entities are equal', () => {
+      const entity1 = new ChildEntity({ id: 'any_id' })
+      const entity2 = new ChildEntity({ id: 'any_id' })
 
-    const areEqual = entity1.equals(entity2)
+      const areEqual = entity1.equals(entity2)
 
-    expect(areEqual).toBeTruthy()
+      expect(areEqual).toBeTruthy()
+    })
+
+    it('should return false if entities are not equal', () => {
+      const entity1 = new ChildEntity({ id: 'any_id' })
+      const entity2 = new ChildEntity({ id: 'any_other_id' })
+
+      const areEqual = entity1.equals(entity2)
+
+      expect(areEqual).toBeFalsy()
+    })
   })
 })
