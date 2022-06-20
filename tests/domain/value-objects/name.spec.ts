@@ -1,7 +1,13 @@
-import { Name, NameType } from '@/domain/value-objects'
+import { Name, NameType, ValueObject } from '@/domain/value-objects'
 import { InvalidNameError } from '@/domain/entities/errors'
 
 describe('Name', () => {
+  it('should extend ValueObject', () => {
+    const sut = new Name({ value: 'John Doe' })
+
+    expect(sut).toBeInstanceOf(ValueObject)
+  })
+
   it('should throw InvalidNameError when name is empty', () => {
     const sut = () => new Name({ value: '' })
 
