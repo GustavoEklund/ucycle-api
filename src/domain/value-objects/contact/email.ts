@@ -3,6 +3,7 @@ import { InvalidEmailError } from '@/domain/entities/errors'
 
 export enum EmailType {
   primary = 'PRIMARY',
+  secondary = 'SECONDARY',
 }
 
 export class Email extends Contact {
