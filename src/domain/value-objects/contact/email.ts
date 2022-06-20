@@ -11,7 +11,7 @@ export class Email extends Contact {
   }
 
   public constructor(email: string, label: EmailType) {
-    super('EMAIL', label, false)
+    super('EMAIL', label, false, true)
     const clearEmail = Email.format(email)
     const isValid = Email.isValid(clearEmail)
     if (!isValid) throw new InvalidEmailError()

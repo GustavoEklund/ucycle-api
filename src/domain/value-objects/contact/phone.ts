@@ -13,7 +13,7 @@ export class Phone extends Contact {
   }
 
   public constructor(number: string, label: PhoneType) {
-    super('PHONE', label, false)
+    super('PHONE', label, false, true)
     const clearNumber = Phone.removeNonNumbers(number)
     this.value = {
       countryCode: Phone.getCountryCode(clearNumber),
