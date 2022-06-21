@@ -1,5 +1,6 @@
-import { HttpResponse, ok } from '@/application/helpers'
+import { created, HttpResponse, notFound, ok } from '@/application/helpers'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
+import { UserAccountNotFoundError } from '@/domain/entities/errors'
 
 import { GrantPermission } from '@/domain/use-cases/permissions'
 import { Controller } from '../controller'
@@ -21,10 +22,12 @@ export class GrantPermissionController extends Controller {
     super()
   }
 
-  public async perform(httpRequest: HttpRequest): Promise<HttpResponse<undefined>> {
-    await this.grantPermission.perform(httpRequest)
+  public async perform(httpRequest: HttpRequest): Promise<HttpResponse<Error[] | undefined>> {
+    const output = await this.grantPermission.perform(httpRequest)
 
-    return ok(undefined)
+    if (output instanceof UserAccountNotFoundError) return notFound([output])
+
+    return created(undefined)
   }
 
   public override buildValidators({
