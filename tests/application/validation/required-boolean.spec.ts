@@ -19,4 +19,20 @@ describe('RequiredBoolean', () => {
       expect(errors).toEqual([new RequiredFieldError('any_field_name')])
     }
   )
+
+  it('should return an empty array if value is true', () => {
+    const sut = new RequiredBoolean(true, 'any_field_name')
+
+    const errors = sut.validate()
+
+    expect(errors).toHaveLength(0)
+  })
+
+  it('should return an empty array if value is false', () => {
+    const sut = new RequiredBoolean(false, 'any_field_name')
+
+    const errors = sut.validate()
+
+    expect(errors).toHaveLength(0)
+  })
 })
