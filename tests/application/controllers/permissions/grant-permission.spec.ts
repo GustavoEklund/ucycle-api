@@ -3,7 +3,7 @@ import { RequiredBoolean, RequiredString } from '@/application/validation'
 import { UserAccountNotFoundError } from '@/domain/entities/errors'
 import { GrantPermission } from '@/domain/use-cases/permissions'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { conflict, created, notFound, serverError } from '@/application/helpers'
+import { notFound, ok } from '@/application/helpers'
 
 describe('GrantPermissionController', () => {
   let grantPermissionSpy: MockProxy<GrantPermission>
@@ -11,6 +11,9 @@ describe('GrantPermissionController', () => {
   let httpRequestStub: GrantPermission.Input
   beforeAll(() => {
     grantPermissionSpy = mock()
+    grantPermissionSpy.perform.mockResolvedValue({
+      id: 'any_permission_id',
+    })
     httpRequestStub = {
       grantById: 'any_user_id',
       grantToId: 'any_grant_to_id',
@@ -71,6 +74,14 @@ describe('GrantPermissionController', () => {
     const expectedHttpResponse = notFound([expectedError])
 
     grantPermissionSpy.perform.mockResolvedValueOnce(expectedError)
+
+    const httpResponse = await sut.perform(httpRequestStub)
+
+    expect(httpResponse).toEqual(expectedHttpResponse)
+  })
+
+  it('should return 200 on success', async () => {
+    const expectedHttpResponse = ok({ id: 'any_permission_id' })
 
     const httpResponse = await sut.perform(httpRequestStub)
 
