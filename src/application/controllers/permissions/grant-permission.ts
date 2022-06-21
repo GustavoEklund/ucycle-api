@@ -4,7 +4,7 @@ import { RequiredType, ValidationBuilder as Builder, Validator } from '@/applica
 import { GrantPermission } from '@/domain/use-cases/permissions'
 import { Controller } from '../controller'
 
-export type HttpRequest = {
+type HttpRequest = {
   grantById: string
   grantToId: string
   code: string
