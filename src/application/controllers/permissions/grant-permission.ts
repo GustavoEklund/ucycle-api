@@ -22,12 +22,12 @@ export class GrantPermissionController extends Controller {
     super()
   }
 
-  public async perform(httpRequest: HttpRequest): Promise<HttpResponse<Error[] | undefined>> {
+  public async perform(httpRequest: HttpRequest): Promise<HttpResponse<{ id: string } | Error[]>> {
     const output = await this.grantPermission.perform(httpRequest)
 
     if (output instanceof UserAccountNotFoundError) return notFound([output])
 
-    return created(undefined)
+    return ok(output)
   }
 
   public override buildValidators({
