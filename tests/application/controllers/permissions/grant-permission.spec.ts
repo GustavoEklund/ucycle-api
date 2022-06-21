@@ -1,4 +1,4 @@
-import { GrantPermissionController, HttpRequest } from '@/application/controllers/permissions'
+import { GrantPermissionController, Controller } from '@/application/controllers'
 import { RequiredBoolean, RequiredString } from '@/application/validation'
 import { GrantPermission } from '@/domain/use-cases/permissions'
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -6,7 +6,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 describe('GrantPermissionController', () => {
   let grantPermissionSpy: MockProxy<GrantPermission>
   let sut: GrantPermissionController
-  let httpRequestStub: HttpRequest
+  let httpRequestStub: GrantPermission.Input
   beforeAll(() => {
     grantPermissionSpy = mock()
     httpRequestStub = {
@@ -24,6 +24,11 @@ describe('GrantPermissionController', () => {
   beforeEach(() => {
     sut = new GrantPermissionController(grantPermissionSpy)
   })
+
+  it('should extend Controller', () => {
+    expect(sut).toBeInstanceOf(Controller)
+  })
+
   it('should call GrantPermission with correct input', async () => {
     await sut.perform(httpRequestStub)
 
