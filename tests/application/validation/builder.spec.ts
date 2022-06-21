@@ -2,6 +2,7 @@ import {
   AllowedMimeTypes,
   MaxFileSize,
   Required,
+  RequiredBoolean,
   RequiredBuffer,
   RequiredInteger,
   RequiredString,
@@ -87,5 +88,16 @@ describe('ValidationBuilder', () => {
       .build()
 
     expect(validators).toEqual([new RequiredInteger(5, 'integer')])
+  })
+
+  it('should return correct boolean validator', () => {
+    const validators = ValidationBuilder.of({
+      value: true,
+      fieldName: 'boolean',
+    })
+      .required(RequiredType.boolean)
+      .build()
+
+    expect(validators).toEqual([new RequiredBoolean(true, 'boolean')])
   })
 })
