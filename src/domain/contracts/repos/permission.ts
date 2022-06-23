@@ -1,20 +1,10 @@
-export interface SavePermission {
-  save: (input: SavePermission.Input) => Promise<SavePermission.Output>
+import { UserPermission } from '@/domain/entities/permission'
+
+export interface SaveUserPermission {
+  save: (input: SaveUserPermission.Input) => Promise<SaveUserPermission.Output>
 }
 
-export namespace SavePermission {
-  export type Input = {
-    grantById: string
-    grantToId: string
-    code: string
-    read: boolean
-    write: boolean
-    owner: boolean
-    status: string
-    moduleId: string
-    resourceId: string
-  }
-  export type Output = {
-    id: string
-  }
+export namespace SaveUserPermission {
+  export type Input = UserPermission
+  export type Output = void
 }

@@ -1,52 +1,59 @@
-import { LoadBasePermission, LoadUserAccount, SavePermission } from '@/domain/contracts/repos'
+import { LoadBasePermission, LoadUserAccount, SaveUserPermission } from '@/domain/contracts/repos'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { GrantPermission, GrantPermissionUseCase } from '@/domain/use-cases/permissions'
 import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
+import { BasePermission } from '@/domain/entities/permission/base-permission'
+import { UUIDGenerator } from '@/domain/contracts/gateways'
+import { UserPermission } from '@/domain/entities/permission'
+import { mockUser } from '@/tests/domain/mocks/entities'
 
 describe('GrantPermissionUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
-  let permissionRepoSpy: MockProxy<SavePermission>
+  let permissionRepoSpy: MockProxy<SaveUserPermission>
   let basePermissionRepoSpy: MockProxy<LoadBasePermission>
   let grantPermissionInput: GrantPermission.Input
+  let cryptoSpy: MockProxy<UUIDGenerator>
   let sut: GrantPermissionUseCase
 
   beforeAll(() => {
     grantPermissionInput = {
       grantById: 'any_user_id',
       grantToId: 'any_target_user_id',
-      code: 'any_permission_code',
+      code: 'ANY_PERMISSION_CODE',
       write: true,
       read: true,
       owner: false,
-      status: 'GRANTED',
       moduleId: 'any_module_id',
-      resourceId: 'any_resource_id',
+      organizationId: 'any_organization_id',
     }
     userRepoSpy = mock()
-    userRepoSpy.load.mockResolvedValue({
-      id: 'any_user_id',
-      lastName: 'any_last_name',
-      firstName: 'any_first_name',
-      contacts: [],
-      documents: [],
-    })
+    userRepoSpy.load.mockResolvedValue(mockUser())
     basePermissionRepoSpy = mock()
-    basePermissionRepoSpy.load.mockResolvedValue({
-      id: 'any_base_permission_id',
-      code: 'any_permission_code',
-      read: true,
-      write: true,
-      owner: false,
-      name: 'any_permission_name',
-      description: 'any_permission_description',
-      moduleId: 'any_module_id',
-    })
+    basePermissionRepoSpy.load.mockResolvedValue(
+      new BasePermission({
+        id: 'any_base_permission_id',
+        code: 'ANY_PERMISSION_CODE',
+        read: true,
+        write: true,
+        owner: false,
+        name: 'any_permission_name',
+        description: 'any_permission_description',
+        moduleId: 'any_module_id',
+        expiration: new Date('2021-03-01T10:00:00'),
+      })
+    )
     permissionRepoSpy = mock()
-    permissionRepoSpy.save.mockResolvedValue({ id: 'any_permission_id' })
+    cryptoSpy = mock()
+    cryptoSpy.uuid.mockReturnValue('any_uuid')
   })
 
   beforeEach(() => {
-    sut = new GrantPermissionUseCase(userRepoSpy, basePermissionRepoSpy, permissionRepoSpy)
+    sut = new GrantPermissionUseCase(
+      userRepoSpy,
+      basePermissionRepoSpy,
+      permissionRepoSpy,
+      cryptoSpy
+    )
   })
 
   it('should call LoadUserAccount with correct input', async () => {
@@ -71,15 +78,7 @@ describe('GrantPermissionUseCase', () => {
   })
 
   it('should return UserAccountNotFoundError if LoadUserAccount returns undefined for target user', async () => {
-    userRepoSpy.load
-      .mockResolvedValueOnce({
-        id: 'any_user_id',
-        lastName: 'any_last_name',
-        firstName: 'any_first_name',
-        contacts: [],
-        documents: [],
-      })
-      .mockResolvedValueOnce(undefined)
+    userRepoSpy.load.mockResolvedValueOnce(mockUser()).mockResolvedValueOnce(undefined)
 
     const output = await sut.perform(grantPermissionInput)
 
@@ -90,7 +89,7 @@ describe('GrantPermissionUseCase', () => {
     await sut.perform(grantPermissionInput)
 
     expect(basePermissionRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(basePermissionRepoSpy.load).toHaveBeenCalledWith({ code: 'any_permission_code' })
+    expect(basePermissionRepoSpy.load).toHaveBeenCalledWith({ code: 'ANY_PERMISSION_CODE' })
   })
 
   it('should return BasePermissionNotFoundError if LoadBasePermission returns undefined', async () => {
@@ -98,29 +97,34 @@ describe('GrantPermissionUseCase', () => {
 
     const output = await sut.perform(grantPermissionInput)
 
-    expect(output).toEqual(new BasePermissionNotFoundError('any_permission_code'))
+    expect(output).toEqual(new BasePermissionNotFoundError('ANY_PERMISSION_CODE'))
   })
 
   it('should call SavePermission with correct input', async () => {
     await sut.perform(grantPermissionInput)
 
     expect(permissionRepoSpy.save).toHaveBeenCalledTimes(1)
-    expect(permissionRepoSpy.save).toHaveBeenCalledWith({
-      grantById: 'any_user_id',
-      grantToId: 'any_target_user_id',
-      code: 'any_permission_code',
-      read: true,
-      write: true,
-      owner: false,
-      status: 'GRANTED',
-      moduleId: 'any_module_id',
-      resourceId: 'any_resource_id',
-    })
+    expect(permissionRepoSpy.save).toHaveBeenCalledWith(
+      new UserPermission({
+        id: 'any_uuid',
+        grantByUserId: 'any_user_id',
+        grantToUserId: 'any_target_user_id',
+        code: 'ANY_PERMISSION_CODE',
+        read: true,
+        write: true,
+        owner: false,
+        moduleId: 'any_module_id',
+        grantAtOrganizationId: 'any_organization_id',
+        description: 'any_permission_description',
+        name: 'any_permission_name',
+        expiration: new Date('2021-03-01T10:00:00'),
+      })
+    )
   })
 
   it('should return correct output on success', async () => {
     const output = await sut.perform(grantPermissionInput)
 
-    expect(output).toEqual({ id: 'any_permission_id' })
+    expect(output).toEqual({ id: 'any_uuid' })
   })
 })
