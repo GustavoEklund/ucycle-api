@@ -32,12 +32,12 @@ export class Person {
     professional,
     marriedStatus,
     specialNeeds,
-    specialNeedsDescription
+    specialNeedsDescription,
   }: personsData) {
-    this.firstName = firstName,
-    this.lastName = lastName,
-    // this.document = document,
-    // this.contact = contact,
+    this.firstName = firstName
+    this.lastName = lastName
+    // this.document = document
+    // this.contact = contact
     this.birthDate = birthDate
     this.professional = professional
     this.marriedStatus = marriedStatus
