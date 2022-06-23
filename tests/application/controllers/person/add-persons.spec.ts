@@ -29,13 +29,13 @@ describe('AddPersonsController', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
 
-it('should call addPersons with correct values', async () => {
-  const person = [personsData]
-  await sut.handle(person)
+  it('should call addPersons with correct values', async () => {
+    const person = [personsData]
+    await sut.handle(person)
 
-  expect(addPersonsSpy).toHaveBeenCalledWith(person)
-  expect(addPersonsSpy).toHaveBeenCalledTimes(1)
-})
+    expect(addPersonsSpy).toHaveBeenCalledWith(person)
+    expect(addPersonsSpy).toHaveBeenCalledTimes(1)
+  })
 
   it('should return an id on success', async () => {
     const person = [personsData]

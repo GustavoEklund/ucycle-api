@@ -1,11 +1,11 @@
 import { AddPersons, setupAddPersons } from '@/domain/use-cases/persons/add-persons'
 import { Person } from '@/domain/entities/persons/persons'
-import { mockPerson } from '../../../infra/repos/postgres/mocks/person'
+import { mockPerson } from '@/tests/infra/repos/postgres/mocks/person'
 import { SavePersons } from '@/domain/contracts/repos/persons/persons'
 import { mock, MockProxy } from 'jest-mock-extended'
 
-let generatePerson = (number: number = 1) => {
-  let returnPerson = []
+const generatePerson = (number = 1) => {
+  const returnPerson = []
 
   for (let i = 0; i < number; i++) {
     const persons = new Person(mockPerson())
@@ -52,13 +52,13 @@ describe('use-cases add-persons', () => {
   })
 
   it('should return an id on success', async () => {
-    let person = generatePerson()
+    const person = generatePerson()
     const response = await sut(person)
 
     expect(response).toEqual([{ id: '1' }])
   })
   it('should return an list id on success', async () => {
-    let person = generatePerson(2)
+    const person = generatePerson(2)
     mockAddPersonsContract.save.mockResolvedValue([{ id: '1' }, { id: '2' }])
     const response = await sut(person)
 
@@ -68,7 +68,7 @@ describe('use-cases add-persons', () => {
   it('should throw if personsRepo throws', async () => {
     mockAddPersonsContract.save.mockRejectedValueOnce(new Error('any_error'))
 
-    let person = generatePerson()
+    const person = generatePerson()
 
     await expect(sut(person)).rejects.toThrow()
   })

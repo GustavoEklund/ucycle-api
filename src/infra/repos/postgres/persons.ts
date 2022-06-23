@@ -44,6 +44,8 @@ export class PgPersonsRepository extends PgRepository implements LoadPersons, Sa
 
     const persons = await personsRepo.save(personsToSave)
 
-    return persons.map((i) => { return { id: i.id } })
+    return persons.map((i) => {
+      return { id: i.id }
+    })
   }
 }

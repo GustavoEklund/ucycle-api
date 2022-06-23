@@ -28,7 +28,6 @@ export namespace LoadPersons {
       }
 }
 
-
 export interface SavePersons {
   save: (params: SavePersons.Input) => Promise<SavePersons.Output>
 }
