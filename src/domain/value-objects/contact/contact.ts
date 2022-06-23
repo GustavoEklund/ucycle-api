@@ -4,6 +4,7 @@ export class Contact {
   protected constructor(
     public readonly type: string,
     public readonly label: string,
-    public readonly verified: boolean
+    public readonly verified: boolean,
+    public readonly isPrivate: boolean
   ) {}
 }

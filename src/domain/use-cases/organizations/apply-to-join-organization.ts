@@ -14,9 +14,8 @@ import {
 } from '@/domain/entities/errors'
 import { Publisher } from '@/domain/events'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
-import { makeContacts } from '@/domain/value-objects/contact'
-import { Document } from '@/domain/value-objects/document'
 import { AdmissionProposalStatus } from '@/domain/entities/organization'
+import { makeContacts } from '@/domain/value-objects/contact'
 
 export interface ApplyToJoinOrganization {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>
@@ -36,11 +35,11 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     userId,
     organizationId,
   }: ApplyToJoinOrganization.Input): Promise<ApplyToJoinOrganization.Output> {
-    const userAccount = await this.userAccountRepo.load({ id: userId })
-    if (userAccount === undefined) throw new UserAccountNotFoundError(userId)
+    const user = await this.userAccountRepo.load({ id: userId })
+    if (user === undefined) throw new UserAccountNotFoundError(userId)
     const organization = await this.organizationRepo.load({ id: organizationId })
     if (organization === undefined) throw new OrganizationNotFoundError(organizationId)
-    if (organization.ownerUser.id === userAccount.id)
+    if (organization.ownerUser.id === user.id)
       throw new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
     const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
     if (admissionProposals.length > 0)
@@ -58,10 +57,10 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     const event = new ApplicationToJoinOrganizationSent({
       admissionProposalId,
       user: {
-        id: userAccount.id,
-        name: userAccount.firstName,
-        documents: userAccount.documents.map((document) => new Document(document.number)),
-        contacts: makeContacts(userAccount.contacts),
+        id: user.id,
+        name: user.account.name.value,
+        documents: user.account.documents,
+        contacts: user.account.contacts,
       },
       organization: {
         id: organization.id,

@@ -1,17 +1,22 @@
+import { User } from '@/domain/entities/user'
+
 type Document = {
   number: string
   type: string
 }
+
 type Email = {
   address: string
   type: string
 }
+
 type Phone = {
   number: string
   countryCode: string
   areaCode: string
   type: string
 }
+
 type Contact = {
   type: string
   verified: boolean
@@ -28,20 +33,7 @@ export namespace LoadUserAccount {
     email?: string
   }
 
-  export type Output =
-    | undefined
-    | {
-        id: string
-        firstName: string
-        lastName: string
-        documents: { number: string }[]
-        contacts: {
-          value: string
-          type: string
-          label: string
-          verified: boolean
-        }[]
-      }
+  export type Output = User | undefined
 }
 
 export interface SaveUserAccount {

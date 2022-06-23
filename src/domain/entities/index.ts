@@ -1,3 +1,3 @@
-export * from './facebook-account'
+export * from './entity'
 export * from './organization'
 export * from './persons'

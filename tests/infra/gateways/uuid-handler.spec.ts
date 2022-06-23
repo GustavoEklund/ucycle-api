@@ -17,14 +17,14 @@ describe('UUIDHandler', () => {
   })
 
   it('should call uuid.v4', () => {
-    sut.uuid({ key: 'any_key' })
+    sut.uuid()
 
     expect(v4).toHaveBeenCalledTimes(1)
   })
 
   it('should return correct uuid', () => {
-    const uuid = sut.uuid({ key: 'any_key' })
+    const uuid = sut.uuid()
 
-    expect(uuid).toBe('any_key_any_uuid')
+    expect(uuid).toBe('any_uuid')
   })
 })
