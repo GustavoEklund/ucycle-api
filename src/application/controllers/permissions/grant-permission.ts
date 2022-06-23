@@ -1,6 +1,6 @@
-import { created, HttpResponse, notFound, ok } from '@/application/helpers'
+import { HttpResponse, notFound, ok } from '@/application/helpers'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
-import { UserAccountNotFoundError } from '@/domain/entities/errors'
+import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 
 import { GrantPermission } from '@/domain/use-cases/permissions'
 import { Controller } from '../controller'
@@ -12,9 +12,8 @@ type HttpRequest = {
   read: boolean
   write: boolean
   owner: boolean
-  status: string
   moduleId: string
-  resourceId: string
+  organizationId: string
 }
 
 export class GrantPermissionController extends Controller {
@@ -22,24 +21,40 @@ export class GrantPermissionController extends Controller {
     super()
   }
 
-  public async perform(httpRequest: HttpRequest): Promise<HttpResponse<{ id: string } | Error[]>> {
-    const output = await this.grantPermission.perform(httpRequest)
-
-    if (output instanceof UserAccountNotFoundError) return notFound([output])
-
-    return ok(output)
-  }
-
-  public override buildValidators({
-    grantById,
-    grantToId,
+  public async perform({
     code,
     read,
     write,
     owner,
-    status,
+    grantById,
+    grantToId,
     moduleId,
-    resourceId,
+    organizationId,
+  }: HttpRequest): Promise<HttpResponse<{ id: string } | Error[]>> {
+    const output = await this.grantPermission.perform({
+      code,
+      read,
+      write,
+      owner,
+      grantById,
+      grantToId,
+      moduleId,
+      organizationId,
+    })
+    if (output instanceof UserAccountNotFoundError) return notFound([output])
+    if (output instanceof BasePermissionNotFoundError) return notFound([output])
+    return ok(output)
+  }
+
+  public override buildValidators({
+    code,
+    read,
+    write,
+    owner,
+    grantById,
+    grantToId,
+    moduleId,
+    organizationId,
   }: HttpRequest): Validator[] {
     return [
       ...Builder.of({ value: grantById, fieldName: 'grantById' })
@@ -52,11 +67,10 @@ export class GrantPermissionController extends Controller {
       ...Builder.of({ value: read, fieldName: 'read' }).required(RequiredType.boolean).build(),
       ...Builder.of({ value: write, fieldName: 'write' }).required(RequiredType.boolean).build(),
       ...Builder.of({ value: owner, fieldName: 'owner' }).required(RequiredType.boolean).build(),
-      ...Builder.of({ value: status, fieldName: 'status' }).required(RequiredType.string).build(),
       ...Builder.of({ value: moduleId, fieldName: 'moduleId' })
         .required(RequiredType.string)
         .build(),
-      ...Builder.of({ value: resourceId, fieldName: 'resourceId' })
+      ...Builder.of({ value: organizationId, fieldName: 'organizationId' })
         .required(RequiredType.string)
         .build(),
     ]
