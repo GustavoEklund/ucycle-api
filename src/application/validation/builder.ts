@@ -6,6 +6,7 @@ import {
   RequiredBuffer,
   RequiredInteger,
   RequiredString,
+  RequiredBoolean,
   Validator,
 } from '@/application/validation'
 
@@ -14,6 +15,7 @@ export enum RequiredType {
   string = 'string',
   buffer = 'buffer',
   integer = 'integer',
+  boolean = 'boolean',
 }
 
 export class ValidationBuilder {
@@ -37,6 +39,9 @@ export class ValidationBuilder {
         return this
       case RequiredType.integer:
         this.validators.push(new RequiredInteger(this.value, this.fieldName))
+        return this
+      case RequiredType.boolean:
+        this.validators.push(new RequiredBoolean(this.value, this.fieldName))
         return this
       case RequiredType.any:
       default:
