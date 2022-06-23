@@ -17,43 +17,28 @@ type HttpRequest = {
 
   specialNeeds: boolean
   specialNeedsDescription?: string
-}
+}[]
 
-type Model = Error | { id: string }
+type Model = Error | { id: string }[]
 
 export class AddPersonsController extends Controller {
   constructor(private readonly addPersons: AddPersons) {
     super()
   }
 
-  async perform({
-    firstName,
-    lastName,
-
-    // document,
-    // contact,
-
-    birthDate,
-    professional,
-    marriedStatus,
-
-    specialNeeds,
-    specialNeedsDescription,
-  }: HttpRequest): Promise<HttpResponse<Model>> {
-    const response = await this.addPersons({
-      firstName,
-      lastName,
-
-      // document,
-      // contact,
-
-      birthDate,
-      professional,
-      marriedStatus,
-
-      specialNeeds,
-      specialNeedsDescription,
+  async perform(received: HttpRequest): Promise<HttpResponse<Model>> {
+    const persons: HttpRequest = received.map((personData) => {
+      return {
+        firstName: personData.firstName,
+        lastName: personData.lastName,
+        birthDate: personData.birthDate,
+        professional: personData.professional,
+        marriedStatus: personData.marriedStatus,
+        specialNeeds: personData.specialNeeds,
+        specialNeedsDescription: personData.specialNeedsDescription,
+      }
     })
+    const response = await this.addPersons(persons)
     return ok(response)
   }
 }

@@ -1,3 +1,18 @@
+type personsData = {
+  firstName: string
+  lastName: string
+
+  // document: Address;
+  // contact: number;
+
+  birthDate?: string
+  professional?: string
+  marriedStatus?: string
+
+  specialNeeds: boolean
+  specialNeedsDescription?: string
+}
+
 export interface LoadPersons {
   load: (params: LoadPersons.Input) => Promise<LoadPersons.Output>
 }
@@ -13,27 +28,15 @@ export namespace LoadPersons {
       }
 }
 
+
 export interface SavePersons {
   save: (params: SavePersons.Input) => Promise<SavePersons.Output>
 }
 
 export namespace SavePersons {
-  export type Input = {
-    firstName: string
-    lastName: string
-
-    // document: Address;
-    // contact: number;
-
-    birthDate?: string
-    professional?: string
-    marriedStatus?: string
-
-    specialNeeds: boolean
-    specialNeedsDescription?: string
-  }
+  export type Input = personsData[]
 
   export type Output = {
     id: string
-  }
+  }[]
 }

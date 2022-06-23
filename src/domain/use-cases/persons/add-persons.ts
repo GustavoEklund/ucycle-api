@@ -1,6 +1,6 @@
 // TODO: create document and contact repository
 import { SavePersons, LoadPersons } from '@/domain/contracts/repos'
-import { Persons } from '@/domain/entities'
+import { Person } from '@/domain/entities'
 
 type Input = {
   firstName: string
@@ -15,60 +15,32 @@ type Input = {
 
   specialNeeds: boolean
   specialNeedsDescription?: string
-}
+}[]
 
 type Output = {
   id: string
-}
+}[]
 
 export type AddPersons = (params: Input) => Promise<Output>
 type Setup = (personsRepo: SavePersons) => AddPersons
 
 export const setupAddPersons: Setup = (personsRepo) => {
-  return async ({
-    firstName,
-    lastName,
-
-    // document,
-    // contact,
-
-    birthDate,
-    professional,
-    marriedStatus,
-
-    specialNeeds,
-    specialNeedsDescription,
-  }) => {
-    const persons = new Persons({
-      firstName,
-      lastName,
-
-      // document,
-      // contact,
-
-      birthDate,
-      professional,
-      marriedStatus,
-
-      specialNeeds,
-      specialNeedsDescription,
+  return async (Input) => {
+    const persons: Input = Input.map((personData) => {
+      const person = new Person(personData)
+      return {
+        firstName: person.firstName,
+        lastName: person.lastName,
+        // document: person.document,
+        // contact: person.contact,
+        birthDate: person.birthDate,
+        professional: person.professional,
+        marriedStatus: person.marriedStatus,
+        specialNeeds: person.specialNeeds,
+        specialNeedsDescription: person.specialNeedsDescription,
+      }
     })
-
-    const response = await personsRepo.save({
-      firstName: persons.firstName,
-      lastName: persons.lastName,
-
-      // document: persons.document,
-      // contact: persons.contact,
-
-      birthDate: persons.birthDate,
-      professional: persons.professional,
-      marriedStatus: persons.marriedStatus,
-
-      specialNeeds: persons.specialNeeds,
-      specialNeedsDescription: persons.specialNeedsDescription,
-    })
-
-    return response
+    const personsId = await personsRepo.save(persons)
+    return personsId
   }
 }
