@@ -15,7 +15,8 @@ import {
 } from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
 import { AdmissionProposalStatus } from '@/domain/entities/organization'
-import { Document } from '@/domain/value-objects'
+import { mockUser } from '@/tests/domain/mocks/entities'
+import { User } from '@/domain/entities/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -25,17 +26,13 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   let organizationRepoSpy: MockProxy<LoadOrganization>
   let admissionProposalRepoSpy: MockProxy<SaveAdmissionProposal & LoadAdmissionProposals>
   let organizationMemberRepoSpy: MockProxy<LoadOrganizationMember>
+  let userMock: User
 
   beforeAll(() => {
-    jest.useFakeTimers().setSystemTime(new Date('2022-01-01'))
+    jest.useFakeTimers().setSystemTime(new Date('2022-03-01T10:00:00'))
+    userMock = mockUser()
     userAccountRepoSpy = mock()
-    userAccountRepoSpy.load.mockResolvedValue({
-      id: 'any_user_id',
-      firstName: 'any_user_name',
-      lastName: 'any_user_last_name',
-      contacts: [],
-      documents: [{ number: '34244419888' }],
-    })
+    userAccountRepoSpy.load.mockResolvedValue(userMock)
     organizationRepoSpy = mock()
     organizationRepoSpy.load.mockResolvedValue({
       id: 'any_organization_id',
@@ -99,7 +96,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
       name: 'any_organization_name',
       documents: [],
       ownerUser: {
-        id: 'any_user_id',
+        id: userMock.id,
         contacts: [],
       },
     })
@@ -173,10 +170,10 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     const expectedEvent = new ApplicationToJoinOrganizationSent({
       admissionProposalId: 'any_admission_proposal_id',
       user: {
-        id: 'any_user_id',
-        name: 'any_user_name',
-        documents: [new Document('34244419888')],
-        contacts: [],
+        id: userMock.id,
+        name: userMock.account.name.value,
+        documents: userMock.account.documents,
+        contacts: userMock.account.contacts,
       },
       organization: {
         id: 'any_organization_id',

@@ -9,11 +9,11 @@ export enum UserAccountStatus {
 }
 
 export class UserAccount extends ValueObject {
-  private readonly name: Name
-  private readonly contacts: Contact[]
-  private readonly documents: Document[]
-  private readonly verified: boolean
-  private readonly status: UserAccountStatus
+  public readonly name: Name
+  public readonly contacts: Contact[]
+  public readonly documents: Document[]
+  public readonly verified: boolean
+  public readonly status: UserAccountStatus
 
   public constructor({
     name,
