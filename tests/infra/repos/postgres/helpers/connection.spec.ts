@@ -19,6 +19,7 @@ jest.mock('typeorm', () => ({
   ManyToOne: jest.fn(),
   ManyToMany: jest.fn(),
   JoinTable: jest.fn(),
+  JoinColumn: jest.fn(),
   createConnection: jest.fn(),
   getConnection: jest.fn(),
   getConnectionManager: jest.fn(),

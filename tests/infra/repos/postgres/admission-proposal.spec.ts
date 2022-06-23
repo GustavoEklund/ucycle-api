@@ -4,9 +4,11 @@ import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
   PgAdmissionProposal,
+  PgBasePermission,
   PgContact,
   PgDocument,
   PgImage,
+  PgModule,
   PgOrganization,
   PgUser,
 } from '@/infra/repos/postgres/entities'
@@ -35,6 +37,8 @@ describe('PgAdmissionProposalRepository', () => {
       PgAddress,
       PgImage,
       PgAdmissionProposal,
+      PgBasePermission,
+      PgModule,
     ])
     backup = db.backup()
     pgAddressRepo = connection.getRepository(PgAddress)
