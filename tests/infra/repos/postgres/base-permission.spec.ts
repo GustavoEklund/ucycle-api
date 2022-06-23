@@ -80,4 +80,10 @@ describe('PgBasePermissionRepository', () => {
 
     expect(basePermission).toEqual(expectedBasePermission)
   })
+
+  it('should return undefined if base permission not found', async () => {
+    const basePermission = await sut.load({ code: 'ANY_BASE_PERMISSION' })
+
+    expect(basePermission).toBeUndefined()
+  })
 })
