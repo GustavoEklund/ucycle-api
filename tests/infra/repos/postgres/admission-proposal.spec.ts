@@ -1,4 +1,4 @@
-import { makeFakeDb, mockOrganization, mockUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockPgOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
@@ -11,6 +11,7 @@ import {
   PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 
 import { IBackup } from 'pg-mem'
@@ -39,6 +40,7 @@ describe('PgAdmissionProposalRepository', () => {
       PgAdmissionProposal,
       PgBasePermission,
       PgModule,
+      PgUserPermission,
     ])
     backup = db.backup()
     pgAddressRepo = connection.getRepository(PgAddress)
@@ -62,9 +64,9 @@ describe('PgAdmissionProposalRepository', () => {
 
   describe('save', () => {
     it('should save admission proposal', async () => {
-      const [pgUser, pgUserOwner] = await pgUserRepo.save([mockUser(), mockUser()])
+      const [pgUser, pgUserOwner] = await pgUserRepo.save([mockPgUser(), mockPgUser()])
       const pgAddress = await pgAddressRepo.save(mockAddress())
-      const organization = mockOrganization({
+      const organization = mockPgOrganization({
         address: pgAddress,
         ownerUser: pgUserOwner,
         pictures: [],

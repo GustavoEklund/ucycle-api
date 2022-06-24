@@ -1,6 +1,8 @@
 import { PgAddress, PgImage, PgUser } from '@/infra/repos/postgres/entities'
 
-export const mockOrganization = ({
+import { faker } from '@faker-js/faker'
+
+export const mockPgOrganization = ({
   ownerUser,
   address,
   pictures,
@@ -9,7 +11,7 @@ export const mockOrganization = ({
   address?: PgAddress
   pictures?: PgImage[]
 }) => ({
-  name: 'any_name',
+  name: faker.company.companyName(),
   ownerUser,
   pictures: Promise.resolve(pictures),
   address,

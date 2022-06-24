@@ -9,13 +9,14 @@ import {
   PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 import {
   makeFakeDb,
   mockContact,
   mockDocument,
-  mockOrganization,
-  mockUser,
+  mockPgOrganization,
+  mockPgUser,
 } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgOrganizationMemberRepository } from '@/infra/repos/postgres'
@@ -44,6 +45,7 @@ describe('PgOrganizationMemberRepository', () => {
       PgAdmissionProposal,
       PgBasePermission,
       PgModule,
+      PgUserPermission,
     ])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
@@ -67,17 +69,17 @@ describe('PgOrganizationMemberRepository', () => {
 
   describe('load', () => {
     it('should load organization member', async () => {
-      let pgOrganization = pgOrganizationRepo.create(mockOrganization({}))
+      let pgOrganization = pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization = await pgOrganizationRepo.save(pgOrganization)
-      const pgUser1 = await pgUserRepo.create(mockUser())
+      const pgUser1 = await pgUserRepo.create(mockPgUser())
       pgUser1.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
       pgUser1.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
       await pgUserRepo.save(pgUser1)
-      const pgUser2 = await pgUserRepo.create(mockUser())
+      const pgUser2 = await pgUserRepo.create(mockPgUser())
       pgUser2.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
       pgUser2.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
       await pgUserRepo.save(pgUser2)
-      const pgUser3 = await pgUserRepo.create(mockUser())
+      const pgUser3 = await pgUserRepo.create(mockPgUser())
       pgUser3.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
       pgUser3.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
       await pgUserRepo.save(pgUser3)

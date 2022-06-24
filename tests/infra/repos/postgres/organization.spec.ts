@@ -1,4 +1,4 @@
-import { makeFakeDb, mockOrganization, mockUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockPgOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
@@ -11,6 +11,7 @@ import {
   PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 
@@ -38,6 +39,7 @@ describe('PgOrganizationRepository', () => {
       PgAdmissionProposal,
       PgBasePermission,
       PgModule,
+      PgUserPermission,
     ])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
@@ -71,7 +73,7 @@ describe('PgOrganizationRepository', () => {
         organizations: Promise.resolve([]),
       })
       pgUser = await pgUserRepo.save(pgUser)
-      const organization = mockOrganization({})
+      const organization = mockPgOrganization({})
       const address = mockAddress()
 
       const { id: organizationId } = await sut.save({
@@ -97,10 +99,10 @@ describe('PgOrganizationRepository', () => {
     it('should load all organizations', async () => {
       const pgAddress = await pgAddressRepo.save(mockAddress())
       await pgAddressRepo.save(pgAddress)
-      const pgOrganization = pgOrganizationRepo.create(mockOrganization({}))
+      const pgOrganization = pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization.address = pgAddress
       await pgOrganizationRepo.save(pgOrganization)
-      const pgUser = pgUserRepo.create(mockUser())
+      const pgUser = pgUserRepo.create(mockPgUser())
       pgUser.organizationsOwned = Promise.resolve([pgOrganization])
       await pgUserRepo.save(pgUser)
 
@@ -109,7 +111,7 @@ describe('PgOrganizationRepository', () => {
       expect(organizations).toEqual([
         {
           id: pgOrganization.id,
-          name: 'any_name',
+          name: pgOrganization.name,
           pictures: [],
           address: {
             buildingNumber: 76,
