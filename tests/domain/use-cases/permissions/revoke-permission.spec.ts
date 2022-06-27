@@ -54,4 +54,18 @@ describe('RevokePermissionUseCase', () => {
 
     expect(userRepositorySpy.load).toHaveBeenNthCalledWith(2, { id: 'any_target_user_id' })
   })
+
+  it('should return UserNotFoundError if LoadUserRepository returns undefined for target user', async () => {
+    userRepositorySpy.load.mockResolvedValueOnce(mockUser()).mockResolvedValueOnce(undefined)
+
+    const output = await sut.perform({
+      user: { id: 'any_user_id' },
+      targetUser: {
+        id: 'any_target_user_id',
+        permission: { id: 'any_permission_id' },
+      },
+    })
+
+    expect(output).toEqual(new UserNotFoundError('any_target_user_id'))
+  })
 })
