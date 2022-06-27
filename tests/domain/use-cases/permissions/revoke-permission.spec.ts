@@ -4,10 +4,18 @@ import { RevokePermissionUseCase } from '@/domain/use-cases/permissions'
 import { UserNotFoundError } from '@/domain/entities/errors'
 
 describe('RevokePermissionUseCase', () => {
-  it('should call LoadUserRepository with correct input', async () => {
-    const loadUserRepositorySpy = mock<LoadUserAccount>()
-    const sut = new RevokePermissionUseCase(loadUserRepositorySpy)
+  let userRepositorySpy: LoadUserAccount
+  let sut: RevokePermissionUseCase
 
+  beforeAll(() => {
+    userRepositorySpy = mock()
+  })
+
+  beforeEach(() => {
+    sut = new RevokePermissionUseCase(userRepositorySpy)
+  })
+
+  it('should call LoadUserRepository with correct input', async () => {
     await sut.perform({
       user: { id: 'any_user_id' },
       targetUser: {
@@ -16,13 +24,10 @@ describe('RevokePermissionUseCase', () => {
       },
     })
 
-    expect(loadUserRepositorySpy.load).toHaveBeenCalledWith({ id: 'any_user_id' })
+    expect(userRepositorySpy.load).toHaveBeenCalledWith({ id: 'any_user_id' })
   })
 
   it('should return UserNotFoundError if LoadUserRepository returns undefined', async () => {
-    const loadUserRepositorySpy = mock<LoadUserAccount>()
-    const sut = new RevokePermissionUseCase(loadUserRepositorySpy)
-
     const output = await sut.perform({
       user: { id: 'any_user_id' },
       targetUser: {
