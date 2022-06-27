@@ -1,4 +1,5 @@
 import { LoadUserAccount } from '@/domain/contracts/repos'
+import { UserNotFoundError } from '@/domain/entities/errors'
 
 export interface RevokePermission {
   perform: (input: RevokePermission.Input) => Promise<RevokePermission.Output>
@@ -9,6 +10,7 @@ export class RevokePermissionUseCase implements RevokePermission {
 
   public async perform(input: RevokePermission.Input): Promise<RevokePermission.Output> {
     await this.userRepository.load({ id: input.user.id })
+    return new UserNotFoundError(input.user.id)
   }
 }
 
@@ -24,5 +26,5 @@ export namespace RevokePermission {
       }
     }
   }
-  export type Output = void
+  export type Output = undefined | UserNotFoundError
 }
