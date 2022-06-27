@@ -12,6 +12,7 @@ export class RevokePermissionUseCase implements RevokePermission {
     const user = await this.userRepository.load({ id: input.user.id })
     if (user === undefined) return new UserNotFoundError(input.user.id)
     await this.userRepository.load({ id: input.targetUser.id })
+    return new UserNotFoundError(input.targetUser.id)
   }
 }
 
