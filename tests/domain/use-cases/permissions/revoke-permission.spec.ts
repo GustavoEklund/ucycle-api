@@ -1,20 +1,22 @@
 import { mock, MockProxy } from 'jest-mock-extended'
-import { LoadUserAccount } from '@/domain/contracts/repos'
+import { LoadUserAccount, LoadUserPermission } from '@/domain/contracts/repos'
 import { RevokePermissionUseCase } from '@/domain/use-cases/permissions'
 import { UserNotFoundError } from '@/domain/entities/errors'
 import { mockUser } from '@/tests/domain/mocks/entities'
 
 describe('RevokePermissionUseCase', () => {
   let userRepositorySpy: MockProxy<LoadUserAccount>
+  let userPermissionRepositorySpy: MockProxy<LoadUserPermission>
   let sut: RevokePermissionUseCase
 
   beforeAll(() => {
     userRepositorySpy = mock()
     userRepositorySpy.load.mockResolvedValue(mockUser())
+    userPermissionRepositorySpy = mock()
   })
 
   beforeEach(() => {
-    sut = new RevokePermissionUseCase(userRepositorySpy)
+    sut = new RevokePermissionUseCase(userRepositorySpy, userPermissionRepositorySpy)
   })
 
   it('should call LoadUserRepository with correct input', async () => {
@@ -67,5 +69,17 @@ describe('RevokePermissionUseCase', () => {
     })
 
     expect(output).toEqual(new UserNotFoundError('any_target_user_id'))
+  })
+
+  it('should call LoadUserPermissionRepository with correct input', async () => {
+    await sut.perform({
+      user: { id: 'any_user_id' },
+      targetUser: {
+        id: 'any_target_user_id',
+        permission: { id: 'any_permission_id' },
+      },
+    })
+
+    expect(userPermissionRepositorySpy.load).toHaveBeenCalledWith({ id: 'any_permission_id' })
   })
 })
