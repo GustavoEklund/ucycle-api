@@ -3,7 +3,7 @@ import { Controller, HttpRequest, RevokePermissionController } from '@/applicati
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { RequiredString } from '@/application/validation'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
 
 describe('RevokePermissionController', () => {
   let revokePermissionSpy: MockProxy<RevokePermission>
@@ -62,6 +62,19 @@ describe('RevokePermissionController', () => {
     expect(output).toEqual({
       statusCode: 404,
       data: [new UserNotFoundError('any_user_id')],
+    })
+  })
+
+  it('should return 404 if RevokePermission returns UserPermissionNotFound', async () => {
+    revokePermissionSpy.perform.mockResolvedValueOnce(
+      new UserPermissionNotFoundError('any_permission_id')
+    )
+
+    const output = await sut.handle(httpRequest)
+
+    expect(output).toEqual({
+      statusCode: 404,
+      data: [new UserPermissionNotFoundError('any_permission_id')],
     })
   })
 })
