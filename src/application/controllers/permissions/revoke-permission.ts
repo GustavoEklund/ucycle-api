@@ -1,7 +1,8 @@
 import { RevokePermission } from '@/domain/use-cases/permissions'
 import { Controller } from '@/application/controllers'
-import { HttpResponse, ok } from '@/application/helpers'
+import { HttpResponse, notFound, ok } from '@/application/helpers'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
+import { UserNotFoundError } from '@/domain/entities/errors'
 
 export type HttpRequest = {
   userId: string
@@ -16,8 +17,12 @@ export class RevokePermissionController extends Controller {
     super()
   }
 
-  public async perform({ userId, targetUser }: HttpRequest): Promise<HttpResponse<undefined>> {
-    await this.revokePermission.perform({ user: { id: userId }, targetUser })
+  public async perform({
+    userId,
+    targetUser,
+  }: HttpRequest): Promise<HttpResponse<undefined | Error[]>> {
+    const output = await this.revokePermission.perform({ user: { id: userId }, targetUser })
+    if (output instanceof UserNotFoundError) return notFound([output])
     return ok(undefined)
   }
 
