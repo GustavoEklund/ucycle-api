@@ -3,6 +3,7 @@ import { Controller, HttpRequest, RevokePermissionController } from '@/applicati
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { RequiredString } from '@/application/validation'
+import { UserNotFoundError } from '@/domain/entities/errors'
 
 describe('RevokePermissionController', () => {
   let revokePermissionSpy: MockProxy<RevokePermission>
@@ -43,12 +44,24 @@ describe('RevokePermissionController', () => {
   it('should call RevokePermission with correct input', async () => {
     await sut.handle(httpRequest)
 
+    expect(revokePermissionSpy.perform).toHaveBeenCalledTimes(1)
     expect(revokePermissionSpy.perform).toHaveBeenCalledWith({
       user: { id: 'any_user_id' },
       targetUser: {
         id: 'any_target_user_id',
         permission: { id: 'any_permission_id' },
       },
+    })
+  })
+
+  it('should return 404 if RevokePermission returns UserNotFoundError', async () => {
+    revokePermissionSpy.perform.mockResolvedValueOnce(new UserNotFoundError('any_user_id'))
+
+    const output = await sut.handle(httpRequest)
+
+    expect(output).toEqual({
+      statusCode: 404,
+      data: [new UserNotFoundError('any_user_id')],
     })
   })
 })
