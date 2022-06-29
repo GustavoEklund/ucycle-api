@@ -1,13 +1,22 @@
 import { RevokePermission } from '@/domain/use-cases/permissions'
-import { Controller, RevokePermissionController } from '@/application/controllers'
+import { Controller, HttpRequest, RevokePermissionController } from '@/application/controllers'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import { RequiredString } from '@/application/validation'
 
 describe('RevokePermissionController', () => {
   let revokePermissionSpy: MockProxy<RevokePermission>
   let sut: RevokePermissionController
+  let httpRequest: HttpRequest
 
   beforeAll(() => {
+    httpRequest = {
+      userId: 'any_user_id',
+      targetUser: {
+        id: 'any_target_user_id',
+        permission: { id: 'any_permission_id' },
+      },
+    }
     revokePermissionSpy = mock()
   })
 
@@ -19,14 +28,20 @@ describe('RevokePermissionController', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
 
+  it('should build validators correctly', () => {
+    const expectedValidators = [
+      new RequiredString('any_user_id', 'userId'),
+      new RequiredString('any_target_user_id', 'targetUser.id'),
+      new RequiredString('any_permission_id', 'targetUser.permission.id'),
+    ]
+
+    const validators = sut.buildValidators(httpRequest)
+
+    expect(validators).toEqual(expectedValidators)
+  })
+
   it('should call RevokePermission with correct input', async () => {
-    await sut.handle({
-      user: { id: 'any_user_id' },
-      targetUser: {
-        id: 'any_target_user_id',
-        permission: { id: 'any_permission_id' },
-      },
-    })
+    await sut.handle(httpRequest)
 
     expect(revokePermissionSpy.perform).toHaveBeenCalledWith({
       user: { id: 'any_user_id' },
