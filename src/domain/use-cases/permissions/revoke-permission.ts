@@ -1,5 +1,5 @@
 import { LoadUserAccount, LoadUserPermission, SaveUserPermission } from '@/domain/contracts/repos'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
 
 export interface RevokePermission {
   perform: (input: RevokePermission.Input) => Promise<RevokePermission.Output>
@@ -19,8 +19,10 @@ export class RevokePermissionUseCase implements RevokePermission {
     const userPermission = await this.userPermissionRepository.load({
       id: input.targetUser.permission.id,
     })
-    userPermission!.revoke()
-    await this.userPermissionRepository.save(userPermission!)
+    if (userPermission === undefined)
+      return new UserPermissionNotFoundError(input.targetUser.permission.id)
+    userPermission.revoke()
+    await this.userPermissionRepository.save(userPermission)
   }
 }
 
@@ -36,5 +38,5 @@ export namespace RevokePermission {
       }
     }
   }
-  export type Output = undefined | UserNotFoundError
+  export type Output = undefined | UserNotFoundError | UserPermissionNotFoundError
 }
