@@ -1,14 +1,26 @@
 import { RevokePermission } from '@/domain/use-cases/permissions'
-import { RevokePermissionController } from '@/application/controllers'
+import { Controller, RevokePermissionController } from '@/application/controllers'
 
-import { mock } from 'jest-mock-extended'
+import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('RevokePermissionController', () => {
-  it('should call RevokePermission with correct input', async () => {
-    const revokePermissionSpy = mock<RevokePermission>()
-    const sut = new RevokePermissionController(revokePermissionSpy)
+  let revokePermissionSpy: MockProxy<RevokePermission>
+  let sut: RevokePermissionController
 
-    await sut.perform({
+  beforeAll(() => {
+    revokePermissionSpy = mock()
+  })
+
+  beforeEach(() => {
+    sut = new RevokePermissionController(revokePermissionSpy)
+  })
+
+  it('should extends Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
+  })
+
+  it('should call RevokePermission with correct input', async () => {
+    await sut.handle({
       user: { id: 'any_user_id' },
       targetUser: {
         id: 'any_target_user_id',
