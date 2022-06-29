@@ -1,4 +1,4 @@
-import { LoadUserAccount, LoadUserPermission } from '@/domain/contracts/repos'
+import { LoadUserAccount, LoadUserPermission, SaveUserPermission } from '@/domain/contracts/repos'
 import { UserNotFoundError } from '@/domain/entities/errors'
 
 export interface RevokePermission {
@@ -8,7 +8,7 @@ export interface RevokePermission {
 export class RevokePermissionUseCase implements RevokePermission {
   public constructor(
     private readonly userRepository: LoadUserAccount,
-    private readonly userPermissionRepository: LoadUserPermission
+    private readonly userPermissionRepository: LoadUserPermission & SaveUserPermission
   ) {}
 
   public async perform(input: RevokePermission.Input): Promise<RevokePermission.Output> {
@@ -16,7 +16,11 @@ export class RevokePermissionUseCase implements RevokePermission {
     if (user === undefined) return new UserNotFoundError(input.user.id)
     const targetUser = await this.userRepository.load({ id: input.targetUser.id })
     if (targetUser === undefined) return new UserNotFoundError(input.targetUser.id)
-    await this.userPermissionRepository.load({ id: input.targetUser.permission.id })
+    const userPermission = await this.userPermissionRepository.load({
+      id: input.targetUser.permission.id,
+    })
+    userPermission!.revoke()
+    await this.userPermissionRepository.save(userPermission!)
   }
 }
 

@@ -9,7 +9,6 @@ export class UserPermission extends Permission {
   public readonly grantToUserId: string
   public readonly grantByUserId: string
   public readonly grantAtOrganizationId: string
-  public readonly status: string
 
   public constructor({
     id,
@@ -42,6 +41,16 @@ export class UserPermission extends Permission {
     this.grantToUserId = grantToUserId
     this.grantByUserId = grantByUserId
     this.grantAtOrganizationId = grantAtOrganizationId
-    this.status = PermissionStatus.GRANTED
+    this._status = PermissionStatus.GRANTED
+  }
+
+  private _status: PermissionStatus
+
+  public get status(): PermissionStatus {
+    return this._status
+  }
+
+  public revoke(): void {
+    this._status = PermissionStatus.REVOKED
   }
 }
