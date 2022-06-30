@@ -77,4 +77,13 @@ describe('RevokePermissionController', () => {
       data: [new UserPermissionNotFoundError('any_permission_id')],
     })
   })
+
+  it('should return 204 if RevokePermission returns undefined on success', async () => {
+    const output = await sut.handle(httpRequest)
+
+    expect(output).toEqual({
+      statusCode: 204,
+      data: undefined,
+    })
+  })
 })
