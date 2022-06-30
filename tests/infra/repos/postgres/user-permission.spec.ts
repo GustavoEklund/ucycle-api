@@ -55,74 +55,82 @@ describe('PgUserPermissionRepository', () => {
     await connection.disconnect()
   })
 
-  it('should save user permission', async () => {
-    const targetPgUser = await connection.getRepository(PgUser).save(mockPgUser())
-    const ownerPgUser = await connection.getRepository(PgUser).save(mockPgUser())
-    const pgOrganization = await connection
-      .getRepository(PgOrganization)
-      .save(mockPgOrganization({}))
-    const pgModule = await connection.getRepository(PgModule).save({
-      id: faker.datatype.uuid(),
-    })
-    const userPermission = new UserPermission({
-      id: faker.datatype.uuid(),
-      code: 'ANY_BASE_PERMISSION',
-      read: true,
-      write: true,
-      owner: false,
-      name: 'any base permission',
-      description: 'any base permission description',
-      moduleId: pgModule.id,
-      expiration: new Date('2021-03-01T10:00:00'),
-      grantToUserId: targetPgUser.id,
-      grantByUserId: ownerPgUser.id,
-      grantAtOrganizationId: pgOrganization.id,
-    })
-
-    await sut.save(userPermission)
-
-    const pgUser = await connection.getRepository(PgUserPermission).findOne(userPermission.id, {
-      relations: ['createdBy', 'grantToUser', 'grantAtOrganization', 'module'],
-    })
-    expect(userPermission.id).toEqual(pgUser?.id)
-    expect(userPermission.code.value).toEqual(pgUser?.code)
-    expect(userPermission.read).toEqual(pgUser?.read)
-    expect(userPermission.write).toEqual(pgUser?.write)
-    expect(userPermission.owner).toEqual(pgUser?.owner)
-    expect(userPermission.name).toEqual(pgUser?.name)
-    expect(userPermission.description).toEqual(pgUser?.description)
-    expect(userPermission.moduleId).toEqual(pgUser?.module?.id)
-    expect(userPermission.grantToUserId).toEqual(pgUser?.grantToUser?.id)
-    expect(userPermission.grantByUserId).toEqual(pgUser?.createdBy?.id)
-    expect(userPermission.grantAtOrganizationId).toEqual(pgUser?.grantAtOrganization?.id)
-    expect(userPermission.expiration).toEqual(pgUser?.expiresAt)
+  it('should extend PgRepository', () => {
+    expect(sut).toBeInstanceOf(PgUserPermissionRepository)
   })
 
-  it('should load user permission', async () => {
-    const targetPgUser = await connection.getRepository(PgUser).save(mockPgUser())
-    const ownerPgUser = await connection.getRepository(PgUser).save(mockPgUser())
-    const pgModule = await connection.getRepository(PgModule).save(mockPgModule())
-    const pgOrganization = await connection.getRepository(PgOrganization).save(
-      mockPgOrganization({
-        ownerUser: ownerPgUser,
+  describe('save', () => {
+    it('should save user permission', async () => {
+      const targetPgUser = await connection.getRepository(PgUser).save(mockPgUser())
+      const ownerPgUser = await connection.getRepository(PgUser).save(mockPgUser())
+      const pgOrganization = await connection
+        .getRepository(PgOrganization)
+        .save(mockPgOrganization({}))
+      const pgModule = await connection.getRepository(PgModule).save({
+        id: faker.datatype.uuid(),
       })
-    )
-    const pgUserPermission = await connection.getRepository(PgUserPermission).save(
-      mockPgUserPermission({
-        grantToUser: targetPgUser,
-        createdBy: ownerPgUser,
-        module: pgModule,
-        grantToOrganization: pgOrganization,
+      const userPermission = new UserPermission({
+        id: faker.datatype.uuid(),
+        code: 'ANY_BASE_PERMISSION',
+        read: true,
+        write: true,
+        owner: false,
+        name: 'any base permission',
+        description: 'any base permission description',
+        moduleId: pgModule.id,
+        expiration: new Date('2021-03-01T10:00:00'),
+        grantToUserId: targetPgUser.id,
+        grantByUserId: ownerPgUser.id,
+        grantAtOrganizationId: pgOrganization.id,
       })
-    )
 
-    const userPermission = await sut.load({ id: pgUserPermission.id })
+      await sut.save(userPermission)
 
-    expect(userPermission?.id).toEqual(pgUserPermission.id)
-    expect(userPermission?.code.value).toEqual(pgUserPermission.code)
-    expect(userPermission?.grantToUserId).toEqual(targetPgUser.id)
-    expect(userPermission?.grantByUserId).toEqual(ownerPgUser.id)
-    expect(userPermission?.grantAtOrganizationId).toEqual(pgOrganization.id)
-    expect(userPermission?.moduleId).toEqual(pgModule.id)
+      const pgUser = await connection.getRepository(PgUserPermission).findOne(userPermission.id, {
+        relations: ['createdBy', 'grantToUser', 'grantAtOrganization', 'module'],
+      })
+      expect(userPermission.id).toEqual(pgUser?.id)
+      expect(userPermission.code.value).toEqual(pgUser?.code)
+      expect(userPermission.read).toEqual(pgUser?.read)
+      expect(userPermission.write).toEqual(pgUser?.write)
+      expect(userPermission.owner).toEqual(pgUser?.owner)
+      expect(userPermission.name).toEqual(pgUser?.name)
+      expect(userPermission.description).toEqual(pgUser?.description)
+      expect(userPermission.moduleId).toEqual(pgUser?.module?.id)
+      expect(userPermission.grantToUserId).toEqual(pgUser?.grantToUser?.id)
+      expect(userPermission.grantByUserId).toEqual(pgUser?.createdBy?.id)
+      expect(userPermission.grantAtOrganizationId).toEqual(pgUser?.grantAtOrganization?.id)
+      expect(userPermission.expiration).toEqual(pgUser?.expiresAt)
+    })
+  })
+
+  describe('load', () => {
+    it('should load user permission', async () => {
+      const targetPgUser = await connection.getRepository(PgUser).save(mockPgUser())
+      const ownerPgUser = await connection.getRepository(PgUser).save(mockPgUser())
+      const pgModule = await connection.getRepository(PgModule).save(mockPgModule())
+      const pgOrganization = await connection.getRepository(PgOrganization).save(
+        mockPgOrganization({
+          ownerUser: ownerPgUser,
+        })
+      )
+      const pgUserPermission = await connection.getRepository(PgUserPermission).save(
+        mockPgUserPermission({
+          grantToUser: targetPgUser,
+          createdBy: ownerPgUser,
+          module: pgModule,
+          grantToOrganization: pgOrganization,
+        })
+      )
+
+      const userPermission = await sut.load({ id: pgUserPermission.id })
+
+      expect(userPermission?.id).toEqual(pgUserPermission.id)
+      expect(userPermission?.code.value).toEqual(pgUserPermission.code)
+      expect(userPermission?.grantToUserId).toEqual(targetPgUser.id)
+      expect(userPermission?.grantByUserId).toEqual(ownerPgUser.id)
+      expect(userPermission?.grantAtOrganizationId).toEqual(pgOrganization.id)
+      expect(userPermission?.moduleId).toEqual(pgModule.id)
+    })
   })
 })
