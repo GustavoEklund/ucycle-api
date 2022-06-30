@@ -13,10 +13,8 @@ describe('RevokePermissionController', () => {
   beforeAll(() => {
     httpRequest = {
       userId: 'any_user_id',
-      targetUser: {
-        id: 'any_target_user_id',
-        permission: { id: 'any_permission_id' },
-      },
+      targetUserId: 'any_target_user_id',
+      permissionId: 'any_permission_id',
     }
     revokePermissionSpy = mock()
   })
@@ -32,8 +30,8 @@ describe('RevokePermissionController', () => {
   it('should build validators correctly', () => {
     const expectedValidators = [
       new RequiredString('any_user_id', 'userId'),
-      new RequiredString('any_target_user_id', 'targetUser.id'),
-      new RequiredString('any_permission_id', 'targetUser.permission.id'),
+      new RequiredString('any_target_user_id', 'targetUserId'),
+      new RequiredString('any_permission_id', 'permissionId'),
     ]
 
     const validators = sut.buildValidators(httpRequest)

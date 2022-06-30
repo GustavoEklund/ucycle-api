@@ -6,10 +6,21 @@ import { notFound, ok } from '@/application/helpers'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
+export type HttpRequest = {
+  userId: string
+  targetUserId: string
+  code: string
+  read: boolean
+  write: boolean
+  owner: boolean
+  moduleId: string
+  organizationId: string
+}
+
 describe('GrantPermissionController', () => {
   let grantPermissionSpy: MockProxy<GrantPermission>
   let sut: GrantPermissionController
-  let httpRequestStub: GrantPermission.Input
+  let httpRequestStub: HttpRequest
 
   beforeAll(() => {
     grantPermissionSpy = mock()
@@ -17,8 +28,8 @@ describe('GrantPermissionController', () => {
       id: 'any_permission_id',
     })
     httpRequestStub = {
-      grantById: 'any_user_id',
-      grantToId: 'any_grant_to_id',
+      userId: 'any_user_id',
+      targetUserId: 'any_grant_to_id',
       code: 'any_code',
       read: false,
       write: false,
@@ -38,8 +49,8 @@ describe('GrantPermissionController', () => {
 
   it('should build validators correctly', () => {
     const expectedValidators = [
-      new RequiredString('any_user_id', 'grantById'),
-      new RequiredString('any_grant_to_id', 'grantToId'),
+      new RequiredString('any_user_id', 'userId'),
+      new RequiredString('any_grant_to_id', 'targetUserId'),
       new RequiredString('any_code', 'code'),
       new RequiredBoolean(false, 'read'),
       new RequiredBoolean(false, 'write'),

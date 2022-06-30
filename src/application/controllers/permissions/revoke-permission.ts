@@ -6,10 +6,8 @@ import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entitie
 
 export type HttpRequest = {
   userId: string
-  targetUser: {
-    id: string
-    permission: { id: string }
-  }
+  targetUserId: string
+  permissionId: string
 }
 
 export class RevokePermissionController extends Controller {
@@ -19,26 +17,34 @@ export class RevokePermissionController extends Controller {
 
   public async perform({
     userId,
-    targetUser,
+    targetUserId,
+    permissionId,
   }: HttpRequest): Promise<HttpResponse<undefined | Error[]>> {
-    const output = await this.revokePermission.perform({ user: { id: userId }, targetUser })
+    const output = await this.revokePermission.perform({
+      user: { id: userId },
+      targetUser: {
+        id: targetUserId,
+        permission: { id: permissionId },
+      },
+    })
     if (output instanceof UserNotFoundError) return notFound([output])
     if (output instanceof UserPermissionNotFoundError) return notFound([output])
     return noContent()
   }
 
-  public override buildValidators({ userId, targetUser }: HttpRequest): Validator[] {
+  public override buildValidators({
+    userId,
+    targetUserId,
+    permissionId,
+  }: HttpRequest): Validator[] {
     return [
       ...ValidationBuilder.of({ value: userId, fieldName: 'userId' })
         .required(RequiredType.string)
         .build(),
-      ...ValidationBuilder.of({ value: targetUser.id, fieldName: 'targetUser.id' })
+      ...ValidationBuilder.of({ value: targetUserId, fieldName: 'targetUserId' })
         .required(RequiredType.string)
         .build(),
-      ...ValidationBuilder.of({
-        value: targetUser.permission.id,
-        fieldName: 'targetUser.permission.id',
-      })
+      ...ValidationBuilder.of({ value: permissionId, fieldName: 'permissionId' })
         .required(RequiredType.string)
         .build(),
     ]

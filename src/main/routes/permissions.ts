@@ -9,12 +9,12 @@ import { Router } from 'express'
 
 export default (router: Router): void => {
   router.post(
-    '/permissions/grant',
+    '/users/:targetUserId/permissions/code/:code/grant',
     adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
     adapt(makeGrantPermissionController())
   )
   router.delete(
-    '/permissions/revoke',
+    '/users/:targetUserId/permissions/:permissionId/revoke',
     adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
     adapt(makeRevokePermissionController())
   )
