@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
+import { PermissionStatus } from '@/domain/entities/permission'
 import { PgModule, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'user_permission' })
@@ -73,25 +74,25 @@ export class PgUserPermission {
   module!: PgModule
 
   @Column('enum', {
-    enum: ['GRANTED', 'REVOKED'],
+    enum: PermissionStatus,
     name: 'status',
     nullable: false,
     comment: 'the permission status can be either GRANTED or REVOKED',
   })
-  status!: string
+  status!: PermissionStatus
 
   @ManyToOne(() => PgUser, (user) => user.basePermissions, { nullable: false })
-  @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'created_by_user_id', referencedColumnName: 'id' })
   createdBy!: PgUser
 
   @ManyToOne(() => PgUser, (user) => user.basePermissions, { nullable: false })
-  @JoinColumn({ name: 'grant_to_user', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'grant_to_user_id', referencedColumnName: 'id' })
   grantToUser!: PgUser
 
   @ManyToOne(() => PgOrganization, (organization) => organization.userPermissions, {
     nullable: false,
   })
-  @JoinColumn({ name: 'grant_at_organization', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'grant_at_organization_id', referencedColumnName: 'id' })
   grantAtOrganization!: PgOrganization
 
   @Column('timestamp', {
