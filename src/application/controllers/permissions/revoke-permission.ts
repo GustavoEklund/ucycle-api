@@ -1,6 +1,6 @@
 import { RevokePermission } from '@/domain/use-cases/permissions'
 import { Controller } from '@/application/controllers'
-import { HttpResponse, notFound, ok } from '@/application/helpers'
+import { HttpResponse, noContent, notFound } from '@/application/helpers'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
 import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
 
@@ -24,7 +24,7 @@ export class RevokePermissionController extends Controller {
     const output = await this.revokePermission.perform({ user: { id: userId }, targetUser })
     if (output instanceof UserNotFoundError) return notFound([output])
     if (output instanceof UserPermissionNotFoundError) return notFound([output])
-    return ok(undefined)
+    return noContent()
   }
 
   public override buildValidators({ userId, targetUser }: HttpRequest): Validator[] {
