@@ -1,9 +1,6 @@
 import { UserPermission } from '@/domain/entities/permission'
+import { PgUserPermissionRepository } from '@/infra/repos/postgres/user-permission'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import { makeFakeDb, mockPgOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
-
-import { faker } from '@faker-js/faker'
-import { IBackup } from 'pg-mem'
 import {
   PgAddress,
   PgAdmissionProposal,
@@ -16,7 +13,16 @@ import {
   PgUser,
   PgUserPermission,
 } from '@/infra/repos/postgres/entities'
-import { PgUserPermissionRepository } from '@/infra/repos/postgres/user-permission'
+
+import {
+  makeFakeDb,
+  mockPgModule,
+  mockPgOrganization,
+  mockPgUser,
+  mockPgUserPermission,
+} from '@/tests/infra/repos/postgres/mocks'
+import { faker } from '@faker-js/faker'
+import { IBackup } from 'pg-mem'
 
 describe('PgUserPermissionRepository', () => {
   let sut: PgUserPermissionRepository
@@ -90,5 +96,33 @@ describe('PgUserPermissionRepository', () => {
     expect(userPermission.grantByUserId).toEqual(pgUser?.createdBy?.id)
     expect(userPermission.grantAtOrganizationId).toEqual(pgUser?.grantAtOrganization?.id)
     expect(userPermission.expiration).toEqual(pgUser?.expiresAt)
+  })
+
+  it('should load user permission', async () => {
+    const targetPgUser = await connection.getRepository(PgUser).save(mockPgUser())
+    const ownerPgUser = await connection.getRepository(PgUser).save(mockPgUser())
+    const pgModule = await connection.getRepository(PgModule).save(mockPgModule())
+    const pgOrganization = await connection.getRepository(PgOrganization).save(
+      mockPgOrganization({
+        ownerUser: ownerPgUser,
+      })
+    )
+    const pgUserPermission = await connection.getRepository(PgUserPermission).save(
+      mockPgUserPermission({
+        grantToUser: targetPgUser,
+        createdBy: ownerPgUser,
+        module: pgModule,
+        grantToOrganization: pgOrganization,
+      })
+    )
+
+    const userPermission = await sut.load({ id: pgUserPermission.id })
+
+    expect(userPermission?.id).toEqual(pgUserPermission.id)
+    expect(userPermission?.code.value).toEqual(pgUserPermission.code)
+    expect(userPermission?.grantToUserId).toEqual(targetPgUser.id)
+    expect(userPermission?.grantByUserId).toEqual(ownerPgUser.id)
+    expect(userPermission?.grantAtOrganizationId).toEqual(pgOrganization.id)
+    expect(userPermission?.moduleId).toEqual(pgModule.id)
   })
 })
