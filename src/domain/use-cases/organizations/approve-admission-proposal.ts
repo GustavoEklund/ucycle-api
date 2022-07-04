@@ -2,6 +2,7 @@ import {
   LoadAdmissionProposal,
   LoadUserAccount,
   LoadUserPermission,
+  SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import {
   AdmissionProposalNotFoundError,
@@ -17,7 +18,7 @@ export interface ApproveAdmissionProposal {
 export class ApproveAdmissionProposalUseCase implements ApproveAdmissionProposal {
   public constructor(
     private readonly userRepo: LoadUserAccount,
-    private readonly admissionProposalRepo: LoadAdmissionProposal,
+    private readonly admissionProposalRepo: LoadAdmissionProposal & SaveAdmissionProposal,
     private readonly userPermissionRepo: LoadUserPermission
   ) {}
 
@@ -31,12 +32,15 @@ export class ApproveAdmissionProposalUseCase implements ApproveAdmissionProposal
     })
     if (admissionProposal === undefined)
       return new AdmissionProposalNotFoundError(input.admissionProposal.id)
-    await this.userPermissionRepo.load({
+    const userPermission = await this.userPermissionRepo.load({
       grantToUserId: input.user.id,
       code: 'APPROVE_ADMISSION_PROPOSAL',
       status: PermissionStatus.GRANTED,
     })
-    return new UnauthorizedUserError(input.user.id, 'APPROVE_ADMISSION_PROPOSAL')
+    if (userPermission === undefined)
+      return new UnauthorizedUserError(input.user.id, 'APPROVE_ADMISSION_PROPOSAL')
+    admissionProposal.accept()
+    await this.admissionProposalRepo.save(admissionProposal)
   }
 }
 

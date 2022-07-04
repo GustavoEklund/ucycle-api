@@ -7,6 +7,9 @@ export enum AdmissionProposalStatus {
 }
 
 export class AdmissionProposal extends Entity {
+  public readonly userId: string
+  public readonly organizationId: string
+
   public constructor({
     id,
     userId,
@@ -17,5 +20,18 @@ export class AdmissionProposal extends Entity {
     organizationId: string
   }) {
     super({ id })
+    this.userId = userId
+    this.organizationId = organizationId
+    this._status = AdmissionProposalStatus.pending
+  }
+
+  private _status: AdmissionProposalStatus
+
+  public get status(): AdmissionProposalStatus {
+    return this._status
+  }
+
+  public accept(): void {
+    this._status = AdmissionProposalStatus.accepted
   }
 }
