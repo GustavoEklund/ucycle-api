@@ -3,7 +3,11 @@ import {
   LoadUserAccount,
   LoadUserPermission,
 } from '@/domain/contracts/repos'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import {
+  AdmissionProposalNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
 import { PermissionStatus } from '@/domain/entities/permission'
 
 export interface ApproveAdmissionProposal {
@@ -32,6 +36,7 @@ export class ApproveAdmissionProposalUseCase implements ApproveAdmissionProposal
       code: 'APPROVE_ADMISSION_PROPOSAL',
       status: PermissionStatus.GRANTED,
     })
+    return new UnauthorizedUserError(input.user.id, 'APPROVE_ADMISSION_PROPOSAL')
   }
 }
 
