@@ -3,18 +3,21 @@ import {
   LoadAdmissionProposal,
   LoadUserAccount,
   LoadUserPermission,
+  SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import { PermissionStatus } from '@/domain/entities/permission'
 import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { mockAdmissionProposal, mockUser } from '@/tests/domain/mocks/entities'
+import { mockAdmissionProposal, mockUser, mockUserPermission } from '@/tests/domain/mocks/entities'
 import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
+import { AdmissionProposal } from '@/domain/entities'
 
 describe('ApproveAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
-  let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal>
+  let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal & SaveAdmissionProposal>
   let userPermissionRepoSpy: MockProxy<LoadUserPermission>
+  let admissionProposalStub: AdmissionProposal
   let sut: ApproveAdmissionProposal
   let inputStub: ApproveAdmissionProposal.Input
 
@@ -30,10 +33,10 @@ describe('ApproveAdmissionProposalUseCase', () => {
     userRepoSpy = mock()
     userRepoSpy.load.mockResolvedValue(mockUser())
     admissionProposalRepoSpy = mock()
-    admissionProposalRepoSpy.load.mockResolvedValue(
-      mockAdmissionProposal({ userId: 'any_user_id' })
-    )
+    admissionProposalStub = mockAdmissionProposal({ userId: 'any_user_id' })
+    admissionProposalRepoSpy.load.mockResolvedValue(admissionProposalStub)
     userPermissionRepoSpy = mock()
+    userPermissionRepoSpy.load.mockResolvedValue(mockUserPermission())
   })
 
   beforeEach(() => {
@@ -86,8 +89,20 @@ describe('ApproveAdmissionProposalUseCase', () => {
   })
 
   it('should return UnauthorizedUserError if LoadUserPermission returns undefined', async () => {
+    userPermissionRepoSpy.load.mockResolvedValueOnce(undefined)
+
     const output = await sut.perform(inputStub)
 
     expect(output).toEqual(new UnauthorizedUserError('any_user_id', 'APPROVE_ADMISSION_PROPOSAL'))
+  })
+
+  it('should call SaveAdmissionProposal with correct input', async () => {
+    const acceptSpy = jest.spyOn(admissionProposalStub, 'accept')
+
+    await sut.perform(inputStub)
+
+    expect(acceptSpy).toHaveBeenCalledTimes(1)
+    expect(admissionProposalRepoSpy.save).toHaveBeenCalledTimes(1)
+    expect(admissionProposalRepoSpy.save).toHaveBeenCalledWith(admissionProposalStub)
   })
 })
