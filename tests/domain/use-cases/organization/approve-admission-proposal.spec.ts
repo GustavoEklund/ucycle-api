@@ -9,6 +9,7 @@ import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/enti
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { mockAdmissionProposal, mockUser } from '@/tests/domain/mocks/entities'
+import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
 
 describe('ApproveAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
@@ -82,5 +83,11 @@ describe('ApproveAdmissionProposalUseCase', () => {
       code: 'APPROVE_ADMISSION_PROPOSAL',
       status: PermissionStatus.GRANTED,
     })
+  })
+
+  it('should return UnauthorizedUserError if LoadUserPermission returns undefined', async () => {
+    const output = await sut.perform(inputStub)
+
+    expect(output).toEqual(new UnauthorizedUserError('any_user_id', 'APPROVE_ADMISSION_PROPOSAL'))
   })
 })
