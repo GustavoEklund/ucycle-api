@@ -2,7 +2,7 @@ import { ApproveAdmissionProposal, ApproveAdmissionProposalUseCase } from '@/dom
 import { LoadAdmissionProposal, LoadUserAccount } from '@/domain/contracts/repos'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { mockUser } from '@/tests/domain/mocks/entities'
 
 describe('ApproveAdmissionProposalUseCase', () => {
@@ -47,5 +47,13 @@ describe('ApproveAdmissionProposalUseCase', () => {
     await sut.perform(inputStub)
 
     expect(admissionProposalSpy.load).toHaveBeenCalledWith({ id: 'any_admission_proposal_id' })
+  })
+
+  it('should return AdmissionProposalNotFoundError if LoadAdmissionProposal returns undefined', async () => {
+    admissionProposalSpy.load.mockResolvedValueOnce(undefined)
+
+    const output = await sut.perform(inputStub)
+
+    expect(output).toEqual(new AdmissionProposalNotFoundError('any_admission_proposal_id'))
   })
 })
