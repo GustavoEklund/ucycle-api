@@ -44,7 +44,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
       },
     })
     admissionProposalRepoSpy = mock()
-    admissionProposalRepoSpy.load.mockResolvedValue([])
+    admissionProposalRepoSpy.loadAll.mockResolvedValue([])
     admissionProposalRepoSpy.save.mockResolvedValue({
       id: 'any_admission_proposal_id',
     })
@@ -137,15 +137,15 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   it('should call LoadAdmissionProposal with correct input', async () => {
     await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
-    expect(admissionProposalRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(admissionProposalRepoSpy.load).toHaveBeenCalledWith({
+    expect(admissionProposalRepoSpy.loadAll).toHaveBeenCalledTimes(1)
+    expect(admissionProposalRepoSpy.loadAll).toHaveBeenCalledWith({
       userId: 'any_user_id',
       organizationId: 'any_organization_id',
     })
   })
 
   it('should throw AlreadyAppliedToJoinOrganizationError if user already applied to join organization', async () => {
-    admissionProposalRepoSpy.load.mockResolvedValueOnce([
+    admissionProposalRepoSpy.loadAll.mockResolvedValueOnce([
       {
         id: 'any_admission_proposal_id',
         user: {
