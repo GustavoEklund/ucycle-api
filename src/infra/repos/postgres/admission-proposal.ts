@@ -24,7 +24,7 @@ export class PgAdmissionProposalRepository
     return { id }
   }
 
-  public async load({
+  public async loadAll({
     userId,
     organizationId,
   }: LoadAdmissionProposals.Input): Promise<LoadAdmissionProposals.Output> {

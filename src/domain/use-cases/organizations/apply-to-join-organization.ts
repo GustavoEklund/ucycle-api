@@ -41,7 +41,7 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     if (organization === undefined) throw new OrganizationNotFoundError(organizationId)
     if (organization.ownerUser.id === user.id)
       throw new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
-    const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
+    const admissionProposals = await this.admissionProposalRepo.loadAll({ userId, organizationId })
     if (admissionProposals.length > 0)
       throw new AlreadyAppliedToJoinOrganizationError(organizationId)
     const organizationMember = await this.organizationMemberRepo.load({
