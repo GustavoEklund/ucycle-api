@@ -1,5 +1,5 @@
 import { LoadAdmissionProposal, LoadUserAccount } from '@/domain/contracts/repos'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 
 export interface ApproveAdmissionProposal {
   perform: (input: ApproveAdmissionProposal.Input) => Promise<ApproveAdmissionProposal.Output>
@@ -17,6 +17,7 @@ export class ApproveAdmissionProposalUseCase implements ApproveAdmissionProposal
     const user = await this.userRepo.load({ id: input.user.id })
     if (user === undefined) return new UserNotFoundError(input.user.id)
     await this.admissionProposalRepo.load({ id: input.admissionProposal.id })
+    return new AdmissionProposalNotFoundError(input.admissionProposal.id)
   }
 }
 
@@ -29,5 +30,5 @@ export namespace ApproveAdmissionProposal {
       id: string
     }
   }
-  export type Output = undefined | UserNotFoundError
+  export type Output = undefined | UserNotFoundError | AdmissionProposalNotFoundError
 }

@@ -23,7 +23,7 @@ namespace LoadAdmissionProposal {
   export type Input = {
     id: string
   }
-  export type Output = AdmissionProposal
+  export type Output = AdmissionProposal | undefined
 }
 
 export interface LoadAdmissionProposals {
