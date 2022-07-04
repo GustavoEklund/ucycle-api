@@ -1,5 +1,10 @@
-import { LoadAdmissionProposal, LoadUserAccount } from '@/domain/contracts/repos'
+import {
+  LoadAdmissionProposal,
+  LoadUserAccount,
+  LoadUserPermission,
+} from '@/domain/contracts/repos'
 import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import { PermissionStatus } from '@/domain/entities/permission'
 
 export interface ApproveAdmissionProposal {
   perform: (input: ApproveAdmissionProposal.Input) => Promise<ApproveAdmissionProposal.Output>
@@ -8,7 +13,8 @@ export interface ApproveAdmissionProposal {
 export class ApproveAdmissionProposalUseCase implements ApproveAdmissionProposal {
   public constructor(
     private readonly userRepo: LoadUserAccount,
-    private readonly admissionProposalRepo: LoadAdmissionProposal
+    private readonly admissionProposalRepo: LoadAdmissionProposal,
+    private readonly userPermissionRepo: LoadUserPermission
   ) {}
 
   public async perform(
@@ -16,8 +22,16 @@ export class ApproveAdmissionProposalUseCase implements ApproveAdmissionProposal
   ): Promise<ApproveAdmissionProposal.Output> {
     const user = await this.userRepo.load({ id: input.user.id })
     if (user === undefined) return new UserNotFoundError(input.user.id)
-    await this.admissionProposalRepo.load({ id: input.admissionProposal.id })
-    return new AdmissionProposalNotFoundError(input.admissionProposal.id)
+    const admissionProposal = await this.admissionProposalRepo.load({
+      id: input.admissionProposal.id,
+    })
+    if (admissionProposal === undefined)
+      return new AdmissionProposalNotFoundError(input.admissionProposal.id)
+    await this.userPermissionRepo.load({
+      grantToUserId: input.user.id,
+      code: 'APPROVE_ADMISSION_PROPOSAL',
+      status: PermissionStatus.GRANTED,
+    })
   }
 }
 
