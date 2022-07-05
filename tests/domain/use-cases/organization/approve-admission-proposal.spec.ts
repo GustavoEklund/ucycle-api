@@ -7,18 +7,20 @@ import {
 } from '@/domain/contracts/repos'
 import { PermissionStatus } from '@/domain/entities/permission'
 import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
-
-import { mock, MockProxy } from 'jest-mock-extended'
 import { mockAdmissionProposal, mockUser, mockUserPermission } from '@/tests/domain/mocks/entities'
 import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
 import { AdmissionProposal } from '@/domain/entities'
+import { AdmissionProposalAccepted } from '@/domain/events/organization'
+
+import { mock, MockProxy } from 'jest-mock-extended'
+import { reset, set } from 'mockdate'
 
 describe('ApproveAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
   let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal & SaveAdmissionProposal>
   let userPermissionRepoSpy: MockProxy<LoadUserPermission>
   let admissionProposalStub: AdmissionProposal
-  let sut: ApproveAdmissionProposal
+  let sut: ApproveAdmissionProposalUseCase
   let inputStub: ApproveAdmissionProposal.Input
 
   beforeAll(() => {
@@ -104,5 +106,21 @@ describe('ApproveAdmissionProposalUseCase', () => {
     expect(acceptSpy).toHaveBeenCalledTimes(1)
     expect(admissionProposalRepoSpy.save).toHaveBeenCalledTimes(1)
     expect(admissionProposalRepoSpy.save).toHaveBeenCalledWith(admissionProposalStub)
+  })
+
+  it('should notify with AdmissionProposalAccepted', async () => {
+    set(new Date('2021-03-01T10:00:00'))
+    const notifySpy = jest.spyOn(sut, 'notify')
+    const expectedEvent = new AdmissionProposalAccepted({
+      acceptedByUserId: 'any_user_id',
+      admissionProposalId: admissionProposalStub.userId,
+      targetUserId: 'any_user_id',
+    })
+
+    await sut.perform(inputStub)
+
+    expect(notifySpy).toHaveBeenCalledTimes(1)
+    expect(notifySpy).toHaveBeenCalledWith(expectedEvent)
+    reset()
   })
 })
