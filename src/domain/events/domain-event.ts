@@ -3,10 +3,10 @@ export abstract class DomainEvent {
   readonly name: string
   readonly when: Date
 
-  protected constructor({ name }: { name: string }) {
+  protected constructor({ name, when }: { name: string; when?: Date }) {
     this.id = undefined
     this.name = name
-    this.when = new Date('now')
+    this.when = when ?? new Date()
   }
 
   private static flatten(event: DomainEvent): string {
