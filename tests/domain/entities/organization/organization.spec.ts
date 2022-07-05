@@ -1,33 +1,5 @@
 import { Organization } from '@/domain/entities/organization/organization'
 
-type organizationDataType = {
-  id?: string
-  name: string
-  address: {
-    city: string
-    state: string
-    country: string
-    street: string
-    neighbourhood: string
-    buildingNumber: number
-  }
-  userId: string
-}
-
-type organizationReturnDataType = {
-  id?: string
-  name: string
-  address: {
-    city: string
-    state: string
-    country: string
-    street: string
-    neighbourhood: string
-    buildingNumber: number
-  }
-  ownerUserId: string
-}
-
 const organizationData = {
   id: 'any_id',
   name: 'any_name',
@@ -39,15 +11,16 @@ const organizationData = {
     neighbourhood: 'any_neighbourhood',
     buildingNumber: 1,
   },
+  description: 'any_description',
 }
 
 describe('Organization', () => {
   let sut: Organization
-  const organizationSutData: organizationDataType = { ...organizationData, userId: 'any_user_id' }
-  const organizationReturnData: organizationReturnDataType = {
+  const organizationSutData = { ...organizationData, userId: 'any_user_id' }
+  const organizationReturnData = new Organization({
     ...organizationData,
-    ownerUserId: 'any_user_id',
-  }
+    userId: 'any_user_id',
+  })
 
   beforeAll(() => {
     sut = new Organization(organizationSutData)

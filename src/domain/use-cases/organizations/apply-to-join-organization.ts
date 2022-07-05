@@ -39,7 +39,7 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
     if (user === undefined) throw new UserAccountNotFoundError(userId)
     const organization = await this.organizationRepo.load({ id: organizationId })
     if (organization === undefined) throw new OrganizationNotFoundError(organizationId)
-    if (organization.ownerUser.id === user.id)
+    if (organization.ownerUserId === user.id)
       throw new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
     const admissionProposals = await this.admissionProposalRepo.load({ userId, organizationId })
     if (admissionProposals.length > 0)
@@ -66,8 +66,8 @@ export class ApplyToJoinOrganizationUseCase extends Publisher implements ApplyTo
         id: organization.id,
         name: organization.name,
         ownerUser: {
-          id: organization.ownerUser.id,
-          contacts: makeContacts(organization.ownerUser.contacts),
+          id: organization.ownerUserId,
+          contacts: [],
         },
       },
     })

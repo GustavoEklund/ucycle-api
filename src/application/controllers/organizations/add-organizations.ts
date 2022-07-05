@@ -11,7 +11,7 @@ type Address = {
   neighbourhood: string
   buildingNumber: number
 }
-type HttpRequest = { name: string; address: Address; userId: string }
+type HttpRequest = { name: string; address: Address; userId: string; description: string }
 type Model = Error | { id: string }
 
 export class AddOrganizationsController extends Controller {
@@ -19,11 +19,17 @@ export class AddOrganizationsController extends Controller {
     super()
   }
 
-  public async perform({ userId, name, address }: HttpRequest): Promise<HttpResponse<Model>> {
+  public async perform({
+    userId,
+    name,
+    address,
+    description,
+  }: HttpRequest): Promise<HttpResponse<Model>> {
     const response = await this.addOrganizations({
       name,
       address,
       userId,
+      description,
     })
     return ok(response)
   }
@@ -57,11 +63,17 @@ export class AddOrganizationsController extends Controller {
 export class AddOrganizationsCLI {
   public constructor(private readonly addOrganizations: AddOrganizations) {}
 
-  public async perform({ userId, name, address }: HttpRequest): Promise<HttpResponse<Model>> {
+  public async perform({
+    userId,
+    name,
+    address,
+    description,
+  }: HttpRequest): Promise<HttpResponse<Model>> {
     const response = await this.addOrganizations({
       name,
       address,
       userId,
+      description,
     })
     return ok(response)
   }

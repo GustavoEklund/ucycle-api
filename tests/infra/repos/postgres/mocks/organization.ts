@@ -17,4 +17,5 @@ export const mockPgOrganization = ({
   address,
   admissionProposals: Promise.resolve([]),
   members: Promise.resolve([]),
+  description: faker.random.word(),
 })

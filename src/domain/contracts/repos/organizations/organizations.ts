@@ -1,3 +1,5 @@
+import { Organization } from '@/domain/entities'
+
 export interface LoadOrganization {
   load: (params: LoadOrganization.Input) => Promise<LoadOrganization.Output>
 }
@@ -6,22 +8,7 @@ export namespace LoadOrganization {
   export type Input = {
     id: string
   }
-  export type Output =
-    | undefined
-    | {
-        id: string
-        name: string
-        documents: { number: string }[]
-        ownerUser: {
-          id: string
-          contacts: {
-            value: string
-            type: string
-            label: string
-            verified: boolean
-          }[]
-        }
-      }
+  export type Output = undefined | Organization
 }
 
 export interface LoadOrganizations {
@@ -56,18 +43,7 @@ export interface SaveOrganization {
 }
 
 export namespace SaveOrganization {
-  export type Input = {
-    name: string
-    address: {
-      city: string
-      state: string
-      country: string
-      street: string
-      neighbourhood: string
-      buildingNumber: number
-    }
-    ownerUserId: string
-  }
+  export type Input = Organization
 
   export type Output = {
     id: string
