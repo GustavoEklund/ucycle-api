@@ -1,3 +1,3 @@
 export * from './add-organizations'
-export * from './load-my-organzations'
+export * from './load-my-organizations'
 export * from './apply-to-join-organization'
