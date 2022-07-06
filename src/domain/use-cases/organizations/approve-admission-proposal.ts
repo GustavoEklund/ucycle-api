@@ -46,9 +46,8 @@ export class ApproveAdmissionProposalUseCase extends Publisher implements Approv
     admissionProposal.accept()
     await this.admissionProposalRepo.save(admissionProposal)
     const event = new AdmissionProposalAccepted({
-      acceptedByUserId: user.id,
-      admissionProposalId: admissionProposal.id,
-      targetUserId: admissionProposal.userId,
+      acceptedByUser: user,
+      admissionProposal: admissionProposal,
     })
     await this.notify(event)
   }
