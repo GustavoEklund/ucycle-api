@@ -11,6 +11,7 @@ import { mockAdmissionProposal, mockUser, mockUserPermission } from '@/tests/dom
 import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
 import { AdmissionProposal } from '@/domain/entities'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
+import { User } from '@/domain/entities/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { reset, set } from 'mockdate'
@@ -20,6 +21,7 @@ describe('ApproveAdmissionProposalUseCase', () => {
   let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal & SaveAdmissionProposal>
   let userPermissionRepoSpy: MockProxy<LoadUserPermission>
   let admissionProposalStub: AdmissionProposal
+  let userStub: User
   let sut: ApproveAdmissionProposalUseCase
   let inputStub: ApproveAdmissionProposal.Input
 
@@ -33,7 +35,8 @@ describe('ApproveAdmissionProposalUseCase', () => {
       },
     }
     userRepoSpy = mock()
-    userRepoSpy.load.mockResolvedValue(mockUser())
+    userStub = mockUser()
+    userRepoSpy.load.mockResolvedValue(userStub)
     admissionProposalRepoSpy = mock()
     admissionProposalStub = mockAdmissionProposal({ userId: 'any_user_id' })
     admissionProposalRepoSpy.load.mockResolvedValue(admissionProposalStub)
@@ -112,9 +115,8 @@ describe('ApproveAdmissionProposalUseCase', () => {
     set(new Date('2021-03-01T10:00:00'))
     const notifySpy = jest.spyOn(sut, 'notify')
     const expectedEvent = new AdmissionProposalAccepted({
-      acceptedByUserId: 'any_user_id',
-      admissionProposalId: admissionProposalStub.userId,
-      targetUserId: 'any_user_id',
+      acceptedByUser: userStub,
+      admissionProposal: admissionProposalStub,
     })
 
     await sut.perform(inputStub)
