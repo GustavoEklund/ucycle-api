@@ -1,7 +1,7 @@
 import { Observer } from '@/domain/events'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
 import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 
 interface JoinUserToOrganization {
   perform: (input: JoinUserToOrganization.Input) => Promise<JoinUserToOrganization.Output>
@@ -19,6 +19,7 @@ export class JoinUserToOrganizationUseCase extends Observer implements JoinUserT
     const user = await this.userRepository.load({ id: input.admissionProposal.userId })
     if (user === undefined) return new UserNotFoundError(input.acceptedByUser.id)
     await this.organizationRepository.load({ id: input.admissionProposal.organizationId })
+    return new OrganizationNotFoundError(input.admissionProposal.organizationId)
   }
 
   public async perform(
