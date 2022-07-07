@@ -4,7 +4,7 @@ import { JoinUserToOrganizationUseCase } from '@/domain/use-cases/organizations'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { mockAdmissionProposal, mockUser } from '@/tests/domain/mocks/entities'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { User } from '@/domain/entities/user'
 
 describe('JoinUserToOrganizationUseCase', () => {
@@ -62,5 +62,18 @@ describe('JoinUserToOrganizationUseCase', () => {
     expect(organizationRepoSpy.load).toHaveBeenCalledWith({
       id: admissionProposalStub.organizationId,
     })
+  })
+
+  it('should return OrganizationNotFoundError if LoadOrganization returns undefined', async () => {
+    organizationRepoSpy.load.mockResolvedValueOnce(undefined)
+    const admissionProposalStub = mockAdmissionProposal({ userId: userStub.id })
+    const event = new AdmissionProposalAccepted({
+      admissionProposal: admissionProposalStub,
+      acceptedByUser: mockUser(),
+    })
+
+    const output = await sut.perform(event)
+
+    expect(output).toEqual(new OrganizationNotFoundError(admissionProposalStub.organizationId))
   })
 })
