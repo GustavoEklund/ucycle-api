@@ -21,7 +21,7 @@ describe('LoadMyOrganizationsUseCase', () => {
           country: 'any_country',
           street: 'any_street',
           neighbourhood: 'any_neighbourhood',
-          buildingNumber: 72,
+          buildingNumber: '72',
         },
         pictures: [
           {
@@ -55,7 +55,7 @@ describe('LoadMyOrganizationsUseCase', () => {
           country: 'any_country',
           street: 'any_street',
           neighbourhood: 'any_neighbourhood',
-          buildingNumber: 72,
+          buildingNumber: '72',
         },
         pictures: [
           {
