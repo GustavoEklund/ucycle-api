@@ -1,6 +1,6 @@
 import { Observer } from '@/domain/events'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
-import { LoadUserAccount } from '@/domain/contracts/repos'
+import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
 import { UserNotFoundError } from '@/domain/entities/errors'
 
 interface JoinUserToOrganization {
@@ -8,13 +8,17 @@ interface JoinUserToOrganization {
 }
 
 export class JoinUserToOrganizationUseCase extends Observer implements JoinUserToOrganization {
-  public constructor(private readonly userRepository: LoadUserAccount) {
+  public constructor(
+    private readonly userRepository: LoadUserAccount,
+    private readonly organizationRepository: LoadOrganization
+  ) {
     super({ domainEvents: ['ADMISSION_PROPOSAL_ACCEPTED'] })
   }
 
   public async handle(input: AdmissionProposalAccepted): Promise<JoinUserToOrganization.Output> {
-    await this.userRepository.load({ id: input.admissionProposal.userId })
-    return new UserNotFoundError(input.acceptedByUser.id)
+    const user = await this.userRepository.load({ id: input.admissionProposal.userId })
+    if (user === undefined) return new UserNotFoundError(input.acceptedByUser.id)
+    await this.organizationRepository.load({ id: input.admissionProposal.organizationId })
   }
 
   public async perform(
