@@ -1,17 +1,20 @@
+import { OrganizationMember } from '@/domain/entities'
+
 type Address = {
   city: string
   state: string
   country: string
   street: string
   neighbourhood: string
-  buildingNumber: number
+  buildingNumber: string
 }
 
 export class Organization {
-  public readonly id: string | undefined
+  public readonly id: string
   public readonly name: string
   public readonly address: Address
   public readonly ownerUserId: string
+  public readonly members: OrganizationMember[]
 
   constructor({
     id,
@@ -19,7 +22,7 @@ export class Organization {
     address,
     userId,
   }: {
-    id?: string
+    id: string
     name: string
     address: Address
     userId: string
@@ -28,5 +31,16 @@ export class Organization {
     this.name = name
     this.address = address
     this.ownerUserId = userId
+    this.members = []
+  }
+
+  public joinMember(member: { userId: string; admissionProposalId: string; date: Date }): void {
+    this.members.push(
+      new OrganizationMember({
+        userId: member.userId,
+        admissionProposalId: member.admissionProposalId,
+        joinDate: member.date,
+      })
+    )
   }
 }

@@ -9,7 +9,7 @@ type Address = {
   country: string
   street: string
   neighbourhood: string
-  buildingNumber: number
+  buildingNumber: string
 }
 type HttpRequest = { name: string; address: Address; userId: string }
 type Model = Error | { id: string }

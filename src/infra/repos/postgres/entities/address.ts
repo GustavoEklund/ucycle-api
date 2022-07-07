@@ -29,7 +29,7 @@ export class PgAddress {
   street!: string
 
   @Column()
-  buildingNumber!: number
+  buildingNumber!: string
 
   @Column()
   postalCode!: string

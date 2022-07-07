@@ -22,7 +22,7 @@ export namespace LoadMyOrganizations {
     country: string
     street: string
     neighbourhood: string
-    buildingNumber: number
+    buildingNumber: string
   }
   type Picture = {
     url: string
