@@ -100,4 +100,15 @@ describe('JoinUserToOrganizationUseCase', () => {
     expect(organizationRepoSpy.save).toHaveBeenCalledTimes(1)
     expect(organizationRepoSpy.save).toHaveBeenCalledWith(organizationStub)
   })
+
+  it('should return undefined on success', async () => {
+    const event = new AdmissionProposalAccepted({
+      admissionProposal: mockAdmissionProposal({ userId: userStub.id }),
+      acceptedByUser: mockUser(),
+    })
+
+    const output = await sut.perform(event)
+
+    expect(output).toBeUndefined()
+  })
 })
