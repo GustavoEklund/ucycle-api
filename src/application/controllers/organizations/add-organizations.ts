@@ -11,7 +11,14 @@ type Address = {
   neighbourhood: string
   buildingNumber: number
 }
-type HttpRequest = { name: string; address: Address; userId: string; description: string }
+
+type HttpRequest = {
+  name: string
+  address: Address
+  userId: string
+  description: string
+}
+
 type Model = Error | { id: string }
 
 export class AddOrganizationsController extends Controller {
