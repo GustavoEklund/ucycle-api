@@ -2,7 +2,7 @@ import { LoadOrganization, LoadUserAccount, SaveOrganization } from '@/domain/co
 import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
 
-interface UpdateOrganization {
+export interface UpdateOrganization {
   perform(input: UpdateOrganization.Input): Promise<UpdateOrganization.Output>
 }
 
@@ -29,7 +29,7 @@ export namespace UpdateOrganization {
   type User = {
     id: string
   }
-  type Organization = {
+  export type Organization = {
     id: string
     name: string
     description: string
@@ -38,5 +38,9 @@ export namespace UpdateOrganization {
     organization: Organization
     user: User
   }
-  export type Output = undefined | OrganizationNotFoundError
+  export type Output =
+    | undefined
+    | OrganizationNotFoundError
+    | UserNotFoundError
+    | UnauthorizedUserError
 }

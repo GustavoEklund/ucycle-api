@@ -66,22 +66,3 @@ export class AddOrganizationsController extends Controller {
     ]
   }
 }
-
-export class AddOrganizationsCLI {
-  public constructor(private readonly addOrganizations: AddOrganizations) {}
-
-  public async perform({
-    userId,
-    name,
-    address,
-    description,
-  }: HttpRequest): Promise<HttpResponse<Model>> {
-    const response = await this.addOrganizations({
-      name,
-      address,
-      userId,
-      description,
-    })
-    return ok(response)
-  }
-}
