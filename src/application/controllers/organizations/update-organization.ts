@@ -9,7 +9,14 @@ import {
 } from '@/domain/entities/errors'
 
 type HttpRequest = {
-  updateOrganizationInfo: UpdateOrganization.Input
+  userId: string
+  organizationId: string
+  organization: Organization
+}
+
+type Organization = {
+  name: string
+  description: string
 }
 
 export class UpdateOrganizationController extends Controller {
@@ -18,32 +25,48 @@ export class UpdateOrganizationController extends Controller {
   }
 
   public async perform({
-    updateOrganizationInfo,
+    userId,
+    organizationId,
+    organization
+
   }: HttpRequest): Promise<HttpResponse<undefined | Error[]>> {
-    const response = await this.updateOrganization.perform(updateOrganizationInfo)
+    const response = await this.updateOrganization.perform({
+      user: {
+        id: userId
+      },
+      organization: {
+        description: organization.description,
+        id: organizationId,
+        name: organization.name
+      }
+    })
     if (response instanceof OrganizationNotFoundError) return notFound([response])
     if (response instanceof UserNotFoundError) return notFound([response])
     if (response instanceof UnauthorizedUserError) return forbidden()
     return ok(response)
   }
 
-  public override buildValidators({ updateOrganizationInfo }: HttpRequest): Validator[] {
+  public override buildValidators({
+    userId,
+    organizationId,
+    organization
+ }: HttpRequest): Validator[] {
     return [
-      ...Builder.of({ fieldName: 'userId', value: updateOrganizationInfo.user.id })
+      ...Builder.of({ fieldName: 'userId', value: userId })
         .required(RequiredType.string)
         .build(),
-      ...Builder.of({ fieldName: 'organizationId', value: updateOrganizationInfo.organization.id })
+      ...Builder.of({ fieldName: 'organizationId', value: organizationId })
         .required(RequiredType.string)
         .build(),
       ...Builder.of({
-        fieldName: 'organizationName',
-        value: updateOrganizationInfo.organization.name,
+        fieldName: 'organization.name',
+        value: organization.name,
       })
         .required(RequiredType.string)
         .build(),
       ...Builder.of({
-        fieldName: 'organizationDescription',
-        value: updateOrganizationInfo.organization.description,
+        fieldName: 'organization.description',
+        value: organization.description,
       })
         .required(RequiredType.string)
         .build(),

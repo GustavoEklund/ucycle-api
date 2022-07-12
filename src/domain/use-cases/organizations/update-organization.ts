@@ -1,3 +1,4 @@
+import { UUIDGenerator } from '@/domain/contracts/gateways'
 import { LoadOrganization, LoadUserAccount, SaveOrganization } from '@/domain/contracts/repos'
 import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
@@ -44,3 +45,4 @@ export namespace UpdateOrganization {
     | UserNotFoundError
     | UnauthorizedUserError
 }
+   type Setup = (organizationsRepo: SaveOrganization, crypto: UUIDGenerator) => UpdateOrganization
