@@ -1,7 +1,7 @@
 import { DeclineAdmissionProposal, DeclineAdmissionProposalUseCase } from '@/domain/use-cases'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { LoadAdmissionProposal, LoadUserAccount } from '@/domain/contracts/repos'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 
@@ -40,7 +40,7 @@ describe('DeclineAdmissionProposalUseCase', () => {
 
   it('should return UserNotFoundError if LoadUser returns undefined', async () => {
     userRepoSpy.load.mockResolvedValueOnce(undefined)
-    const expectedError = new UserNotFoundError('any_user_id')
+    const expectedError = new UserNotFoundError(userStub.id)
 
     const output = await sut.perform(inputStub)
 
@@ -52,5 +52,13 @@ describe('DeclineAdmissionProposalUseCase', () => {
 
     expect(admissionProposalRepoSpy.load).toHaveBeenCalledTimes(1)
     expect(admissionProposalRepoSpy.load).toHaveBeenCalledWith({ id: 'any_admission_proposal_id' })
+  })
+
+  it('should return AdmissionProposalNotFoundError if LoadAdmissionProposal returns undefined', async () => {
+    admissionProposalRepoSpy.load.mockResolvedValueOnce(undefined)
+
+    const output = await sut.perform(inputStub)
+
+    expect(output).toEqual(new AdmissionProposalNotFoundError('any_admission_proposal_id'))
   })
 })
