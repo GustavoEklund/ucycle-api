@@ -18,6 +18,7 @@ import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
 import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
+import { Organization } from '@/domain/entities'
 
 describe('PgOrganizationRepository', () => {
   let sut: PgOrganizationRepository
@@ -76,11 +77,15 @@ describe('PgOrganizationRepository', () => {
       const organization = mockPgOrganization({})
       const address = mockAddress()
 
-      const { id: organizationId } = await sut.save({
-        name: organization.name,
-        address: address,
-        ownerUserId: pgUser.id,
-      })
+      const { id: organizationId } = await sut.save(
+        new Organization({
+          name: organization.name,
+          id: pgUser.id,
+          address: address,
+          userId: pgUser.id,
+          description: organization.description,
+        })
+      )
 
       const pgOrganization = await pgOrganizationRepo.findOne({
         where: { id: organizationId },

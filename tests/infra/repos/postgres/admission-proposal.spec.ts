@@ -86,8 +86,12 @@ describe('PgAdmissionProposalRepository', () => {
       expect(admissionProposal).toMatchObject({
         id: admissionProposalId,
         status: 'any_status',
-        organization: pgOrganization,
-        createdBy: pgUser,
+        organization: {
+          id: pgOrganization.id,
+        },
+        createdBy: {
+          id: pgUser.id,
+        },
       })
     })
   })

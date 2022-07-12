@@ -15,6 +15,7 @@ type Input = {
   name: string
   address: Address
   userId: string
+  description: string
 }
 
 type Output = {
@@ -25,12 +26,8 @@ export type AddOrganizations = (params: Input) => Promise<Output>
 type Setup = (organizationsRepo: SaveOrganization, crypto: UUIDGenerator) => AddOrganizations
 
 export const setupAddOrganizations: Setup = (organizationsRepo, crypto) => {
-  return async ({ name, address, userId }) => {
-    const organization = new Organization({ id: crypto.uuid(), name, address, userId })
-    return await organizationsRepo.save({
-      name: organization.name,
-      address: organization.address,
-      ownerUserId: organization.ownerUserId,
-    })
+  return async ({ name, address, userId, description }) => {
+    const organization = new Organization({ id: crypto.uuid(), name, address, userId, description })
+    return await organizationsRepo.save(organization)
   }
 }

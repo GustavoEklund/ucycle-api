@@ -14,5 +14,6 @@ export const mockOrganization = (input?: { ownerUserId?: string }): Organization
       neighbourhood: faker.address.streetName(),
       buildingNumber: faker.address.buildingNumber(),
     },
+    description: faker.lorem.paragraph(),
   })
 }

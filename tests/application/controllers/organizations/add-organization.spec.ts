@@ -16,6 +16,7 @@ describe('AddOrganizationsController', () => {
   let userId: string
   let sut: AddOrganizationsController
   let addOrganizationsSpy: jest.Mock
+  let description: string
 
   beforeAll(() => {
     address = {
@@ -28,6 +29,7 @@ describe('AddOrganizationsController', () => {
     }
     name = 'any_name'
     userId = 'any_user_id'
+    description = 'any_description'
     addOrganizationsSpy = jest.fn()
     addOrganizationsSpy.mockResolvedValue({ id: 'any_id' })
   })
@@ -52,7 +54,7 @@ describe('AddOrganizationsController', () => {
       new RequiredInteger('72', 'address.buildingNumber'),
     ]
 
-    const validators = sut.buildValidators({ name, address, userId })
+    const validators = sut.buildValidators({ name, address, userId, description })
 
     expect(validators).toEqual(expectedValidators)
   })

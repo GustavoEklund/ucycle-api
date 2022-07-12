@@ -1,8 +1,7 @@
-import { PgRepository } from '@/infra/repos/postgres/repository'
-import { LoadOrganization, LoadOrganizations, SaveOrganization } from '@/domain/contracts/repos'
-import { PgOrganization } from '@/infra/repos/postgres/entities'
-import { PgUser } from './entities/user'
 import { Organization } from '@/domain/entities'
+import { LoadOrganization, LoadOrganizations, SaveOrganization } from '@/domain/contracts/repos'
+import { PgRepository } from '@/infra/repos/postgres/repository'
+import { PgUser, PgOrganization } from '@/infra/repos/postgres/entities'
 
 export class PgOrganizationRepository
   extends PgRepository
@@ -10,23 +9,24 @@ export class PgOrganizationRepository
 {
   public async load({ id }: LoadOrganization.Input): Promise<LoadOrganization.Output> {
     const organizationRepo = this.getRepository(PgOrganization)
-    const organization = await organizationRepo.findOne(
+    const pgOrganization = await organizationRepo.findOne(
       { id },
       { relations: ['ownerUser', 'address'] }
     )
-    if (organization !== undefined) {
+    if (pgOrganization !== undefined) {
       return new Organization({
-        id: organization.id,
-        name: organization.name,
+        id: pgOrganization.id,
+        name: pgOrganization.name,
         address: {
-          city: organization.address.city,
-          buildingNumber: organization.address.buildingNumber,
-          street: organization.address.street,
-          country: organization.address.country,
-          state: organization.address.state,
-          neighbourhood: organization.address.neighbourhood,
+          city: pgOrganization.address.city,
+          buildingNumber: pgOrganization.address.buildingNumber,
+          street: pgOrganization.address.street,
+          country: pgOrganization.address.country,
+          state: pgOrganization.address.state,
+          neighbourhood: pgOrganization.address.neighbourhood,
         },
-        userId: organization.ownerUser.id,
+        description: '',
+        userId: pgOrganization.ownerUser.id,
       })
     }
   }
