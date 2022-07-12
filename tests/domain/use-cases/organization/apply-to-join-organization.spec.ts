@@ -14,11 +14,13 @@ import {
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
-import { AdmissionProposalStatus } from '@/domain/entities/organization'
+import { AdmissionProposalStatus, Organization } from '@/domain/entities/organization'
 import { mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import { idText } from 'typescript'
+import { mockAddress } from '@/../tests/infra/repos/postgres/mocks'
 
 describe('ApplyToJoinOrganizationUseCase', () => {
   let sut: ApplyToJoinOrganizationUseCase
@@ -34,15 +36,15 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     userAccountRepoSpy = mock()
     userAccountRepoSpy.load.mockResolvedValue(userMock)
     organizationRepoSpy = mock()
-    organizationRepoSpy.load.mockResolvedValue({
-      id: 'any_organization_id',
-      name: 'any_organization_name',
-      documents: [],
-      ownerUser: {
-        id: 'any_owner_user_id',
-        contacts: [],
-      },
-    })
+    organizationRepoSpy.load.mockResolvedValue(
+      new Organization({
+        id: 'any_organization_id',
+        name: 'any_organization_name',
+        address: mockAddress(),
+        description: 'any description',
+        userId: 'any_owner_user_id',
+      })
+    )
     admissionProposalRepoSpy = mock()
     admissionProposalRepoSpy.load.mockResolvedValue([])
     admissionProposalRepoSpy.save.mockResolvedValue({
@@ -91,16 +93,15 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   })
 
   it('should throw TheOrganizationOwnerCanNotApplyToJoinOrganizationError if user is the owner of the organization', async () => {
-    organizationRepoSpy.load.mockResolvedValueOnce({
-      id: 'any_organization_id',
-      name: 'any_organization_name',
-      documents: [],
-      ownerUser: {
-        id: userMock.id,
-        contacts: [],
-      },
-    })
-
+    organizationRepoSpy.load.mockResolvedValueOnce(
+      new Organization({
+        id: 'any_organization_id',
+        name: 'any_organization_name',
+        address: mockAddress(),
+        description: 'any description',
+        userId: userMock.id,
+      })
+    )
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
     await expect(promise).rejects.toThrowError(
