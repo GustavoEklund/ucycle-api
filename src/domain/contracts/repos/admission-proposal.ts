@@ -1,3 +1,5 @@
+import { AdmissionProposal } from '@/domain/entities'
+
 export interface SaveAdmissionProposal {
   save: (input: SaveAdmissionProposal.Input) => Promise<SaveAdmissionProposal.Output>
 }
@@ -13,8 +15,19 @@ export namespace SaveAdmissionProposal {
   }
 }
 
+export interface LoadAdmissionProposal {
+  load: (input: LoadAdmissionProposal.Input) => Promise<LoadAdmissionProposal.Output>
+}
+
+export namespace LoadAdmissionProposal {
+  export type Input = {
+    id: string
+  }
+  export type Output = AdmissionProposal | undefined
+}
+
 export interface LoadAdmissionProposals {
-  load: (input: LoadAdmissionProposals.Input) => Promise<LoadAdmissionProposals.Output>
+  loadAll: (input: LoadAdmissionProposals.Input) => Promise<LoadAdmissionProposals.Output>
 }
 
 export namespace LoadAdmissionProposals {

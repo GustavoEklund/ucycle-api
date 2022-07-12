@@ -8,15 +8,15 @@ import {
   UserNotFoundError,
 } from '@/domain/entities/errors'
 
+type Organization = {
+  name: string
+  description: string
+}
+
 type HttpRequest = {
   userId: string
   organizationId: string
   organization: Organization
-}
-
-type Organization = {
-  name: string
-  description: string
 }
 
 export class UpdateOrganizationController extends Controller {
@@ -27,18 +27,17 @@ export class UpdateOrganizationController extends Controller {
   public async perform({
     userId,
     organizationId,
-    organization
-
+    organization,
   }: HttpRequest): Promise<HttpResponse<undefined | Error[]>> {
     const response = await this.updateOrganization.perform({
       user: {
-        id: userId
+        id: userId,
       },
       organization: {
         description: organization.description,
         id: organizationId,
-        name: organization.name
-      }
+        name: organization.name,
+      },
     })
     if (response instanceof OrganizationNotFoundError) return notFound([response])
     if (response instanceof UserNotFoundError) return notFound([response])
@@ -49,12 +48,10 @@ export class UpdateOrganizationController extends Controller {
   public override buildValidators({
     userId,
     organizationId,
-    organization
- }: HttpRequest): Validator[] {
+    organization,
+  }: HttpRequest): Validator[] {
     return [
-      ...Builder.of({ fieldName: 'userId', value: userId })
-        .required(RequiredType.string)
-        .build(),
+      ...Builder.of({ fieldName: 'userId', value: userId }).required(RequiredType.string).build(),
       ...Builder.of({ fieldName: 'organizationId', value: organizationId })
         .required(RequiredType.string)
         .build(),

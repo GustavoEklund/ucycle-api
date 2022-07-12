@@ -1,4 +1,4 @@
-import { UserPermission } from '@/domain/entities/permission'
+import { PermissionStatus, UserPermission } from '@/domain/entities/permission'
 
 export interface SaveUserPermission {
   save: (input: SaveUserPermission.Input) => Promise<SaveUserPermission.Output>
@@ -15,7 +15,10 @@ export interface LoadUserPermission {
 
 export namespace LoadUserPermission {
   export type Input = {
-    id: string
+    id?: string
+    code?: string
+    grantToUserId?: string
+    status?: PermissionStatus
   }
   export type Output = UserPermission | undefined
 }

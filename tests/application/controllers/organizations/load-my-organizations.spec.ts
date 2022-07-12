@@ -22,7 +22,7 @@ describe('LoadMyOrganizationsController', () => {
           country: 'any_country',
           street: 'any_street',
           neighbourhood: 'any_neighbourhood',
-          buildingNumber: 72,
+          buildingNumber: '72',
         },
         pictures: [
           {
@@ -70,7 +70,7 @@ describe('LoadMyOrganizationsController', () => {
             country: 'any_country',
             street: 'any_street',
             neighbourhood: 'any_neighbourhood',
-            buildingNumber: 72,
+            buildingNumber: '72',
           },
           pictures: [
             {

@@ -1,6 +1,6 @@
-import { UUIDGenerator } from '@/domain/contracts/gateways'
 import { SaveOrganization } from '@/domain/contracts/repos'
 import { Organization } from '@/domain/entities'
+import { UUIDGenerator } from '@/domain/contracts/gateways'
 
 type Address = {
   city: string
@@ -8,7 +8,7 @@ type Address = {
   country: string
   street: string
   neighbourhood: string
-  buildingNumber: number
+  buildingNumber: string
 }
 
 type Input = {
