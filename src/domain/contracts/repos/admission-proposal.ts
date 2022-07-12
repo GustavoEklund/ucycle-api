@@ -19,7 +19,7 @@ export interface LoadAdmissionProposal {
   load: (input: LoadAdmissionProposal.Input) => Promise<LoadAdmissionProposal.Output>
 }
 
-namespace LoadAdmissionProposal {
+export namespace LoadAdmissionProposal {
   export type Input = {
     id: string
   }
