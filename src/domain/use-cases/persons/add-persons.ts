@@ -1,5 +1,5 @@
 // TODO: create document and contact repository
-import { SavePersons, LoadPersons } from '@/domain/contracts/repos'
+import { SavePersons } from '@/domain/contracts/repos'
 import { Person } from '@/domain/entities'
 
 type Input = {
@@ -40,7 +40,6 @@ export const setupAddPersons: Setup = (personsRepo) => {
         specialNeedsDescription: person.specialNeedsDescription,
       }
     })
-    const personsId = await personsRepo.save(persons)
-    return personsId
+    return await personsRepo.save(persons)
   }
 }
