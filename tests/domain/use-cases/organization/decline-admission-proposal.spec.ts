@@ -1,22 +1,33 @@
 import { DeclineAdmissionProposal, DeclineAdmissionProposalUseCase } from '@/domain/use-cases'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { LoadAdmissionProposal, LoadUserAccount } from '@/domain/contracts/repos'
+import {
+  LoadAdmissionProposal,
+  LoadUserAccount,
+  LoadUserPermission,
+} from '@/domain/contracts/repos'
 import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
-import { mockUser } from '@/tests/domain/mocks/entities'
+import { mockAdmissionProposal, mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
+import { PermissionStatus } from '@/domain/entities/permission'
+import { AdmissionProposal } from '@/domain/entities'
 
 describe('DeclineAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
   let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal>
+  let userPermissionRepoSpy: MockProxy<LoadUserPermission>
   let sut: DeclineAdmissionProposal
   let inputStub: DeclineAdmissionProposal.Input
   let userStub: User
+  let admissionProposalStub: AdmissionProposal
 
   beforeAll(() => {
     userRepoSpy = mock()
     userStub = mockUser()
     userRepoSpy.load.mockResolvedValue(userStub)
     admissionProposalRepoSpy = mock()
+    admissionProposalStub = mockAdmissionProposal()
+    admissionProposalRepoSpy.load.mockResolvedValue(admissionProposalStub)
+    userPermissionRepoSpy = mock()
     inputStub = {
       user: {
         id: userStub.id,
@@ -28,7 +39,11 @@ describe('DeclineAdmissionProposalUseCase', () => {
   })
 
   beforeEach(() => {
-    sut = new DeclineAdmissionProposalUseCase(userRepoSpy, admissionProposalRepoSpy)
+    sut = new DeclineAdmissionProposalUseCase(
+      userRepoSpy,
+      admissionProposalRepoSpy,
+      userPermissionRepoSpy
+    )
   })
 
   it('should call LoadUser with correct input', async () => {
@@ -60,5 +75,17 @@ describe('DeclineAdmissionProposalUseCase', () => {
     const output = await sut.perform(inputStub)
 
     expect(output).toEqual(new AdmissionProposalNotFoundError('any_admission_proposal_id'))
+  })
+
+  it('should call LoadUserPermission with correct input', async () => {
+    await sut.perform(inputStub)
+
+    expect(userPermissionRepoSpy.load).toHaveBeenCalledTimes(1)
+    expect(userPermissionRepoSpy.load).toHaveBeenCalledWith({
+      code: 'DECLINE_ADMISSION_PROPOSAL',
+      status: PermissionStatus.GRANTED,
+      grantToUserId: admissionProposalStub.userId,
+      organizationId: admissionProposalStub.organizationId,
+    })
   })
 })
