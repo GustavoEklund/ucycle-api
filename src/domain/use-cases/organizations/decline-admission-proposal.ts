@@ -3,7 +3,11 @@ import {
   LoadUserAccount,
   LoadUserPermission,
 } from '@/domain/contracts/repos'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import {
+  AdmissionProposalNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
 import { PermissionStatus } from '@/domain/entities/permission'
 
 export interface DeclineAdmissionProposal {
@@ -33,6 +37,7 @@ export class DeclineAdmissionProposalUseCase {
       grantToUserId: admissionProposal.userId,
       organizationId: admissionProposal.organizationId,
     })
+    return new UnauthorizedUserError(user.id, 'DECLINE_ADMISSION_PROPOSAL')
   }
 }
 
@@ -45,5 +50,9 @@ export namespace DeclineAdmissionProposal {
       id: string
     }
   }
-  export type Output = undefined | UserNotFoundError | AdmissionProposalNotFoundError
+  export type Output =
+    | undefined
+    | UserNotFoundError
+    | AdmissionProposalNotFoundError
+    | UnauthorizedUserError
 }
