@@ -19,6 +19,7 @@ export namespace LoadUserPermission {
     code?: string
     grantToUserId?: string
     status?: PermissionStatus
+    organizationId?: string
   }
   export type Output = UserPermission | undefined
 }
