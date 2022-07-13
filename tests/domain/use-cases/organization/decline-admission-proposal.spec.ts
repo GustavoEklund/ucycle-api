@@ -5,7 +5,11 @@ import {
   LoadUserAccount,
   LoadUserPermission,
 } from '@/domain/contracts/repos'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import {
+  AdmissionProposalNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
 import { mockAdmissionProposal, mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 import { PermissionStatus } from '@/domain/entities/permission'
@@ -87,5 +91,14 @@ describe('DeclineAdmissionProposalUseCase', () => {
       grantToUserId: admissionProposalStub.userId,
       organizationId: admissionProposalStub.organizationId,
     })
+  })
+
+  it('should return UnauthorizedUserError if LoadUserPermission returns undefined', async () => {
+    userPermissionRepoSpy.load.mockResolvedValueOnce(undefined)
+    const expectedError = new UnauthorizedUserError(userStub.id, 'DECLINE_ADMISSION_PROPOSAL')
+
+    const output = await sut.perform(inputStub)
+
+    expect(output).toEqual(expectedError)
   })
 })
