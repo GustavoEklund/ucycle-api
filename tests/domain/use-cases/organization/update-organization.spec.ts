@@ -5,7 +5,6 @@ import { User } from '@/domain/entities/user'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { UpdateOrganizationUseCase } from '@/domain/use-cases/organizations'
 import { mockUser } from '../../mocks/entities'
-
 describe('UpdateOrganizationUseCase', () => {
   let userMock: User
   let organizationMock: Organization
