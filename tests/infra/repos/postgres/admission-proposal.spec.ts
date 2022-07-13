@@ -1,4 +1,4 @@
-import { makeFakeDb, mockOrganization, mockUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
@@ -58,7 +58,7 @@ describe('PgAdmissionProposalRepository', () => {
 
   describe('save', () => {
     it('should save admission proposal', async () => {
-      const [pgUser, pgUserOwner] = await pgUserRepo.save([mockUser(), mockUser()])
+      const [pgUser, pgUserOwner] = await pgUserRepo.save([mockPgUser(), mockPgUser()])
       const pgAddress = await pgAddressRepo.save(mockAddress())
       const organization = mockOrganization({
         address: pgAddress,

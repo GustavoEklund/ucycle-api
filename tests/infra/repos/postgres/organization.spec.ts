@@ -1,4 +1,4 @@
-import { makeFakeDb, mockOrganization, mockUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
@@ -96,7 +96,7 @@ describe('PgOrganizationRepository', () => {
       const pgOrganization = pgOrganizationRepo.create(mockOrganization({}))
       pgOrganization.address = pgAddress
       await pgOrganizationRepo.save(pgOrganization)
-      const pgUser = pgUserRepo.create(mockUser())
+      const pgUser = pgUserRepo.create(mockPgUser())
       pgUser.organizationsOwned = Promise.resolve([pgOrganization])
       await pgUserRepo.save(pgUser)
 
