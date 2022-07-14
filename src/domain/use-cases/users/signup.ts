@@ -15,13 +15,12 @@ export class SignUpUseCase extends Publisher implements SignUp {
   }
 
   public async perform({ account, profile }: SignUp.Input): Promise<SignUp.Output> {
-    const cpf = account.documents[0]
-    const document = await this.documentRepo.load({ number: cpf })
-    if (document !== undefined) return new DocumentAlreadyExistsError(cpf)
-    const emailContact = await this.contactRepo.load({ value: account.emails[0] })
-    if (emailContact !== undefined) return new ContactAlreadyExistsError(account.emails[0])
-    await this.contactRepo.load({ value: account.phones[0] })
-    return new ContactAlreadyExistsError(account.phones[0])
+    const document = await this.documentRepo.load({ number: account.document })
+    if (document !== undefined) return new DocumentAlreadyExistsError(account.document)
+    const emailContact = await this.contactRepo.load({ value: account.email })
+    if (emailContact !== undefined) return new ContactAlreadyExistsError(account.email)
+    const phoneContact = await this.contactRepo.load({ value: account.phone })
+    if (phoneContact !== undefined) return new ContactAlreadyExistsError(account.phone)
   }
 }
 
@@ -29,9 +28,9 @@ export namespace SignUp {
   export type Input = {
     account: {
       name: string
-      emails: string[]
-      phones: string[]
-      documents: string[]
+      email: string
+      phone: string
+      document: string
     }
     profile: {
       socialName: string

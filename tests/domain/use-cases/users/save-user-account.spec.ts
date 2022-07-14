@@ -33,9 +33,9 @@ describe('SignUpUseCase', () => {
     inputStub = {
       account: {
         name: 'any_name',
-        phones: [phoneFaker],
-        emails: [emailFaker],
-        documents: [cpf],
+        phone: phoneFaker,
+        email: emailFaker,
+        document: cpf,
       },
       profile: {
         socialName: 'any_social_name',
