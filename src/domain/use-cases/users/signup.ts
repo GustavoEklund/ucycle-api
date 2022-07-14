@@ -1,5 +1,5 @@
 import { Publisher } from '@/domain/events'
-import { LoadDocument } from '@/domain/contracts/repos'
+import { LoadContact, LoadDocument } from '@/domain/contracts/repos'
 import { DocumentAlreadyExistsError } from '@/domain/entities/errors'
 
 export interface SignUp {
@@ -7,14 +7,18 @@ export interface SignUp {
 }
 
 export class SignUpUseCase extends Publisher implements SignUp {
-  public constructor(private readonly documentRepo: LoadDocument) {
+  public constructor(
+    private readonly documentRepo: LoadDocument,
+    private readonly contactRepo: LoadContact
+  ) {
     super()
   }
 
   public async perform({ account, profile }: SignUp.Input): Promise<SignUp.Output> {
-    await this.documentRepo.load({ number: account.documents[0] })
-
-    return new DocumentAlreadyExistsError('any_document_number')
+    const cpf = account.documents[0]
+    const document = await this.documentRepo.load({ number: cpf })
+    if (document !== undefined) return new DocumentAlreadyExistsError(cpf)
+    await this.contactRepo.load({ value: account.emails[0] })
   }
 }
 
