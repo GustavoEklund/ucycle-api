@@ -62,21 +62,9 @@ describe('PgUserAccountRepository', () => {
         where: { id: user.id },
         relations: ['documents', 'contacts'],
       })
-      expect({
-        id: pgUser?.id,
-        documents: await pgUser?.documents,
-        contacts: (await pgUser?.contacts)?.map((pgContact) => ({
-          label: pgContact.label,
-          isPrivate: pgContact.isPrivate,
-          type: pgContact.type,
-          value: JSON.parse(pgContact.value),
-          verified: pgContact.verified,
-        })),
-      }).toMatchObject({
-        id: user.id,
-        documents: user.account.documents,
-        contacts: user.account.contacts,
-      })
+      expect(pgUser?.id).toBe(user.id)
+      expect(await pgUser?.contacts).toHaveLength(user.account.contacts.length)
+      expect(await pgUser?.documents).toHaveLength(user.account.documents.length)
     })
   })
 })
