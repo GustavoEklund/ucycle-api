@@ -1,6 +1,6 @@
 import { Publisher } from '@/domain/events'
 import { LoadContact, LoadDocument } from '@/domain/contracts/repos'
-import { DocumentAlreadyExistsError } from '@/domain/entities/errors'
+import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
 
 export interface SignUp {
   perform: (input: SignUp.Input) => Promise<SignUp.Output>
@@ -19,6 +19,7 @@ export class SignUpUseCase extends Publisher implements SignUp {
     const document = await this.documentRepo.load({ number: cpf })
     if (document !== undefined) return new DocumentAlreadyExistsError(cpf)
     await this.contactRepo.load({ value: account.emails[0] })
+    return new ContactAlreadyExistsError(account.emails[0])
   }
 }
 
