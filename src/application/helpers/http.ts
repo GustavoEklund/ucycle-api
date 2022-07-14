@@ -1,8 +1,27 @@
 import { ForbiddenError, NotFoundError, ServerError, UnauthorizedError } from '@/application/errors'
 
-export type HttpResponse<T = any> = {
+export enum HttpStatus {
+  created = 201,
+  noContent = 204,
+  badRequest = 400,
+  unauthorized = 401,
+  forbidden = 403,
+  notFound = 404,
+  conflict = 409,
+  serverError = 500,
+}
+
+export type HttpResponse<T = any, H = any> = {
   statusCode: number
   data: T
+  headers?: H
+  error?: Error
+}
+
+export type HttpRequest = {
+  url: string
+  headers?: object
+  body?: object | string | URLSearchParams
 }
 
 export const ok = <T = any>(data: T): HttpResponse<T> => ({
