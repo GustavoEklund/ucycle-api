@@ -52,6 +52,7 @@ describe('KeycloakApi', () => {
     await sut.saveWithKeycloak({
       id: 'any_id',
       email: 'any_email',
+      password: 'any_password',
       firstName: 'any_first_name',
       lastName: 'any_last_name',
     })
@@ -72,6 +73,7 @@ describe('KeycloakApi', () => {
     await sut.saveWithKeycloak({
       id: 'any_id',
       email: 'any_email',
+      password: 'any_password',
       firstName: 'any_first_name',
       lastName: 'any_last_name',
     })
@@ -88,8 +90,15 @@ describe('KeycloakApi', () => {
         email: 'any_email',
         firstName: 'any_first_name',
         lastName: 'any_last_name',
+        credentials: [
+          {
+            type: 'password',
+            value: 'any_password',
+            temporary: false,
+          },
+        ],
         username: 'any_email',
-        requiredActions: ['UPDATE_PASSWORD', 'VERIFY_EMAIL'],
+        requiredActions: ['VERIFY_EMAIL'],
       },
     })
   })
@@ -119,6 +128,7 @@ describe('KeycloakApi', () => {
     const promise = sut.saveWithKeycloak({
       id: 'any_id',
       email: 'any_email',
+      password: 'any_password',
       firstName: 'any_first_name',
       lastName: 'any_last_name',
     })

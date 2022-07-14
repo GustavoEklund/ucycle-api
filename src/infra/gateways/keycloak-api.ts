@@ -24,6 +24,7 @@ export class KeycloakApi implements SaveKeycloakUserAccount {
   public async saveWithKeycloak({
     id,
     email,
+    password,
     lastName,
     firstName,
   }: SaveKeycloakUserAccount.Input): Promise<SaveKeycloakUserAccount.Output> {
@@ -44,8 +45,15 @@ export class KeycloakApi implements SaveKeycloakUserAccount {
         email,
         firstName,
         lastName,
+        credentials: [
+          {
+            type: 'password',
+            value: password,
+            temporary: false,
+          },
+        ],
         username: email,
-        requiredActions: ['UPDATE_PASSWORD', 'VERIFY_EMAIL'],
+        requiredActions: ['VERIFY_EMAIL'],
       },
     })
     if (createUserStatusCode !== HttpStatus.created) {

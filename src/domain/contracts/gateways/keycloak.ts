@@ -8,6 +8,7 @@ export namespace SaveKeycloakUserAccount {
   export type Input = {
     id?: string
     email: string
+    password: string
     firstName: string
     lastName: string
   }
