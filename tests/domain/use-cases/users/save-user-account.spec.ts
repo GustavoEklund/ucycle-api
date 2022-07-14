@@ -66,8 +66,8 @@ describe('SignUpUseCase', () => {
   it('should call load contact with correct email input', async () => {
     await sut.perform(inputStub)
 
-    expect(contactRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(contactRepoSpy.load).toHaveBeenCalledWith({ value: emailFaker })
+    expect(contactRepoSpy.load).toHaveBeenCalledTimes(2)
+    expect(contactRepoSpy.load).toHaveBeenNthCalledWith(1, { value: emailFaker })
   })
 
   it('should return ContactAlreadyExistsError if LoadContact returns an email', async () => {
@@ -76,5 +76,12 @@ describe('SignUpUseCase', () => {
     const output = await sut.perform(inputStub)
 
     expect(output).toEqual(new ContactAlreadyExistsError(emailFaker))
+  })
+
+  it('should call load contact with correct phone input', async () => {
+    await sut.perform(inputStub)
+
+    expect(contactRepoSpy.load).toHaveBeenCalledTimes(2)
+    expect(contactRepoSpy.load).toHaveBeenNthCalledWith(2, { value: 'any_phone_number' })
   })
 })
