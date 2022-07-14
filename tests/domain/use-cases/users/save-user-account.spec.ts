@@ -1,9 +1,10 @@
 import { LoadContact, LoadDocument } from '@/domain/contracts/repos'
 import { SignUp, SignUpUseCase } from '@/domain/use-cases/users'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { DocumentAlreadyExistsError } from '@/domain/entities/errors'
+import { DocumentAlreadyExistsError, ContactAlreadyExistsError } from '@/domain/entities/errors'
 import { Document } from '@/domain/value-objects'
 import { faker } from '@faker-js/faker'
+import { Email, EmailType } from '@/domain/value-objects/contact'
 
 describe('SignUpUseCase', () => {
   let inputStub: SignUp.Input
@@ -11,6 +12,7 @@ describe('SignUpUseCase', () => {
   let documentRepoSpy: MockProxy<LoadDocument>
   let contactRepoSpy: MockProxy<LoadContact>
   let cpf: string
+  let emailFaker: string
 
   beforeAll(() => {
     cpf = faker.helpers.arrayElement([
@@ -25,11 +27,12 @@ describe('SignUpUseCase', () => {
       '24845408333',
       '95574461102',
     ])
+    emailFaker = faker.internet.email()
     inputStub = {
       account: {
         name: 'any_name',
         phones: ['any_phone_number'],
-        emails: ['any_email'],
+        emails: [emailFaker],
         documents: [cpf],
       },
       profile: {
@@ -64,6 +67,14 @@ describe('SignUpUseCase', () => {
     await sut.perform(inputStub)
 
     expect(contactRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(contactRepoSpy.load).toHaveBeenCalledWith({ value: 'any_email' })
+    expect(contactRepoSpy.load).toHaveBeenCalledWith({ value: emailFaker })
+  })
+
+  it('should return ContactAlreadyExistsError if LoadContact returns an email', async () => {
+    contactRepoSpy.load.mockResolvedValueOnce(new Email(emailFaker, EmailType.primary))
+
+    const output = await sut.perform(inputStub)
+
+    expect(output).toEqual(new ContactAlreadyExistsError(emailFaker))
   })
 })
