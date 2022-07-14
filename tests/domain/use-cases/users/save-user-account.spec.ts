@@ -1,10 +1,10 @@
 import { LoadContact, LoadDocument } from '@/domain/contracts/repos'
 import { SignUp, SignUpUseCase } from '@/domain/use-cases/users'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { DocumentAlreadyExistsError, ContactAlreadyExistsError } from '@/domain/entities/errors'
+import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
 import { Document } from '@/domain/value-objects'
 import { faker } from '@faker-js/faker'
-import { Email, EmailType } from '@/domain/value-objects/contact'
+import { Email, EmailType, Phone, PhoneType } from '@/domain/value-objects/contact'
 
 describe('SignUpUseCase', () => {
   let inputStub: SignUp.Input
@@ -13,6 +13,7 @@ describe('SignUpUseCase', () => {
   let contactRepoSpy: MockProxy<LoadContact>
   let cpf: string
   let emailFaker: string
+  let phoneFaker: string
 
   beforeAll(() => {
     cpf = faker.helpers.arrayElement([
@@ -28,10 +29,11 @@ describe('SignUpUseCase', () => {
       '95574461102',
     ])
     emailFaker = faker.internet.email()
+    phoneFaker = faker.phone.phoneNumber('+55 (##) #####-####')
     inputStub = {
       account: {
         name: 'any_name',
-        phones: ['any_phone_number'],
+        phones: [phoneFaker],
         emails: [emailFaker],
         documents: [cpf],
       },
@@ -42,6 +44,7 @@ describe('SignUpUseCase', () => {
     documentRepoSpy = mock()
     documentRepoSpy.load.mockResolvedValue(undefined)
     contactRepoSpy = mock()
+    contactRepoSpy.load.mockResolvedValue(undefined)
   })
 
   beforeEach(() => {
@@ -82,6 +85,16 @@ describe('SignUpUseCase', () => {
     await sut.perform(inputStub)
 
     expect(contactRepoSpy.load).toHaveBeenCalledTimes(2)
-    expect(contactRepoSpy.load).toHaveBeenNthCalledWith(2, { value: 'any_phone_number' })
+    expect(contactRepoSpy.load).toHaveBeenNthCalledWith(2, { value: phoneFaker })
+  })
+
+  it('should return ContactAlreadyExistsError if LoadContact returns an phone', async () => {
+    contactRepoSpy.load
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(new Phone(phoneFaker, PhoneType.whatsapp))
+
+    const output = await sut.perform(inputStub)
+
+    expect(output).toEqual(new ContactAlreadyExistsError(phoneFaker))
   })
 })
