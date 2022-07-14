@@ -21,6 +21,7 @@ export class SignUpUseCase extends Publisher implements SignUp {
     const emailContact = await this.contactRepo.load({ value: account.emails[0] })
     if (emailContact !== undefined) return new ContactAlreadyExistsError(account.emails[0])
     await this.contactRepo.load({ value: account.phones[0] })
+    return new ContactAlreadyExistsError(account.phones[0])
   }
 }
 
