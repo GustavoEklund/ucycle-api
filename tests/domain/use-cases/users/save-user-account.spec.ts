@@ -5,7 +5,7 @@ import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/
 import { Document } from '@/domain/value-objects'
 import { faker } from '@faker-js/faker'
 import { Email, EmailType, Phone, PhoneType } from '@/domain/value-objects/contact'
-import { UUIDGenerator } from '@/domain/contracts/gateways'
+import { SaveKeycloakUserAccount, UUIDGenerator } from '@/domain/contracts/gateways'
 import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
 
 describe('SignUpUseCase', () => {
@@ -15,9 +15,12 @@ describe('SignUpUseCase', () => {
   let contactRepoSpy: MockProxy<LoadContact>
   let userRepoSpy: MockProxy<SaveUserAccount>
   let cryptoSpy: MockProxy<UUIDGenerator>
+  let userAccountApiSpy: MockProxy<SaveKeycloakUserAccount>
   let cpf: string
   let emailFaker: string
   let phoneFaker: string
+  let firstName: string
+  let lastName: string
   let nameFaker: string
   let socialNameFaker: string
 
@@ -36,7 +39,9 @@ describe('SignUpUseCase', () => {
     ])
     emailFaker = faker.internet.email()
     phoneFaker = faker.phone.phoneNumber('+55 (##) #####-####')
-    nameFaker = faker.name.findName()
+    firstName = faker.name.firstName()
+    lastName = faker.name.lastName()
+    nameFaker = firstName + ' ' + lastName
     socialNameFaker = faker.name.findName()
     inputStub = {
       account: {
@@ -44,6 +49,7 @@ describe('SignUpUseCase', () => {
         phone: phoneFaker,
         email: emailFaker,
         document: cpf,
+        password: 'any_password',
       },
       profile: {
         socialName: socialNameFaker,
@@ -56,10 +62,17 @@ describe('SignUpUseCase', () => {
     contactRepoSpy = mock()
     contactRepoSpy.load.mockResolvedValue(undefined)
     userRepoSpy = mock()
+    userAccountApiSpy = mock()
   })
 
   beforeEach(() => {
-    sut = new SignUpUseCase(userRepoSpy, documentRepoSpy, contactRepoSpy, cryptoSpy)
+    sut = new SignUpUseCase(
+      userRepoSpy,
+      documentRepoSpy,
+      contactRepoSpy,
+      cryptoSpy,
+      userAccountApiSpy
+    )
   })
 
   it('should call load document with correct input', async () => {
@@ -129,5 +142,18 @@ describe('SignUpUseCase', () => {
         account: userAccount,
       })
     )
+  })
+
+  it('should call SaveKeycloakUserAccount with correct input', async () => {
+    await sut.perform(inputStub)
+
+    expect(userAccountApiSpy.saveWithKeycloak).toHaveBeenCalledTimes(1)
+    expect(userAccountApiSpy.saveWithKeycloak).toHaveBeenCalledWith({
+      id: 'any_uuid',
+      email: inputStub.account.email,
+      password: 'any_password',
+      firstName: firstName,
+      lastName: lastName,
+    })
   })
 })
