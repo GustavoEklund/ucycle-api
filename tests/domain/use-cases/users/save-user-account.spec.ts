@@ -1,4 +1,4 @@
-import { LoadContact, LoadDocument } from '@/domain/contracts/repos'
+import { LoadContact, LoadDocument, SaveUserAccount } from '@/domain/contracts/repos'
 import { SignUp, SignUpUseCase } from '@/domain/use-cases/users'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
@@ -11,9 +11,12 @@ describe('SignUpUseCase', () => {
   let sut: SignUpUseCase
   let documentRepoSpy: MockProxy<LoadDocument>
   let contactRepoSpy: MockProxy<LoadContact>
+  let userRepoSpy: MockProxy<SaveUserAccount>
   let cpf: string
   let emailFaker: string
   let phoneFaker: string
+  let nameFaker: string
+  let socialNameFaker: string
 
   beforeAll(() => {
     cpf = faker.helpers.arrayElement([
@@ -30,25 +33,28 @@ describe('SignUpUseCase', () => {
     ])
     emailFaker = faker.internet.email()
     phoneFaker = faker.phone.phoneNumber('+55 (##) #####-####')
+    nameFaker = faker.name.findName()
+    socialNameFaker = faker.name.findName()
     inputStub = {
       account: {
-        name: 'any_name',
+        name: nameFaker,
         phone: phoneFaker,
         email: emailFaker,
         document: cpf,
       },
       profile: {
-        socialName: 'any_social_name',
+        socialName: socialNameFaker,
       },
     }
     documentRepoSpy = mock()
     documentRepoSpy.load.mockResolvedValue(undefined)
     contactRepoSpy = mock()
     contactRepoSpy.load.mockResolvedValue(undefined)
+    userRepoSpy = mock()
   })
 
   beforeEach(() => {
-    sut = new SignUpUseCase(documentRepoSpy, contactRepoSpy)
+    sut = new SignUpUseCase(userRepoSpy, documentRepoSpy, contactRepoSpy)
   })
 
   it('should call load document with correct input', async () => {
@@ -96,5 +102,11 @@ describe('SignUpUseCase', () => {
     const output = await sut.perform(inputStub)
 
     expect(output).toEqual(new ContactAlreadyExistsError(phoneFaker))
+  })
+
+  it('should call save user with correct input', async () => {
+    await sut.perform(inputStub)
+
+    expect(userRepoSpy.save).toHaveBeenCalledTimes(1)
   })
 })
