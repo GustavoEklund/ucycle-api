@@ -156,4 +156,13 @@ describe('SignUpUseCase', () => {
       lastName: lastName,
     })
   })
+
+  it('should throw if SaveKeycloakUserAccount throws', async () => {
+    const error = new Error('any_error')
+    userAccountApiSpy.saveWithKeycloak.mockRejectedValueOnce(error)
+
+    const promise = sut.perform(inputStub)
+
+    await expect(promise).rejects.toThrow(error)
+  })
 })
