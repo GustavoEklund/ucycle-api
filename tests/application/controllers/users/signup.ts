@@ -42,4 +42,13 @@ describe('AddPersonsController', () => {
     expect(userMockSpy).toHaveBeenCalledTimes(1)
     expect(userMockSpy).toHaveBeenCalledWith(inputStub)
   })
+
+  it('should return undefined on success', async () => {
+    const response = await sut.handle(inputStub)
+
+    expect(response).toEqual({
+      statusCode: 200,
+      data: undefined,
+    })
+  })
 })
