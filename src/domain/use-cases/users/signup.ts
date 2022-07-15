@@ -1,6 +1,9 @@
 import { Publisher } from '@/domain/events'
-import { LoadContact, LoadDocument } from '@/domain/contracts/repos'
+import { LoadContact, LoadDocument, SaveUserAccount } from '@/domain/contracts/repos'
 import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
+import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
+import { EmailType, PhoneType } from '@/domain/value-objects/contact'
+import { DocumentType } from '@/domain/value-objects'
 
 export interface SignUp {
   perform: (input: SignUp.Input) => Promise<SignUp.Output>
@@ -8,6 +11,7 @@ export interface SignUp {
 
 export class SignUpUseCase extends Publisher implements SignUp {
   public constructor(
+    private readonly userAccountRepo: SaveUserAccount,
     private readonly documentRepo: LoadDocument,
     private readonly contactRepo: LoadContact
   ) {
@@ -21,6 +25,21 @@ export class SignUpUseCase extends Publisher implements SignUp {
     if (emailContact !== undefined) return new ContactAlreadyExistsError(account.email)
     const phoneContact = await this.contactRepo.load({ value: account.phone })
     if (phoneContact !== undefined) return new ContactAlreadyExistsError(account.phone)
+    const profileUser = new UserProfile({ socialName: profile.socialName })
+    const accountUser = new UserAccount({
+      name: account.name,
+      emails: [{ value: account.email, label: EmailType.primary }],
+      documents: [account.document],
+      phones: [{ value: account.phone, label: PhoneType.whatsapp }],
+      verified: false,
+      status: UserAccountStatus.disabled,
+    })
+    const userCreate = new User({
+      id: '',
+      profile: profileUser,
+      account: accountUser,
+    })
+    await this.userAccountRepo.save(userCreate)
   }
 }
 
