@@ -11,7 +11,7 @@ type HttpRequest = {
   socialName: string
 }
 
-describe('AddPersonsController', () => {
+describe('SignUpController', () => {
   let sut: SignUpController
   let userMockSpy: MockProxy<SignUp>
   let inputStub: HttpRequest
