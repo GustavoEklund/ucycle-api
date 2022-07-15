@@ -3,7 +3,7 @@ import { LoadContact, LoadDocument, SaveUserAccount } from '@/domain/contracts/r
 import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
 import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
 import { EmailType, PhoneType } from '@/domain/value-objects/contact'
-import { DocumentType } from '@/domain/value-objects'
+import { UUIDGenerator } from '@/domain/contracts/gateways'
 
 export interface SignUp {
   perform: (input: SignUp.Input) => Promise<SignUp.Output>
@@ -13,7 +13,8 @@ export class SignUpUseCase extends Publisher implements SignUp {
   public constructor(
     private readonly userAccountRepo: SaveUserAccount,
     private readonly documentRepo: LoadDocument,
-    private readonly contactRepo: LoadContact
+    private readonly contactRepo: LoadContact,
+    private readonly crypto: UUIDGenerator
   ) {
     super()
   }
@@ -34,8 +35,9 @@ export class SignUpUseCase extends Publisher implements SignUp {
       verified: false,
       status: UserAccountStatus.disabled,
     })
+    const userId = this.crypto.uuid()
     const userCreate = new User({
-      id: '',
+      id: userId,
       profile: profileUser,
       account: accountUser,
     })

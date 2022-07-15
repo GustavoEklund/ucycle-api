@@ -5,6 +5,8 @@ import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/
 import { Document } from '@/domain/value-objects'
 import { faker } from '@faker-js/faker'
 import { Email, EmailType, Phone, PhoneType } from '@/domain/value-objects/contact'
+import { UUIDGenerator } from '@/domain/contracts/gateways'
+import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
 
 describe('SignUpUseCase', () => {
   let inputStub: SignUp.Input
@@ -12,6 +14,7 @@ describe('SignUpUseCase', () => {
   let documentRepoSpy: MockProxy<LoadDocument>
   let contactRepoSpy: MockProxy<LoadContact>
   let userRepoSpy: MockProxy<SaveUserAccount>
+  let cryptoSpy: MockProxy<UUIDGenerator>
   let cpf: string
   let emailFaker: string
   let phoneFaker: string
@@ -46,6 +49,8 @@ describe('SignUpUseCase', () => {
         socialName: socialNameFaker,
       },
     }
+    cryptoSpy = mock()
+    cryptoSpy.uuid.mockReturnValue('any_uuid')
     documentRepoSpy = mock()
     documentRepoSpy.load.mockResolvedValue(undefined)
     contactRepoSpy = mock()
@@ -54,7 +59,7 @@ describe('SignUpUseCase', () => {
   })
 
   beforeEach(() => {
-    sut = new SignUpUseCase(userRepoSpy, documentRepoSpy, contactRepoSpy)
+    sut = new SignUpUseCase(userRepoSpy, documentRepoSpy, contactRepoSpy, cryptoSpy)
   })
 
   it('should call load document with correct input', async () => {
@@ -107,6 +112,22 @@ describe('SignUpUseCase', () => {
   it('should call save user with correct input', async () => {
     await sut.perform(inputStub)
 
+    const userProfile = new UserProfile({ socialName: inputStub.profile.socialName })
+    const userAccount = new UserAccount({
+      name: inputStub.account.name,
+      documents: [inputStub.account.document],
+      phones: [{ value: inputStub.account.phone, label: PhoneType.whatsapp }],
+      emails: [{ value: inputStub.account.email, label: EmailType.primary }],
+      verified: false,
+      status: UserAccountStatus.disabled,
+    })
     expect(userRepoSpy.save).toHaveBeenCalledTimes(1)
+    expect(userRepoSpy.save).toHaveBeenCalledWith(
+      new User({
+        id: 'any_uuid',
+        profile: userProfile,
+        account: userAccount,
+      })
+    )
   })
 })
