@@ -3,7 +3,8 @@ import { LoadContact, LoadDocument, SaveUserAccount } from '@/domain/contracts/r
 import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
 import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
 import { EmailType, PhoneType } from '@/domain/value-objects/contact'
-import { UUIDGenerator } from '@/domain/contracts/gateways'
+import { SaveKeycloakUserAccount, UUIDGenerator } from '@/domain/contracts/gateways'
+import { Name } from '../../value-objects'
 
 export interface SignUp {
   perform: (input: SignUp.Input) => Promise<SignUp.Output>
@@ -14,7 +15,8 @@ export class SignUpUseCase extends Publisher implements SignUp {
     private readonly userAccountRepo: SaveUserAccount,
     private readonly documentRepo: LoadDocument,
     private readonly contactRepo: LoadContact,
-    private readonly crypto: UUIDGenerator
+    private readonly crypto: UUIDGenerator,
+    private readonly userAccountApi: SaveKeycloakUserAccount
   ) {
     super()
   }
@@ -36,12 +38,20 @@ export class SignUpUseCase extends Publisher implements SignUp {
       status: UserAccountStatus.disabled,
     })
     const userId = this.crypto.uuid()
+    const userName = new Name({ value: account.name })
     const userCreate = new User({
       id: userId,
       profile: profileUser,
       account: accountUser,
     })
     await this.userAccountRepo.save(userCreate)
+    await this.userAccountApi.saveWithKeycloak({
+      id: userId,
+      firstName: userName.first,
+      lastName: userName.last,
+      email: account.email,
+      password: account.password,
+    })
   }
 }
 
@@ -52,6 +62,7 @@ export namespace SignUp {
       email: string
       phone: string
       document: string
+      password: string
     }
     profile: {
       socialName: string
