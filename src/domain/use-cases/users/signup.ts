@@ -4,7 +4,7 @@ import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/
 import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
 import { EmailType, PhoneType } from '@/domain/value-objects/contact'
 import { SaveKeycloakUserAccount, UUIDGenerator } from '@/domain/contracts/gateways'
-import { Name } from '../../value-objects'
+import { Name } from '@/domain/value-objects'
 
 export interface SignUp {
   perform: (input: SignUp.Input) => Promise<SignUp.Output>
