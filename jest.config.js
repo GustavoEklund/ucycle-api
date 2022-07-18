@@ -3,6 +3,7 @@ module.exports = {
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/main/**',
     '!<rootDir>/src/**/index.ts',
+    '!<rootDir>/src/infra/repos/postgres/migrations/*.ts',
   ],
   coverageDirectory: 'coverage',
   coverageProvider: 'babel',

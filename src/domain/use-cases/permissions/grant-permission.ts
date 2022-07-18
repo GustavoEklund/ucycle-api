@@ -13,7 +13,7 @@ export class GrantPermissionUseCase extends Publisher implements GrantPermission
   public constructor(
     private readonly userRepo: LoadUserAccount,
     private readonly basePermissionRepo: LoadBasePermission,
-    private readonly permissionRepo: SaveUserPermission,
+    private readonly userPermissionRepo: SaveUserPermission,
     private readonly crypto: UUIDGenerator
   ) {
     super()
@@ -50,7 +50,7 @@ export class GrantPermissionUseCase extends Publisher implements GrantPermission
       description: basePermission.description,
       expiration: basePermission.expiration,
     })
-    await this.permissionRepo.save(userPermission)
+    await this.userPermissionRepo.save(userPermission)
     const event = new PermissionGranted({
       permission: userPermission,
       grantTo: targetUser,

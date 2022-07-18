@@ -11,7 +11,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgAddress, PgAdmissionProposal, PgImage, PgUser } from '@/infra/repos/postgres/entities'
+import {
+  PgAddress,
+  PgAdmissionProposal,
+  PgImage,
+  PgUser,
+  PgUserPermission,
+} from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
@@ -36,6 +42,10 @@ export class PgOrganization {
 
   @ManyToOne(() => PgUser, (user) => user.organizationsOwned)
   ownerUser!: PgUser
+
+  @ManyToOne(() => PgUserPermission, (userPermission) => userPermission.grantAtOrganization)
+  @JoinTable({ name: 'user_permissions' })
+  userPermissions!: Promise<PgUserPermission[]>
 
   @CreateDateColumn()
   createdAt!: Date

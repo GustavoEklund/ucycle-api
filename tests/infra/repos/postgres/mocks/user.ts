@@ -1,8 +1,7 @@
-export const mockPgUser = () => {
-  return {
-    firstName: 'any_name',
-    lastName: 'any_last_name',
-    pictureUrl: 'any_picture_url',
-    initials: 'any_initials',
-  }
-}
+import { faker } from '@faker-js/faker'
+
+export const mockPgUser = () => ({
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName(),
+  firstAccess: faker.datatype.boolean(),
+})

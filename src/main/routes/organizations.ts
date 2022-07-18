@@ -5,6 +5,7 @@ import {
   makeAddOrganizationsController,
   makeApplyToJoinOrganizationController,
   makeLoadMyOrganizationsController,
+  makeUpdateOrganizationController,
 } from '@/main/factories/application/controllers'
 
 export default (router: Router): void => {
@@ -18,5 +19,10 @@ export default (router: Router): void => {
     '/organizations/:organizationId/apply-to-join',
     adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
     adapt(makeApplyToJoinOrganizationController())
+  )
+  router.put(
+    '/organizations/:organizationId',
+    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adapt(makeUpdateOrganizationController())
   )
 }

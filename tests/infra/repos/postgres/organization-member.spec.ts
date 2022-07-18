@@ -2,17 +2,20 @@ import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
   PgAdmissionProposal,
+  PgBasePermission,
   PgContact,
   PgDocument,
   PgImage,
+  PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 import {
   makeFakeDb,
   mockContact,
   mockDocument,
-  mockOrganization,
+  mockPgOrganization,
   mockPgUser,
 } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
@@ -40,6 +43,9 @@ describe('PgOrganizationMemberRepository', () => {
       PgAddress,
       PgImage,
       PgAdmissionProposal,
+      PgBasePermission,
+      PgModule,
+      PgUserPermission,
     ])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
@@ -63,7 +69,7 @@ describe('PgOrganizationMemberRepository', () => {
 
   describe('load', () => {
     it('should load organization member', async () => {
-      let pgOrganization = pgOrganizationRepo.create(mockOrganization({}))
+      let pgOrganization = pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization = await pgOrganizationRepo.save(pgOrganization)
       const pgUser1 = await pgUserRepo.create(mockPgUser())
       pgUser1.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])

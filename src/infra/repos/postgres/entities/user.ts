@@ -9,7 +9,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgContact, PgDocument, PgOrganization } from '@/infra/repos/postgres/entities'
+import {
+  PgBasePermission,
+  PgContact,
+  PgDocument,
+  PgModule,
+  PgOrganization,
+} from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'user' })
 export class PgUser {
@@ -42,6 +48,12 @@ export class PgUser {
 
   @ManyToMany(() => PgOrganization, (organization) => organization.members)
   organizations!: Promise<PgOrganization[]>
+
+  @OneToMany(() => PgBasePermission, (basePermission) => basePermission.createdBy)
+  basePermissions!: Promise<PgBasePermission[]>
+
+  @OneToMany(() => PgModule, (module) => module.createdBy)
+  modules!: Promise<PgModule[]>
 
   @CreateDateColumn()
   createdAt!: Date

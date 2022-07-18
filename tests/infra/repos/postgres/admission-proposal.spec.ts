@@ -1,14 +1,17 @@
-import { makeFakeDb, mockOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockPgOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
   PgAdmissionProposal,
+  PgBasePermission,
   PgContact,
   PgDocument,
   PgImage,
+  PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 
 import { IBackup } from 'pg-mem'
@@ -35,6 +38,9 @@ describe('PgAdmissionProposalRepository', () => {
       PgAddress,
       PgImage,
       PgAdmissionProposal,
+      PgBasePermission,
+      PgModule,
+      PgUserPermission,
     ])
     backup = db.backup()
     pgAddressRepo = connection.getRepository(PgAddress)
@@ -60,7 +66,7 @@ describe('PgAdmissionProposalRepository', () => {
     it('should save admission proposal', async () => {
       const [pgUser, pgUserOwner] = await pgUserRepo.save([mockPgUser(), mockPgUser()])
       const pgAddress = await pgAddressRepo.save(mockAddress())
-      const organization = mockOrganization({
+      const organization = mockPgOrganization({
         address: pgAddress,
         ownerUser: pgUserOwner,
         pictures: [],
@@ -80,8 +86,12 @@ describe('PgAdmissionProposalRepository', () => {
       expect(admissionProposal).toMatchObject({
         id: admissionProposalId,
         status: 'any_status',
-        organization: pgOrganization,
-        createdBy: pgUser,
+        organization: {
+          id: pgOrganization.id,
+        },
+        createdBy: {
+          id: pgUser.id,
+        },
       })
     })
   })

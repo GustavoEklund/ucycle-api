@@ -6,8 +6,8 @@ import { GrantPermission } from '@/domain/use-cases/permissions'
 import { Controller } from '../controller'
 
 type HttpRequest = {
-  grantById: string
-  grantToId: string
+  userId: string
+  targetUserId: string
   code: string
   read: boolean
   write: boolean
@@ -26,8 +26,8 @@ export class GrantPermissionController extends Controller {
     read,
     write,
     owner,
-    grantById,
-    grantToId,
+    userId,
+    targetUserId,
     moduleId,
     organizationId,
   }: HttpRequest): Promise<HttpResponse<{ id: string } | Error[]>> {
@@ -36,8 +36,8 @@ export class GrantPermissionController extends Controller {
       read,
       write,
       owner,
-      grantById,
-      grantToId,
+      grantById: userId,
+      grantToId: targetUserId,
       moduleId,
       organizationId,
     })
@@ -51,16 +51,14 @@ export class GrantPermissionController extends Controller {
     read,
     write,
     owner,
-    grantById,
-    grantToId,
+    userId,
+    targetUserId,
     moduleId,
     organizationId,
   }: HttpRequest): Validator[] {
     return [
-      ...Builder.of({ value: grantById, fieldName: 'grantById' })
-        .required(RequiredType.string)
-        .build(),
-      ...Builder.of({ value: grantToId, fieldName: 'grantToId' })
+      ...Builder.of({ value: userId, fieldName: 'userId' }).required(RequiredType.string).build(),
+      ...Builder.of({ value: targetUserId, fieldName: 'targetUserId' })
         .required(RequiredType.string)
         .build(),
       ...Builder.of({ value: code, fieldName: 'code' }).required(RequiredType.string).build(),

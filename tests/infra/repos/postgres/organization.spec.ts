@@ -1,20 +1,24 @@
-import { makeFakeDb, mockOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockPgOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
   PgAdmissionProposal,
+  PgBasePermission,
   PgContact,
   PgDocument,
   PgImage,
+  PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
 import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
+import { Organization } from '@/domain/entities'
 
 describe('PgOrganizationRepository', () => {
   let sut: PgOrganizationRepository
@@ -34,6 +38,9 @@ describe('PgOrganizationRepository', () => {
       PgAddress,
       PgImage,
       PgAdmissionProposal,
+      PgBasePermission,
+      PgModule,
+      PgUserPermission,
     ])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
@@ -67,14 +74,18 @@ describe('PgOrganizationRepository', () => {
         organizations: Promise.resolve([]),
       })
       pgUser = await pgUserRepo.save(pgUser)
-      const organization = mockOrganization({})
+      const organization = mockPgOrganization({})
       const address = mockAddress()
 
-      const { id: organizationId } = await sut.save({
-        name: organization.name,
-        address: address,
-        ownerUserId: pgUser.id,
-      })
+      const { id: organizationId } = await sut.save(
+        new Organization({
+          name: organization.name,
+          id: pgUser.id,
+          address: address,
+          userId: pgUser.id,
+          description: organization.description,
+        })
+      )
 
       const pgOrganization = await pgOrganizationRepo.findOne({
         where: { id: organizationId },
@@ -93,7 +104,7 @@ describe('PgOrganizationRepository', () => {
     it('should load all organizations', async () => {
       const pgAddress = await pgAddressRepo.save(mockAddress())
       await pgAddressRepo.save(pgAddress)
-      const pgOrganization = pgOrganizationRepo.create(mockOrganization({}))
+      const pgOrganization = pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization.address = pgAddress
       await pgOrganizationRepo.save(pgOrganization)
       const pgUser = pgUserRepo.create(mockPgUser())
@@ -105,10 +116,10 @@ describe('PgOrganizationRepository', () => {
       expect(organizations).toEqual([
         {
           id: pgOrganization.id,
-          name: 'any_name',
+          name: pgOrganization.name,
           pictures: [],
           address: {
-            buildingNumber: 76,
+            buildingNumber: '76',
             city: 'any_city',
             country: 'any_country',
             neighbourhood: 'any_neighbourhood',

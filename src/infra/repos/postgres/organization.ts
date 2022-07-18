@@ -1,7 +1,7 @@
-import { PgRepository } from '@/infra/repos/postgres/repository'
+import { Organization } from '@/domain/entities'
 import { LoadOrganization, LoadOrganizations, SaveOrganization } from '@/domain/contracts/repos'
-import { PgOrganization } from '@/infra/repos/postgres/entities'
-import { PgUser } from './entities/user'
+import { PgRepository } from '@/infra/repos/postgres/repository'
+import { PgUser, PgOrganization } from '@/infra/repos/postgres/entities'
 
 export class PgOrganizationRepository
   extends PgRepository
@@ -9,17 +9,25 @@ export class PgOrganizationRepository
 {
   public async load({ id }: LoadOrganization.Input): Promise<LoadOrganization.Output> {
     const organizationRepo = this.getRepository(PgOrganization)
-    const organization = await organizationRepo.findOne({ id }, { relations: ['ownerUser'] })
-    if (organization !== undefined) {
-      return {
-        id: String(organization.id),
-        name: organization.name,
-        documents: [],
-        ownerUser: {
-          id: organization.ownerUser.id,
-          contacts: await organization.ownerUser.contacts,
+    const pgOrganization = await organizationRepo.findOne(
+      { id },
+      { relations: ['ownerUser', 'address'] }
+    )
+    if (pgOrganization !== undefined) {
+      return new Organization({
+        id: pgOrganization.id,
+        name: pgOrganization.name,
+        address: {
+          city: pgOrganization.address.city,
+          buildingNumber: pgOrganization.address.buildingNumber,
+          street: pgOrganization.address.street,
+          country: pgOrganization.address.country,
+          state: pgOrganization.address.state,
+          neighbourhood: pgOrganization.address.neighbourhood,
         },
-      }
+        description: '',
+        userId: pgOrganization.ownerUser.id,
+      })
     }
   }
 
