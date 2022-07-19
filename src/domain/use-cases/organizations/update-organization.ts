@@ -18,7 +18,7 @@ export class UpdateOrganizationUseCase implements UpdateOrganization {
     const organization = await this.organizationRepo.load({ id: input.organization.id })
     if (user === undefined) return new UserNotFoundError(input.user.id)
     if (organization === undefined) return new OrganizationNotFoundError(input.organization.id)
-    if (organization.ownerUserId !== user.id)
+    if (!organization.isOwner(user.id))
       return new UnauthorizedUserError(input.user.id, 'UPDATE_ORGANIZATION')
     organization.updateName(input.organization.name)
     organization.updateDescription(input.organization.description)

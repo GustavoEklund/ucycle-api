@@ -2,6 +2,7 @@ import { Entity } from '@/domain/entities'
 import { description } from 'aws-sdk/clients/frauddetector'
 import { name } from 'aws-sdk/clients/importexport'
 import { __listOfAudioDescription } from 'aws-sdk/clients/mediaconvert'
+import { bool } from 'aws-sdk/clients/signer'
 import { InvalidNameError } from '../errors'
 import { InvalidDescriptionError } from '../errors/invalid-description'
 
@@ -16,10 +17,10 @@ export type Address = {
 
 export class Organization extends Entity {
   public _description: string
-  public readonly _id: string | undefined
+  public _id: string | undefined
   public _name: string
-  public readonly address: Address
-  public readonly ownerUserId: string
+  public address: Address
+  public ownerUserId: string
 
   constructor({
     id,
@@ -39,6 +40,7 @@ export class Organization extends Entity {
     this.address = address
     this.ownerUserId = userId
     this._description = description
+    this.ownerUserId = userId
   }
 
   public get name(): string {
@@ -55,6 +57,10 @@ export class Organization extends Entity {
 
   private isDescriptionValid(description: description): undefined | InvalidDescriptionError {
     if (this.description !== '') return new InvalidDescriptionError(this.description)
+  }
+
+  public isOwner(userId: string): boolean {
+    return userId === this.ownerUserId
   }
 
   public updateName(name: string): void {
