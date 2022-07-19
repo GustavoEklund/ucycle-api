@@ -1,5 +1,8 @@
 import { Entity, OrganizationMember } from '@/domain/entities'
-import { InvalidNameError, InvalidDescriptionError } from '@/domain/entities/errors'
+import { description } from 'aws-sdk/clients/frauddetector'
+import { name } from 'aws-sdk/clients/importexport'
+import { InvalidNameError } from '../errors'
+import { InvalidDescriptionError } from '../errors/invalid-description'
 
 export type Address = {
   city: string
@@ -11,10 +14,11 @@ export type Address = {
 }
 
 export class Organization extends Entity {
-  public _name: string
   public _description: string
-  public readonly address: Address
-  public readonly ownerUserId: string
+  public _id: string | undefined
+  public _name: string
+  public address: Address
+  public ownerUserId: string
   public readonly members: OrganizationMember[]
 
   constructor({
@@ -35,6 +39,7 @@ export class Organization extends Entity {
     this.address = address
     this.ownerUserId = userId
     this._description = description
+    this.ownerUserId = userId
     this.members = []
   }
 
@@ -52,6 +57,10 @@ export class Organization extends Entity {
 
   private isDescriptionValid(): undefined | InvalidDescriptionError {
     if (this.description !== '') return new InvalidDescriptionError(this.description)
+  }
+
+  public isOwner(userId: string): boolean {
+    return userId === this.ownerUserId
   }
 
   public updateName(name: string): void {
