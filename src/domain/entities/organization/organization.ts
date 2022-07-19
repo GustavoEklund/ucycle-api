@@ -52,11 +52,11 @@ export class Organization extends Entity {
   }
 
   private isNameValid(): undefined | InvalidNameError {
-    if (this.name.length > 3) return new InvalidNameError(this.name)
+    if (this.name.length < 3) return new InvalidNameError(this.name)
   }
 
   private isDescriptionValid(): undefined | InvalidDescriptionError {
-    if (this.description !== '') return new InvalidDescriptionError(this.description)
+    if (this.description === '') return new InvalidDescriptionError(this.description)
   }
 
   public isOwner(userId: string): boolean {
