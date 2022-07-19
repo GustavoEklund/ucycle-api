@@ -7,7 +7,7 @@ type Address = {
   country: string
   street: string
   neighbourhood: string
-  buildingNumber: number
+  buildingNumber: string
 }
 
 describe('AddOrganizationsController', () => {
@@ -25,7 +25,7 @@ describe('AddOrganizationsController', () => {
       country: 'any_country',
       street: 'any_street',
       neighbourhood: 'any_neighbourhood',
-      buildingNumber: 72,
+      buildingNumber: '72',
     }
     name = 'any_name'
     userId = 'any_user_id'
@@ -51,7 +51,7 @@ describe('AddOrganizationsController', () => {
       new RequiredString('any_country', 'address.country'),
       new RequiredString('any_street', 'address.street'),
       new RequiredString('any_neighbourhood', 'address.neighbourhood'),
-      new RequiredInteger(72, 'address.buildingNumber'),
+      new RequiredInteger('72', 'address.buildingNumber'),
     ]
 
     const validators = sut.buildValidators({ name, address, userId, description })

@@ -4,15 +4,15 @@ import faker from '@faker-js/faker'
 export const mockOrganization = (input?: { ownerUserId?: string }): Organization =>
   new Organization({
     id: faker.datatype.uuid(),
-    name: faker.random.word(),
+    name: faker.company.companyName(),
     address: {
       city: faker.address.cityName(),
       state: faker.address.state(),
       country: faker.address.country(),
-      street: faker.address.streetAddress(),
-      neighbourhood: faker.random.word(),
-      buildingNumber: Number(faker.address.buildingNumber()),
+      street: faker.address.streetName(),
+      neighbourhood: faker.address.streetName(),
+      buildingNumber: faker.address.buildingNumber(),
     },
     userId: input?.ownerUserId ?? faker.datatype.uuid(),
-    description: faker.random.words(),
+    description: faker.lorem.paragraph(),
   })

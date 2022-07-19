@@ -1,7 +1,7 @@
-import { UpdateOrganization, UpdateOrganizationUseCase } from '@/domain/use-cases'
+import { UpdateOrganization, UpdateOrganizationUseCase } from '@/domain/use-cases/organizations'
 import {
-  makePgUserAccountRepo,
   makePgOrganizationRepo,
+  makePgUserAccountRepo,
 } from '@/main/factories/infra/repos/postgres'
 
 export const makeUpdateOrganization = (): UpdateOrganization => {

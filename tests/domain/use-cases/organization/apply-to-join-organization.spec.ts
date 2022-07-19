@@ -15,12 +15,10 @@ import {
 } from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
 import { AdmissionProposalStatus, Organization } from '@/domain/entities/organization'
-import { mockUser } from '@/tests/domain/mocks/entities'
+import { mockOrganization, mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { idText } from 'typescript'
-import { mockAddress } from '@/../tests/infra/repos/postgres/mocks'
 
 describe('ApplyToJoinOrganizationUseCase', () => {
   let sut: ApplyToJoinOrganizationUseCase
@@ -29,6 +27,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   let admissionProposalRepoSpy: MockProxy<SaveAdmissionProposal & LoadAdmissionProposals>
   let organizationMemberRepoSpy: MockProxy<LoadOrganizationMember>
   let userMock: User
+  let organizationMock: Organization
 
   beforeAll(() => {
     jest.useFakeTimers().setSystemTime(new Date('2022-03-01T10:00:00'))
@@ -36,17 +35,10 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     userAccountRepoSpy = mock()
     userAccountRepoSpy.load.mockResolvedValue(userMock)
     organizationRepoSpy = mock()
-    organizationRepoSpy.load.mockResolvedValue(
-      new Organization({
-        id: 'any_organization_id',
-        name: 'any_organization_name',
-        address: mockAddress(),
-        description: 'any description',
-        userId: 'any_owner_user_id',
-      })
-    )
+    organizationMock = mockOrganization()
+    organizationRepoSpy.load.mockResolvedValue(organizationMock)
     admissionProposalRepoSpy = mock()
-    admissionProposalRepoSpy.load.mockResolvedValue([])
+    admissionProposalRepoSpy.loadAll.mockResolvedValue([])
     admissionProposalRepoSpy.save.mockResolvedValue({
       id: 'any_admission_proposal_id',
     })
@@ -93,20 +85,12 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   })
 
   it('should throw TheOrganizationOwnerCanNotApplyToJoinOrganizationError if user is the owner of the organization', async () => {
-    organizationRepoSpy.load.mockResolvedValueOnce(
-      new Organization({
-        id: 'any_organization_id',
-        name: 'any_organization_name',
-        address: mockAddress(),
-        description: 'any description',
-        userId: userMock.id,
-      })
-    )
+    organizationRepoSpy.load.mockResolvedValueOnce(mockOrganization({ ownerUserId: userMock.id }))
+    const expectedError = new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
+
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
-    await expect(promise).rejects.toThrowError(
-      new TheOrganizationOwnerCanNotApplyToJoinOrganizationError()
-    )
+    await expect(promise).rejects.toThrowError(expectedError)
   })
 
   it('should call LoadOrganizationMember with correct input', async () => {
@@ -138,15 +122,15 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   it('should call LoadAdmissionProposal with correct input', async () => {
     await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
-    expect(admissionProposalRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(admissionProposalRepoSpy.load).toHaveBeenCalledWith({
+    expect(admissionProposalRepoSpy.loadAll).toHaveBeenCalledTimes(1)
+    expect(admissionProposalRepoSpy.loadAll).toHaveBeenCalledWith({
       userId: 'any_user_id',
       organizationId: 'any_organization_id',
     })
   })
 
   it('should throw AlreadyAppliedToJoinOrganizationError if user already applied to join organization', async () => {
-    admissionProposalRepoSpy.load.mockResolvedValueOnce([
+    admissionProposalRepoSpy.loadAll.mockResolvedValueOnce([
       {
         id: 'any_admission_proposal_id',
         user: {
@@ -177,10 +161,10 @@ describe('ApplyToJoinOrganizationUseCase', () => {
         contacts: userMock.account.contacts,
       },
       organization: {
-        id: 'any_organization_id',
-        name: 'any_organization_name',
+        id: organizationMock.id,
+        name: organizationMock.name,
         ownerUser: {
-          id: 'any_owner_user_id',
+          id: organizationMock.ownerUserId,
           contacts: [],
         },
       },
@@ -190,7 +174,7 @@ describe('ApplyToJoinOrganizationUseCase', () => {
     await sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
     expect(notifySpy).toHaveBeenCalledTimes(1)
-    expect(notifySpy.mock.calls[0][0].equals(expectedEvent)).toBeTruthy()
+    expect(notifySpy).toHaveBeenNthCalledWith(1, expectedEvent)
   })
 
   it('should call SaveAdmissionProposal with correct input', async () => {

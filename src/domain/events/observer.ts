@@ -11,5 +11,5 @@ export abstract class Observer {
     return this.domainEvents.filter((eventName) => eventName === event.name).length > 0
   }
 
-  public abstract handle(event: DomainEvent): Promise<void>
+  public abstract handle(event: DomainEvent): Promise<any>
 }

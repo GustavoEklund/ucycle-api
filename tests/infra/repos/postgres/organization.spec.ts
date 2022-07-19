@@ -119,7 +119,7 @@ describe('PgOrganizationRepository', () => {
           name: pgOrganization.name,
           pictures: [],
           address: {
-            buildingNumber: 76,
+            buildingNumber: '76',
             city: 'any_city',
             country: 'any_country',
             neighbourhood: 'any_neighbourhood',

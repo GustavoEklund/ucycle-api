@@ -5,5 +5,5 @@ export const mockAddress = () => ({
   street: 'any_street',
   neighbourhood: 'any_neighbourhood',
   postalCode: 'any_postal_code',
-  buildingNumber: 76,
+  buildingNumber: '76',
 })

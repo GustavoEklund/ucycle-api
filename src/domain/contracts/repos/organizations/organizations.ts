@@ -25,7 +25,7 @@ export namespace LoadOrganizations {
     country: string
     street: string
     neighbourhood: string
-    buildingNumber: number
+    buildingNumber: string
   }
   type Picture = {
     url: string

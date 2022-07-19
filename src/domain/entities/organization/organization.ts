@@ -1,8 +1,6 @@
-import { Entity } from '@/domain/entities'
+import { Entity, OrganizationMember } from '@/domain/entities'
 import { description } from 'aws-sdk/clients/frauddetector'
 import { name } from 'aws-sdk/clients/importexport'
-import { __listOfAudioDescription } from 'aws-sdk/clients/mediaconvert'
-import { bool } from 'aws-sdk/clients/signer'
 import { InvalidNameError } from '../errors'
 import { InvalidDescriptionError } from '../errors/invalid-description'
 
@@ -12,7 +10,7 @@ export type Address = {
   country: string
   street: string
   neighbourhood: string
-  buildingNumber: number
+  buildingNumber: string
 }
 
 export class Organization extends Entity {
@@ -21,6 +19,7 @@ export class Organization extends Entity {
   public _name: string
   public address: Address
   public ownerUserId: string
+  public readonly members: OrganizationMember[]
 
   constructor({
     id,
@@ -41,6 +40,7 @@ export class Organization extends Entity {
     this.ownerUserId = userId
     this._description = description
     this.ownerUserId = userId
+    this.members = []
   }
 
   public get name(): string {
@@ -51,11 +51,11 @@ export class Organization extends Entity {
     return this._description
   }
 
-  private isNameValid(name: name): undefined | InvalidNameError {
+  private isNameValid(): undefined | InvalidNameError {
     if (this.name.length > 3) return new InvalidNameError(this.name)
   }
 
-  private isDescriptionValid(description: description): undefined | InvalidDescriptionError {
+  private isDescriptionValid(): undefined | InvalidDescriptionError {
     if (this.description !== '') return new InvalidDescriptionError(this.description)
   }
 
@@ -64,12 +64,24 @@ export class Organization extends Entity {
   }
 
   public updateName(name: string): void {
-    this.isNameValid(this.name)
     this._name = name
+    const error = this.isNameValid()
+    if (error) throw error
   }
 
   public updateDescription(description: string) {
-    this.isDescriptionValid(this.description)
     this._description = description
+    const error = this.isDescriptionValid()
+    if (error) throw error
+  }
+
+  public joinMember(member: { userId: string; admissionProposalId: string; date: Date }): void {
+    this.members.push(
+      new OrganizationMember({
+        userId: member.userId,
+        admissionProposalId: member.admissionProposalId,
+        joinDate: member.date,
+      })
+    )
   }
 }

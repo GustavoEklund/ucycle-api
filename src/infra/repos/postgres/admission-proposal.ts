@@ -1,10 +1,15 @@
 import { PgRepository } from '@/infra/repos/postgres/repository'
-import { LoadAdmissionProposals, SaveAdmissionProposal } from '@/domain/contracts/repos'
+import {
+  LoadAdmissionProposal,
+  LoadAdmissionProposals,
+  SaveAdmissionProposal,
+} from '@/domain/contracts/repos'
 import { PgAdmissionProposal, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
+import { AdmissionProposal } from '@/domain/entities'
 
 export class PgAdmissionProposalRepository
   extends PgRepository
-  implements SaveAdmissionProposal, LoadAdmissionProposals
+  implements SaveAdmissionProposal, LoadAdmissionProposal, LoadAdmissionProposals
 {
   public async save({
     userId,
@@ -24,7 +29,20 @@ export class PgAdmissionProposalRepository
     return { id }
   }
 
-  public async load({
+  public async load(input: LoadAdmissionProposal.Input): Promise<LoadAdmissionProposal.Output> {
+    const pgAdmissionProposalRepo = this.getRepository(PgAdmissionProposal)
+    const pgAdmissionProposal = await pgAdmissionProposalRepo.findOne(input.id, {
+      relations: ['organization', 'createdBy'],
+    })
+    if (pgAdmissionProposal === undefined) return undefined
+    return new AdmissionProposal({
+      id: pgAdmissionProposal.id,
+      userId: pgAdmissionProposal.createdBy.id,
+      organizationId: pgAdmissionProposal.organization.id,
+    })
+  }
+
+  public async loadAll({
     userId,
     organizationId,
   }: LoadAdmissionProposals.Input): Promise<LoadAdmissionProposals.Output> {
