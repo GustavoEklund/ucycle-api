@@ -1,10 +1,14 @@
 import { LoadOrganization, LoadUserAccount, SaveOrganization } from '@/domain/contracts/repos'
 import { Organization } from '@/domain/entities'
-import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import {
+  OrganizationNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
 import { User } from '@/domain/entities/user'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { UpdateOrganizationUseCase } from '@/domain/use-cases/organizations'
-import { mockUser } from '../../mocks/entities'
+import { mockOrganization, mockUser } from '../../mocks/entities'
 
 describe('UpdateOrganizationUseCase', () => {
   let userMock: User
@@ -14,17 +18,18 @@ describe('UpdateOrganizationUseCase', () => {
   let sut: UpdateOrganizationUseCase
   let input: {
     organization: {
-      id: 'any_organization_id'
-      name: 'any_organization_name'
-      description: 'any_organization_description'
+      id: string
+      name: string
+      description: string
     }
     user: {
-      id: 'any_user_id'
+      id: string
     }
   }
 
   beforeAll(() => {
     userMock = mockUser()
+    organizationMock = mockOrganization({ ownerUserId: userMock.id })
     userAccountRepoSpy = mock()
     userAccountRepoSpy.load.mockResolvedValue(userMock)
     organizationRepoSpy = mock()
@@ -59,5 +64,19 @@ describe('UpdateOrganizationUseCase', () => {
     const output = await sut.perform(input)
 
     expect(output).toEqual(new OrganizationNotFoundError('any_organization_id'))
+  })
+  it('should call organizationRepo.save at least one time', async () => {
+    await sut.perform(input)
+
+    expect(organizationRepoSpy.save).toHaveBeenCalledTimes(1)
+  })
+
+  it('should throw UnauthorizedUserError if user is not the owner', async () => {
+    organizationMock = mockOrganization({ ownerUserId: 'any_other_user_id' })
+    organizationRepoSpy.load.mockResolvedValueOnce(organizationMock)
+
+    const output = await sut.perform(input)
+
+    expect(output).toEqual(new UnauthorizedUserError(input.user.id, 'UPDATE_ORGANIZATION'))
   })
 })

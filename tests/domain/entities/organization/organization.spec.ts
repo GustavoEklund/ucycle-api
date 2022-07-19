@@ -12,6 +12,7 @@ const organizationData = {
     buildingNumber: 1,
   },
   description: 'any_description',
+  ownerUserId: 'any_owner_user_id',
 }
 
 describe('Organization', () => {
