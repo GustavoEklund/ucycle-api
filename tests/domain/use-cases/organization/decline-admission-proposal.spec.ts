@@ -4,20 +4,21 @@ import {
   LoadAdmissionProposal,
   LoadUserAccount,
   LoadUserPermission,
+  SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import {
   AdmissionProposalNotFoundError,
   UnauthorizedUserError,
   UserNotFoundError,
 } from '@/domain/entities/errors'
-import { mockAdmissionProposal, mockUser } from '@/tests/domain/mocks/entities'
+import { mockAdmissionProposal, mockUser, mockUserPermission } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 import { PermissionStatus } from '@/domain/entities/permission'
 import { AdmissionProposal } from '@/domain/entities'
 
 describe('DeclineAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
-  let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal>
+  let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal & SaveAdmissionProposal>
   let userPermissionRepoSpy: MockProxy<LoadUserPermission>
   let sut: DeclineAdmissionProposal
   let inputStub: DeclineAdmissionProposal.Input
@@ -32,6 +33,7 @@ describe('DeclineAdmissionProposalUseCase', () => {
     admissionProposalStub = mockAdmissionProposal()
     admissionProposalRepoSpy.load.mockResolvedValue(admissionProposalStub)
     userPermissionRepoSpy = mock()
+    userPermissionRepoSpy.load.mockResolvedValue(mockUserPermission())
     inputStub = {
       user: {
         id: userStub.id,
@@ -100,5 +102,17 @@ describe('DeclineAdmissionProposalUseCase', () => {
     const output = await sut.perform(inputStub)
 
     expect(output).toEqual(expectedError)
+  })
+
+  it('should call SaveAdmissionProposal with correct input', async () => {
+    const declineSpy = jest.spyOn(admissionProposalStub, 'decline')
+
+    await sut.perform(inputStub)
+
+    expect(declineSpy).toHaveBeenCalledOnce()
+    expect(declineSpy).toHaveBeenCalledWith()
+    expect(admissionProposalRepoSpy.save).toHaveBeenCalledOnce()
+    expect(admissionProposalRepoSpy.save).toHaveBeenCalledWith(admissionProposalStub)
+    expect(declineSpy).toHaveBeenCalledBefore(admissionProposalRepoSpy.save)
   })
 })

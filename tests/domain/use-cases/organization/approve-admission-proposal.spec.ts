@@ -102,7 +102,7 @@ describe('ApproveAdmissionProposalUseCase', () => {
   })
 
   it('should call SaveAdmissionProposal with correct input', async () => {
-    const acceptSpy = jest.spyOn(admissionProposalStub, 'accept')
+    const acceptSpy = jest.spyOn(admissionProposalStub, 'approve')
 
     await sut.perform(inputStub)
 
