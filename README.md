@@ -44,3 +44,42 @@ With all that setup, you should be able to run the following command to start th
 ```bash
 npm run dev
 ```
+
+## Testing
+
+This project is built with [Jest](https://jestjs.io/). All tests are under `tests` folder. Tests with extension
+`.spec.ts` are unit tests, tests with extension `.test.ts` are integration tests and tests with extension `.e2e.ts`
+are end-to-end tests.
+
+The project also uses other helpful tools for testing such as:
+
+* [jest-extended](https://www.npmjs.com/package/jest-extended): Additional Jest matchers - https://github.com/jest-community/jest-extended
+* [jest-mock-extended](https://www.npmjs.com/package/jest-mock-extended): Type safe mocking extensions for Jest - https://github.com/marchaos/jest-mock-extended
+* [pg-mem](https://www.npmjs.com/package/pg-mem): An in memory postgres DB instance for your unit tests - https://github.com/oguimbal/pg-mem
+
+The coverage policy of this project is to achieve 300% coverage of tests, meaning that all production code must be
+covered 100% three times, one for unit tests, one for integration tests and one for end-to-end tests.
+
+To run all tests, run the following command:
+
+```bash
+npm run test
+```
+
+To run tests in watch mode, run the following command:
+
+```bash
+npm run test:watch
+```
+
+To run tests related to staged changes, run the following command:
+
+```bash
+npm run test:staged
+```
+
+To run coverage, run the following command:
+
+```bash
+npm run test:coverage
+```
