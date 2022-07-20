@@ -20,5 +20,13 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src", "tests", "jest.config.js", "jest.integration.config.js", "ormconfig.ts"],
+  "include": [
+    "tests/main/config/global.d.ts",
+    "node_modules/jest-extended/types/**/*.d.ts",
+    "src",
+    "tests",
+    "jest.config.js",
+    "jest.integration.config.js",
+    "ormconfig.ts"
+  ],
 }

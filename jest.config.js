@@ -12,6 +12,7 @@ module.exports = {
     '@/(.+)': '<rootDir>/src/$1',
   },
   testMatch: ['**/*.spec.ts'],
+  setupFilesAfterEnv: ['jest-extended/all'],
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   transform: {
     '\\.ts': 'ts-jest',
