@@ -2,6 +2,7 @@ import {
   LoadAdmissionProposal,
   LoadUserAccount,
   LoadUserPermission,
+  SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import {
   AdmissionProposalNotFoundError,
@@ -17,7 +18,7 @@ export interface DeclineAdmissionProposal {
 export class DeclineAdmissionProposalUseCase {
   public constructor(
     private readonly userRepo: LoadUserAccount,
-    private readonly admissionProposalRepo: LoadAdmissionProposal,
+    private readonly admissionProposalRepo: LoadAdmissionProposal & SaveAdmissionProposal,
     private readonly userPermissionRepo: LoadUserPermission
   ) {}
 
@@ -31,13 +32,16 @@ export class DeclineAdmissionProposalUseCase {
     })
     if (admissionProposal === undefined)
       return new AdmissionProposalNotFoundError(input.admissionProposal.id)
-    await this.userPermissionRepo.load({
+    const userPermission = await this.userPermissionRepo.load({
       code: 'DECLINE_ADMISSION_PROPOSAL',
       status: PermissionStatus.GRANTED,
       grantToUserId: admissionProposal.userId,
       organizationId: admissionProposal.organizationId,
     })
-    return new UnauthorizedUserError(user.id, 'DECLINE_ADMISSION_PROPOSAL')
+    if (userPermission === undefined)
+      return new UnauthorizedUserError(user.id, 'DECLINE_ADMISSION_PROPOSAL')
+    admissionProposal.decline()
+    await this.admissionProposalRepo.save(admissionProposal)
   }
 }
 

@@ -43,7 +43,7 @@ export class ApproveAdmissionProposalUseCase extends Publisher implements Approv
     })
     if (userPermission === undefined)
       return new UnauthorizedUserError(input.user.id, 'APPROVE_ADMISSION_PROPOSAL')
-    admissionProposal.accept()
+    admissionProposal.approve()
     await this.admissionProposalRepo.save(admissionProposal)
     const event = new AdmissionProposalAccepted({
       acceptedByUser: user,
