@@ -107,8 +107,10 @@ describe('ApproveAdmissionProposalUseCase', () => {
     await sut.perform(inputStub)
 
     expect(acceptSpy).toHaveBeenCalledTimes(1)
+    expect(acceptSpy).toHaveBeenCalledWith()
     expect(admissionProposalRepoSpy.save).toHaveBeenCalledTimes(1)
     expect(admissionProposalRepoSpy.save).toHaveBeenCalledWith(admissionProposalStub)
+    expect(acceptSpy).toHaveBeenCalledBefore(admissionProposalRepoSpy.save)
   })
 
   it('should notify with AdmissionProposalAccepted', async () => {
