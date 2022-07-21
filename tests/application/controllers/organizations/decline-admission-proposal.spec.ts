@@ -1,4 +1,4 @@
-import { DeclineAdmissionProposalController } from '@/application/controllers'
+import { Controller, DeclineAdmissionProposalController } from '@/application/controllers'
 import { DeclineAdmissionProposal } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -23,6 +23,10 @@ describe('DeclineAdmissionProposalController', () => {
 
   beforeEach(() => {
     sut = new DeclineAdmissionProposalController(declineAdmissionProposalSpy)
+  })
+
+  it('should extend Controller', () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
 
   it('should call DeclineAdmissionProposal with correct input', async () => {
