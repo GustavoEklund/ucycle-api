@@ -1,6 +1,10 @@
 import { DeclineAdmissionProposal } from '@/domain/use-cases'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
-import { HttpResponse, notFound } from '@/application/helpers'
+import {
+  AdmissionProposalNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
+import { forbidden, HttpResponse, notFound } from '@/application/helpers'
 
 type HttpRequest = {
   userId: string
@@ -17,5 +21,6 @@ export class DeclineAdmissionProposalController {
     })
     if (output instanceof UserNotFoundError) return notFound([output])
     if (output instanceof AdmissionProposalNotFoundError) return notFound([output])
+    if (output instanceof UnauthorizedUserError) return forbidden([output])
   }
 }
