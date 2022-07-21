@@ -2,13 +2,18 @@ import { DeclineAdmissionProposalController } from '@/application/controllers'
 import { DeclineAdmissionProposal } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { UserNotFoundError } from '@/domain/entities/errors'
+import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 
 describe('DeclineAdmissionProposalController', () => {
+  let httpRequestStub: { userId: string; admissionProposalId: string }
   let declineAdmissionProposalSpy: MockProxy<DeclineAdmissionProposal>
   let sut: DeclineAdmissionProposalController
 
   beforeAll(() => {
+    httpRequestStub = {
+      userId: 'any_user_id',
+      admissionProposalId: 'any_admission_proposal_id',
+    }
     declineAdmissionProposalSpy = mock()
   })
 
@@ -17,10 +22,7 @@ describe('DeclineAdmissionProposalController', () => {
   })
 
   it('should call DeclineAdmissionProposal with correct input', async () => {
-    await sut.handle({
-      userId: 'any_user_id',
-      admissionProposalId: 'any_admission_proposal_id',
-    })
+    await sut.handle(httpRequestStub)
 
     expect(declineAdmissionProposalSpy.perform).toHaveBeenCalledTimes(1)
     expect(declineAdmissionProposalSpy.perform).toHaveBeenCalledWith({
@@ -33,10 +35,19 @@ describe('DeclineAdmissionProposalController', () => {
     const expectedError = new UserNotFoundError('any_user_id')
     declineAdmissionProposalSpy.perform.mockResolvedValueOnce(expectedError)
 
-    const httpResponse = await sut.handle({
-      userId: 'any_user_id',
-      admissionProposalId: 'any_admission_proposal_id',
+    const httpResponse = await sut.handle(httpRequestStub)
+
+    expect(httpResponse).toEqual({
+      statusCode: 404,
+      data: [expectedError],
     })
+  })
+
+  it('should return 404 if DeclineAdmissionProposal returns AdmissionProposalNotFoundError', async () => {
+    const expectedError = new AdmissionProposalNotFoundError('any_admission_proposal_id')
+    declineAdmissionProposalSpy.perform.mockResolvedValueOnce(expectedError)
+
+    const httpResponse = await sut.handle(httpRequestStub)
 
     expect(httpResponse).toEqual({
       statusCode: 404,
