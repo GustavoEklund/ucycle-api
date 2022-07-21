@@ -4,7 +4,7 @@ import {
   UnauthorizedUserError,
   UserNotFoundError,
 } from '@/domain/entities/errors'
-import { forbidden, HttpResponse, notFound, ok } from '@/application/helpers'
+import { HttpResponse } from '@/application/helpers'
 
 type HttpRequest = {
   userId: string
@@ -19,9 +19,9 @@ export class DeclineAdmissionProposalController {
       user: { id: input.userId },
       admissionProposal: { id: input.admissionProposalId },
     })
-    if (output instanceof UserNotFoundError) return notFound([output])
-    if (output instanceof AdmissionProposalNotFoundError) return notFound([output])
-    if (output instanceof UnauthorizedUserError) return forbidden([output])
-    return ok(undefined)
+    if (output instanceof UserNotFoundError) return HttpResponse.notFound([output])
+    if (output instanceof AdmissionProposalNotFoundError) return HttpResponse.notFound([output])
+    if (output instanceof UnauthorizedUserError) return HttpResponse.forbidden([output])
+    return HttpResponse.ok(undefined)
   }
 }
