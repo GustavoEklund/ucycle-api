@@ -5,16 +5,19 @@ import {
   UserNotFoundError,
 } from '@/domain/entities/errors'
 import { HttpResponse } from '@/application/helpers'
+import { Controller } from '@/application/controllers'
 
 type HttpRequest = {
   userId: string
   admissionProposalId: string
 }
 
-export class DeclineAdmissionProposalController {
-  public constructor(private readonly declineAdmissionProposal: DeclineAdmissionProposal) {}
+export class DeclineAdmissionProposalController extends Controller {
+  public constructor(private readonly declineAdmissionProposal: DeclineAdmissionProposal) {
+    super()
+  }
 
-  public async handle(input: HttpRequest): Promise<HttpResponse<undefined | Error[]>> {
+  public async perform(input: HttpRequest): Promise<HttpResponse<undefined | Error[]>> {
     const output = await this.declineAdmissionProposal.perform({
       user: { id: input.userId },
       admissionProposal: { id: input.admissionProposalId },
