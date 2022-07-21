@@ -70,4 +70,13 @@ describe('DeclineAdmissionProposalController', () => {
       data: [expectedError],
     })
   })
+
+  it('should return 200 if DeclineAdmissionProposal returns undefined', async () => {
+    const httpResponse = await sut.handle(httpRequestStub)
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: undefined,
+    })
+  })
 })
