@@ -2,7 +2,11 @@ import { DeclineAdmissionProposalController } from '@/application/controllers'
 import { DeclineAdmissionProposal } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import {
+  AdmissionProposalNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
 
 describe('DeclineAdmissionProposalController', () => {
   let httpRequestStub: { userId: string; admissionProposalId: string }
@@ -51,6 +55,18 @@ describe('DeclineAdmissionProposalController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 404,
+      data: [expectedError],
+    })
+  })
+
+  it('should return 403 if DeclineAdmissionProposal returns UnauthorizedUserError', async () => {
+    const expectedError = new UnauthorizedUserError('any_user_id', 'any_permission_code')
+    declineAdmissionProposalSpy.perform.mockResolvedValueOnce(expectedError)
+
+    const httpResponse = await sut.handle(httpRequestStub)
+
+    expect(httpResponse).toEqual({
+      statusCode: 403,
       data: [expectedError],
     })
   })
