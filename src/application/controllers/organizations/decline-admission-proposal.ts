@@ -6,6 +6,7 @@ import {
 } from '@/domain/entities/errors'
 import { HttpResponse } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
+import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
 
 type HttpRequest = {
   userId: string
@@ -26,5 +27,16 @@ export class DeclineAdmissionProposalController extends Controller {
     if (output instanceof AdmissionProposalNotFoundError) return HttpResponse.notFound([output])
     if (output instanceof UnauthorizedUserError) return HttpResponse.forbidden([output])
     return HttpResponse.ok(undefined)
+  }
+
+  public override buildValidators({ userId, admissionProposalId }: HttpRequest): Validator[] {
+    return [
+      ...ValidationBuilder.of({ value: userId, fieldName: 'userId' })
+        .required(RequiredType.string)
+        .build(),
+      ...ValidationBuilder.of({ value: admissionProposalId, fieldName: 'admissionProposalId' })
+        .required(RequiredType.string)
+        .build(),
+    ]
   }
 }
