@@ -7,6 +7,7 @@ import {
   UnauthorizedUserError,
   UserNotFoundError,
 } from '@/domain/entities/errors'
+import { RequiredString } from '@/application/validation'
 
 describe('DeclineAdmissionProposalController', () => {
   let httpRequestStub: { userId: string; admissionProposalId: string }
@@ -27,6 +28,17 @@ describe('DeclineAdmissionProposalController', () => {
 
   it('should extend Controller', () => {
     expect(sut).toBeInstanceOf(Controller)
+  })
+
+  it('should build validators correctly', () => {
+    const expectedValidators = [
+      new RequiredString('any_user_id', 'userId'),
+      new RequiredString('any_admission_proposal_id', 'admissionProposalId'),
+    ]
+
+    const validators = sut.buildValidators(httpRequestStub)
+
+    expect(validators).toEqual(expectedValidators)
   })
 
   it('should call DeclineAdmissionProposal with correct input', async () => {
