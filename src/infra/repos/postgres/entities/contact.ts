@@ -18,6 +18,9 @@ export class PgContact {
   @Column({ type: 'boolean', default: false })
   verified!: boolean
 
+  @Column({ type: 'boolean', default: false, name: 'is_private' })
+  isPrivate!: boolean
+
   @Column({ nullable: false })
   type!: string
 
@@ -31,7 +34,7 @@ export class PgContact {
     cascade: ['insert'],
     nullable: false,
   })
-  user!: Promise<PgUser>
+  user!: PgUser
 
   @CreateDateColumn()
   createdAt!: Date

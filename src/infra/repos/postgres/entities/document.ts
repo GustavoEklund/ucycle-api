@@ -22,7 +22,7 @@ export class PgDocument {
   number!: string
 
   @ManyToOne(() => PgUser, (user) => user.documents, { nullable: false })
-  user!: Promise<PgUser>
+  user!: PgUser
 
   @CreateDateColumn()
   createdAt!: Date

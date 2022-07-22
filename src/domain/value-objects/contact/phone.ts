@@ -1,4 +1,5 @@
 import { Contact } from '@/domain/value-objects/contact'
+import { InvalidPhoneError } from '@/domain/entities/errors'
 
 export enum PhoneType {
   primary = 'PRIMARY',
@@ -15,6 +16,7 @@ export class Phone extends Contact {
   public constructor(number: string, label: PhoneType) {
     super('PHONE', label, false, true)
     const clearNumber = Phone.removeNonNumbers(number)
+    if (!Phone.isValid(clearNumber)) throw new InvalidPhoneError()
     this.value = {
       countryCode: Phone.getCountryCode(clearNumber),
       areaCode: Phone.getAreaCode(clearNumber),
@@ -46,5 +48,9 @@ export class Phone extends Contact {
     const numberWithoutAreaCodeLength = 9
     if (number.length <= numberWithoutAreaCodeLength) return number
     return number.substring(2)
+  }
+
+  private static isValid(phone: string): boolean {
+    return phone.length > 6
   }
 }
