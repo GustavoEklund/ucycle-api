@@ -4,11 +4,14 @@ import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
   PgAdmissionProposal,
+  PgBasePermission,
   PgContact,
   PgDocument,
   PgImage,
+  PgModule,
   PgOrganization,
   PgUser,
+  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
@@ -33,6 +36,9 @@ describe('PgDocumentRepository', () => {
       PgAddress,
       PgImage,
       PgAdmissionProposal,
+      PgBasePermission,
+      PgUserPermission,
+      PgModule,
     ])
     backup = db.backup()
     pgUserRepo = connection.getRepository(PgUser)
