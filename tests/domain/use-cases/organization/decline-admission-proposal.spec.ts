@@ -1,70 +1,71 @@
-import { ApproveAdmissionProposal, ApproveAdmissionProposalUseCase } from '@/domain/use-cases'
+import { DeclineAdmissionProposal, DeclineAdmissionProposalUseCase } from '@/domain/use-cases'
+import { mock, MockProxy } from 'jest-mock-extended'
 import {
   LoadAdmissionProposal,
   LoadUserAccount,
   LoadUserPermission,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
-import { PermissionStatus } from '@/domain/entities/permission'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import {
+  AdmissionProposalNotFoundError,
+  UnauthorizedUserError,
+  UserNotFoundError,
+} from '@/domain/entities/errors'
 import { mockAdmissionProposal, mockUser, mockUserPermission } from '@/tests/domain/mocks/entities'
-import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
-import { AdmissionProposal } from '@/domain/entities'
-import { AdmissionProposalAccepted } from '@/domain/events/organization'
 import { User } from '@/domain/entities/user'
+import { PermissionStatus } from '@/domain/entities/permission'
+import { AdmissionProposal } from '@/domain/entities'
 
-import { mock, MockProxy } from 'jest-mock-extended'
-import { reset, set } from 'mockdate'
-
-describe('ApproveAdmissionProposalUseCase', () => {
+describe('DeclineAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>
   let admissionProposalRepoSpy: MockProxy<LoadAdmissionProposal & SaveAdmissionProposal>
   let userPermissionRepoSpy: MockProxy<LoadUserPermission>
-  let admissionProposalStub: AdmissionProposal
+  let sut: DeclineAdmissionProposal
+  let inputStub: DeclineAdmissionProposal.Input
   let userStub: User
-  let sut: ApproveAdmissionProposalUseCase
-  let inputStub: ApproveAdmissionProposal.Input
+  let admissionProposalStub: AdmissionProposal
 
   beforeAll(() => {
+    userRepoSpy = mock()
+    userStub = mockUser()
+    userRepoSpy.load.mockResolvedValue(userStub)
+    admissionProposalRepoSpy = mock()
+    admissionProposalStub = mockAdmissionProposal()
+    admissionProposalRepoSpy.load.mockResolvedValue(admissionProposalStub)
+    userPermissionRepoSpy = mock()
+    userPermissionRepoSpy.load.mockResolvedValue(mockUserPermission())
     inputStub = {
       user: {
-        id: 'any_user_id',
+        id: userStub.id,
       },
       admissionProposal: {
         id: 'any_admission_proposal_id',
       },
     }
-    userRepoSpy = mock()
-    userStub = mockUser()
-    userRepoSpy.load.mockResolvedValue(userStub)
-    admissionProposalRepoSpy = mock()
-    admissionProposalStub = mockAdmissionProposal({ userId: 'any_user_id' })
-    admissionProposalRepoSpy.load.mockResolvedValue(admissionProposalStub)
-    userPermissionRepoSpy = mock()
-    userPermissionRepoSpy.load.mockResolvedValue(mockUserPermission())
   })
 
   beforeEach(() => {
-    sut = new ApproveAdmissionProposalUseCase(
+    sut = new DeclineAdmissionProposalUseCase(
       userRepoSpy,
       admissionProposalRepoSpy,
       userPermissionRepoSpy
     )
   })
 
-  it('should call LoadUserRepository with correct input', async () => {
+  it('should call LoadUser with correct input', async () => {
     await sut.perform(inputStub)
 
     expect(userRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(userRepoSpy.load).toHaveBeenCalledWith({ id: 'any_user_id' })
+    expect(userRepoSpy.load).toHaveBeenCalledWith({ id: userStub.id })
   })
 
-  it('should return UserNotFoundError if LoadUserRepository returns undefined', async () => {
+  it('should return UserNotFoundError if LoadUser returns undefined', async () => {
     userRepoSpy.load.mockResolvedValueOnce(undefined)
+    const expectedError = new UserNotFoundError(userStub.id)
 
     const output = await sut.perform(inputStub)
 
-    expect(output).toEqual(new UserNotFoundError('any_user_id'))
+    expect(output).toEqual(expectedError)
   })
 
   it('should call LoadAdmissionProposal with correct input', async () => {
@@ -87,44 +88,31 @@ describe('ApproveAdmissionProposalUseCase', () => {
 
     expect(userPermissionRepoSpy.load).toHaveBeenCalledTimes(1)
     expect(userPermissionRepoSpy.load).toHaveBeenCalledWith({
-      grantToUserId: 'any_user_id',
-      code: 'APPROVE_ADMISSION_PROPOSAL',
+      code: 'DECLINE_ADMISSION_PROPOSAL',
       status: PermissionStatus.GRANTED,
+      grantToUserId: admissionProposalStub.userId,
+      organizationId: admissionProposalStub.organizationId,
     })
   })
 
   it('should return UnauthorizedUserError if LoadUserPermission returns undefined', async () => {
     userPermissionRepoSpy.load.mockResolvedValueOnce(undefined)
+    const expectedError = new UnauthorizedUserError(userStub.id, 'DECLINE_ADMISSION_PROPOSAL')
 
     const output = await sut.perform(inputStub)
 
-    expect(output).toEqual(new UnauthorizedUserError('any_user_id', 'APPROVE_ADMISSION_PROPOSAL'))
+    expect(output).toEqual(expectedError)
   })
 
   it('should call SaveAdmissionProposal with correct input', async () => {
-    const acceptSpy = jest.spyOn(admissionProposalStub, 'approve')
+    const declineSpy = jest.spyOn(admissionProposalStub, 'decline')
 
     await sut.perform(inputStub)
 
-    expect(acceptSpy).toHaveBeenCalledTimes(1)
-    expect(acceptSpy).toHaveBeenCalledWith()
-    expect(admissionProposalRepoSpy.save).toHaveBeenCalledTimes(1)
+    expect(declineSpy).toHaveBeenCalledOnce()
+    expect(declineSpy).toHaveBeenCalledWith()
+    expect(admissionProposalRepoSpy.save).toHaveBeenCalledOnce()
     expect(admissionProposalRepoSpy.save).toHaveBeenCalledWith(admissionProposalStub)
-    expect(acceptSpy).toHaveBeenCalledBefore(admissionProposalRepoSpy.save)
-  })
-
-  it('should notify with AdmissionProposalAccepted', async () => {
-    set(new Date('2021-03-01T10:00:00'))
-    const notifySpy = jest.spyOn(sut, 'notify')
-    const expectedEvent = new AdmissionProposalAccepted({
-      acceptedByUser: userStub,
-      admissionProposal: admissionProposalStub,
-    })
-
-    await sut.perform(inputStub)
-
-    expect(notifySpy).toHaveBeenCalledTimes(1)
-    expect(notifySpy).toHaveBeenCalledWith(expectedEvent)
-    reset()
+    expect(declineSpy).toHaveBeenCalledBefore(admissionProposalRepoSpy.save)
   })
 })

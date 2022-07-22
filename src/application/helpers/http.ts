@@ -49,9 +49,9 @@ export const unauthorized = (): HttpResponse<Error[]> => ({
   data: [new UnauthorizedError()],
 })
 
-export const forbidden = (): HttpResponse<Error[]> => ({
+export const forbidden = (errors?: Error[]): HttpResponse<Error[]> => ({
   statusCode: 403,
-  data: [new ForbiddenError()],
+  data: errors ?? [new ForbiddenError()],
 })
 
 export const notFound = (error?: Error[]): HttpResponse<Error[]> => ({
@@ -68,3 +68,15 @@ export const serverError = (error: unknown): HttpResponse<Error[]> => ({
   statusCode: 500,
   data: [new ServerError(error instanceof Error ? error : undefined)],
 })
+
+export const HttpResponse = {
+  ok,
+  created,
+  noContent,
+  badRequest,
+  unauthorized,
+  forbidden,
+  notFound,
+  conflict,
+  serverError,
+}
