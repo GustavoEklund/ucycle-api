@@ -40,7 +40,7 @@
     "down": "docker-compose down",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest --passWithNoTests --no-cache --runInBand",
+    "test": "jest --passWithNoTests --no-cache",
     "test:watch": "npm test -- --watch",
     "test:staged": "npm test -- --findRelatedTests",
     "test:coverage": "npm test -- --coverage",

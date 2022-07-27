@@ -14,13 +14,11 @@ import { PgModule, PgOrganization, PgUser } from '@/infra/repos/postgres/entitie
 
 @Entity({ name: 'user_permission' })
 export class PgUserPermission {
-  @PrimaryGeneratedColumn('uuid', {
-    name: 'id',
-    comment: 'the user permission id, in uuid format',
-  })
+  @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
-  @Column('varchar', {
+  @Column({
+    type: 'varchar',
     length: 100,
     name: 'code',
     unique: true,
@@ -29,7 +27,8 @@ export class PgUserPermission {
   })
   code!: string
 
-  @Column('varchar', {
+  @Column({
+    type: 'varchar',
     name: 'name',
     length: 256,
     nullable: false,
@@ -37,7 +36,8 @@ export class PgUserPermission {
   })
   name!: string
 
-  @Column('varchar', {
+  @Column({
+    type: 'varchar',
     name: 'description',
     length: 256,
     nullable: true,
@@ -45,7 +45,8 @@ export class PgUserPermission {
   })
   description?: string
 
-  @Column('boolean', {
+  @Column({
+    type: 'boolean',
     name: 'read',
     default: false,
     nullable: false,
@@ -53,7 +54,8 @@ export class PgUserPermission {
   })
   read!: boolean
 
-  @Column('boolean', {
+  @Column({
+    type: 'boolean',
     name: 'write',
     default: false,
     nullable: false,
@@ -61,7 +63,8 @@ export class PgUserPermission {
   })
   write!: boolean
 
-  @Column('boolean', {
+  @Column({
+    type: 'boolean',
     name: 'owner',
     default: false,
     nullable: false,
@@ -69,17 +72,18 @@ export class PgUserPermission {
   })
   owner!: boolean
 
-  @ManyToOne(() => PgModule, (module) => module.basePermissions, { nullable: false })
-  @JoinColumn({ name: 'module_id', referencedColumnName: 'id' })
-  module!: PgModule
-
-  @Column('enum', {
+  @Column({
+    type: 'enum',
     enum: PermissionStatus,
     name: 'status',
     nullable: false,
     comment: 'the permission status can be either GRANTED or REVOKED',
   })
   status!: PermissionStatus
+
+  @ManyToOne(() => PgModule, (module) => module.basePermissions, { nullable: false })
+  @JoinColumn({ name: 'module_id', referencedColumnName: 'id' })
+  module!: PgModule
 
   @ManyToOne(() => PgUser, (user) => user.basePermissions, { nullable: false })
   @JoinColumn({ name: 'created_by_user_id', referencedColumnName: 'id' })
@@ -95,7 +99,8 @@ export class PgUserPermission {
   @JoinColumn({ name: 'grant_at_organization_id', referencedColumnName: 'id' })
   grantAtOrganization!: PgOrganization
 
-  @Column('timestamp', {
+  @Column({
+    type: 'timestamp',
     name: 'expires_at',
     nullable: true,
     comment: 'the date when the permission expires',

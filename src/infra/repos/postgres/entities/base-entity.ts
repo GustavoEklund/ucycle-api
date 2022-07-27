@@ -1,30 +1,13 @@
 import {
-  Column,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
-
-@Entity({ name: 'image' })
-export class PgImage {
+export class PgBaseEntity {
   @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
-
-  @Column()
-  url!: string
-
-  @ManyToOne(() => PgOrganization, (organization) => organization.pictures)
-  organization!: PgOrganization
-
-  @ManyToOne(() => PgUser, (user) => user.images)
-  @JoinColumn({ name: 'created_by' })
-  createdBy!: PgUser
 
   @CreateDateColumn({
     name: 'created_at',

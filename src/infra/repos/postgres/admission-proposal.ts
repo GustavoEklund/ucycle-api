@@ -4,7 +4,12 @@ import {
   LoadAdmissionProposals,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
-import { PgAdmissionProposal, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
+import {
+  PgAdmissionProposal,
+  PgAdmissionProposalStatus,
+  PgOrganization,
+  PgUser,
+} from '@/infra/repos/postgres/entities'
 import { AdmissionProposal } from '@/domain/entities'
 
 export class PgAdmissionProposalRepository
@@ -22,7 +27,7 @@ export class PgAdmissionProposalRepository
     const pgOrganization = await pgOrganizationRepo.findOneOrFail(organizationId)
     const pgAdmissionProposalRepo = this.getRepository(PgAdmissionProposal)
     const { id } = await pgAdmissionProposalRepo.save({
-      status,
+      status: status as PgAdmissionProposalStatus,
       organization: pgOrganization,
       createdBy: pgUser,
     })

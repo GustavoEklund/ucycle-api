@@ -1,9 +1,11 @@
+import { faker } from '@faker-js/faker'
+
 export const mockAddress = () => ({
-  city: 'any_city',
-  state: 'any_state',
-  country: 'any_country',
-  street: 'any_street',
-  neighbourhood: 'any_neighbourhood',
-  postalCode: 'any_postal_code',
-  buildingNumber: '76',
+  city: faker.address.city(),
+  state: faker.address.state(),
+  country: faker.address.country(),
+  street: faker.address.streetName(),
+  neighbourhood: faker.address.cityName(),
+  zipCode: faker.address.zipCode('########'),
+  buildingNumber: faker.address.buildingNumber(),
 })

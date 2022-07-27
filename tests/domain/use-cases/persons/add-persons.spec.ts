@@ -1,7 +1,7 @@
 import { AddPersons, setupAddPersons } from '@/domain/use-cases/persons/add-persons'
 import { Person } from '@/domain/entities/persons/persons'
 import { mockPerson } from '@/tests/infra/repos/postgres/mocks/person'
-import { SavePersons } from '@/domain/contracts/repos/persons/persons'
+import { SavePersons } from '@/domain/contracts/repos/person'
 import { mock, MockProxy } from 'jest-mock-extended'
 
 const generatePerson = (number = 1) => {

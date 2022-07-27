@@ -1,4 +1,6 @@
 import { makeFakeDb, mockPgOrganization, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
+import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
+import { Organization } from '@/domain/entities'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
@@ -10,6 +12,7 @@ import {
   PgImage,
   PgModule,
   PgOrganization,
+  PgOrganizationMember,
   PgUser,
   PgUserPermission,
 } from '@/infra/repos/postgres/entities'
@@ -17,8 +20,6 @@ import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
-import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
-import { Organization } from '@/domain/entities'
 
 describe('PgOrganizationRepository', () => {
   let sut: PgOrganizationRepository
@@ -41,6 +42,7 @@ describe('PgOrganizationRepository', () => {
       PgBasePermission,
       PgModule,
       PgUserPermission,
+      PgOrganizationMember,
     ])
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
@@ -67,11 +69,9 @@ describe('PgOrganizationRepository', () => {
         firstName: 'any_name',
         lastName: 'any_last_name',
         firstAccess: true,
-        documents: Promise.resolve([]),
         contacts: Promise.resolve([
           { verified: false, type: 'EMAIL', value: { type: 'PRIMARY', address: 'new_email' } },
         ]),
-        organizations: Promise.resolve([]),
       })
       pgUser = await pgUserRepo.save(pgUser)
       const organization = mockPgOrganization({})
@@ -102,7 +102,8 @@ describe('PgOrganizationRepository', () => {
 
   describe('loadAll', () => {
     it('should load all organizations', async () => {
-      const pgAddress = await pgAddressRepo.save(mockAddress())
+      const addressStub = mockAddress()
+      const pgAddress = await pgAddressRepo.save(addressStub)
       await pgAddressRepo.save(pgAddress)
       const pgOrganization = pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization.address = pgAddress
@@ -119,13 +120,13 @@ describe('PgOrganizationRepository', () => {
           name: pgOrganization.name,
           pictures: [],
           address: {
-            buildingNumber: '76',
-            city: 'any_city',
-            country: 'any_country',
-            neighbourhood: 'any_neighbourhood',
-            postalCode: 'any_postal_code',
-            state: 'any_state',
-            street: 'any_street',
+            buildingNumber: addressStub.buildingNumber,
+            city: addressStub.city,
+            country: addressStub.country,
+            neighbourhood: addressStub.neighbourhood,
+            postalCode: addressStub.zipCode,
+            state: addressStub.state,
+            street: addressStub.street,
           },
         },
       ])

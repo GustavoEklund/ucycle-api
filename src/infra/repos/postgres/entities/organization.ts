@@ -3,8 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -15,20 +14,26 @@ import {
   PgAddress,
   PgAdmissionProposal,
   PgImage,
+  PgOrganizationMember,
   PgUser,
   PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'organization' })
 export class PgOrganization {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
   @Column()
   name!: string
 
   @ManyToOne(() => PgAddress, (address) => address.organizations)
+  @JoinColumn({ name: 'address_id', referencedColumnName: 'id' })
   address!: PgAddress
+
+  @ManyToOne(() => PgUser, (user) => user.organizationsOwned)
+  @JoinColumn({ name: 'owner_user_id', referencedColumnName: 'id' })
+  ownerUser!: PgUser
 
   @OneToMany(() => PgImage, (image) => image.organization)
   pictures!: Promise<PgImage[]>
@@ -36,23 +41,27 @@ export class PgOrganization {
   @OneToMany(() => PgAdmissionProposal, (admissionProposal) => admissionProposal.organization)
   admissionProposals!: Promise<PgAdmissionProposal[]>
 
-  @ManyToMany(() => PgUser, (user) => user.organizations)
-  @JoinTable({ name: 'organization_members' })
-  members!: Promise<PgUser[]>
-
-  @ManyToOne(() => PgUser, (user) => user.organizationsOwned)
-  ownerUser!: PgUser
+  @OneToMany(() => PgOrganizationMember, (organizationMember) => organizationMember.organization)
+  members!: Promise<PgOrganizationMember[]>
 
   @ManyToOne(() => PgUserPermission, (userPermission) => userPermission.grantAtOrganization)
-  @JoinTable({ name: 'user_permissions' })
   userPermissions!: Promise<PgUserPermission[]>
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    name: 'created_at',
+    comment: 'the date and time when the permission was created',
+  })
   createdAt!: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    name: 'updated_at',
+    comment: 'the date when the permission was updated last time',
+  })
   updatedAt!: Date
 
-  @DeleteDateColumn()
-  deletedAt!: Date
+  @DeleteDateColumn({
+    name: 'deleted_at',
+    comment: 'the date when the permission was deleted, null if not deleted',
+  })
+  deletedAt?: Date
 }

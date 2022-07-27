@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,7 +13,7 @@ import { PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'contact' })
 export class PgContact {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
   @Column({ type: 'boolean', default: false })
@@ -34,14 +35,24 @@ export class PgContact {
     cascade: ['insert'],
     nullable: false,
   })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user!: PgUser
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    name: 'created_at',
+    comment: 'the date and time when the permission was created',
+  })
   createdAt!: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    name: 'updated_at',
+    comment: 'the date when the permission was updated last time',
+  })
   updatedAt!: Date
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({
+    name: 'deleted_at',
+    comment: 'the date when the permission was deleted, null if not deleted',
+  })
   deletedAt?: Date
 }
