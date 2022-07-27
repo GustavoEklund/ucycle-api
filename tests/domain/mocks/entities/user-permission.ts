@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker'
 export const mockUserPermission = (): UserPermission =>
   new UserPermission({
     id: faker.datatype.uuid(),
-    code: faker.random.word().toUpperCase(),
+    code: faker.random.word().toUpperCase().padStart(3, faker.random.word()),
     name: faker.random.word(),
     description: faker.random.words(),
     read: faker.datatype.boolean(),

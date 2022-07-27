@@ -15,6 +15,7 @@ jest.mock('typeorm', () => ({
   CreateDateColumn: jest.fn(),
   DeleteDateColumn: jest.fn(),
   UpdateDateColumn: jest.fn(),
+  OneToOne: jest.fn(),
   OneToMany: jest.fn(),
   ManyToOne: jest.fn(),
   ManyToMany: jest.fn(),

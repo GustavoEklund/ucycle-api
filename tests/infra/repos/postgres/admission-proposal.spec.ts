@@ -4,12 +4,14 @@ import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
   PgAddress,
   PgAdmissionProposal,
+  PgAdmissionProposalStatus,
   PgBasePermission,
   PgContact,
   PgDocument,
   PgImage,
   PgModule,
   PgOrganization,
+  PgOrganizationMember,
   PgUser,
   PgUserPermission,
 } from '@/infra/repos/postgres/entities'
@@ -41,6 +43,7 @@ describe('PgAdmissionProposalRepository', () => {
       PgBasePermission,
       PgModule,
       PgUserPermission,
+      PgOrganizationMember,
     ])
     backup = db.backup()
     pgAddressRepo = connection.getRepository(PgAddress)
@@ -74,7 +77,7 @@ describe('PgAdmissionProposalRepository', () => {
       const pgOrganization = await pgOrganizationRepo.save(organization)
 
       const { id: admissionProposalId } = await sut.save({
-        status: 'any_status',
+        status: PgAdmissionProposalStatus.pending,
         userId: pgUser.id,
         organizationId: pgOrganization.id,
       })
@@ -85,7 +88,7 @@ describe('PgAdmissionProposalRepository', () => {
       })
       expect(admissionProposal).toMatchObject({
         id: admissionProposalId,
-        status: 'any_status',
+        status: PgAdmissionProposalStatus.pending,
         organization: {
           id: pgOrganization.id,
         },

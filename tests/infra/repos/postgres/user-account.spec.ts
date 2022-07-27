@@ -10,6 +10,7 @@ import {
   PgImage,
   PgModule,
   PgOrganization,
+  PgOrganizationMember,
   PgUser,
   PgUserPermission,
 } from '@/infra/repos/postgres/entities'
@@ -40,6 +41,7 @@ describe('PgUserAccountRepository', () => {
       PgBasePermission,
       PgUserPermission,
       PgModule,
+      PgOrganizationMember,
     ])
     backup = db.backup()
     pgUserRepo = connection.getRepository(PgUser)

@@ -1,28 +1,28 @@
 import { makeFakeDb, mockPerson } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import { PgPersons } from '@/infra/repos/postgres/entities'
-import { PgPersonsRepository } from '@/infra/repos/postgres'
+import { PgPerson } from '@/infra/repos/postgres/entities'
+import { PgPersonRepository } from '@/infra/repos/postgres'
 
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
 
 describe('PgPersonsRepository', () => {
-  let sut: PgPersonsRepository
+  let sut: PgPersonRepository
   let connection: PgConnection
-  let PgPersonsRepo: Repository<PgPersons>
+  let pgPersonsRepo: Repository<PgPerson>
   let backup: IBackup
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([PgPersons])
+    const db = await makeFakeDb([PgPerson])
     backup = db.backup()
-    PgPersonsRepo = connection.getRepository(PgPersons)
+    pgPersonsRepo = connection.getRepository(PgPerson)
   })
 
   beforeEach(() => {
     backup.restore()
-    sut = new PgPersonsRepository()
+    sut = new PgPersonRepository()
   })
 
   afterAll(async () => {
@@ -39,10 +39,10 @@ describe('PgPersonsRepository', () => {
 
       const sutReturn = await sut.save(person)
 
-      const PgPersons = await PgPersonsRepo.findOne({
+      const pgPersons = await pgPersonsRepo.findOne({
         where: [{ id: sutReturn[0].id }],
       })
-      expect(PgPersons).toMatchObject({
+      expect(pgPersons).toMatchObject({
         id: sutReturn[0].id,
       })
     })
@@ -50,13 +50,13 @@ describe('PgPersonsRepository', () => {
 
   describe('load', () => {
     it('should load person', async () => {
-      const PgPersons = PgPersonsRepo.create(mockPerson())
-      await PgPersonsRepo.save(PgPersons)
+      const pgPersons = pgPersonsRepo.create(mockPerson())
+      await pgPersonsRepo.save(pgPersons)
 
-      const persons = await sut.load({ id: PgPersons.id })
+      const persons = await sut.load({ id: pgPersons.id })
 
       expect(persons).toEqual({
-        id: PgPersons.id,
+        id: pgPersons.id,
       })
     })
   })

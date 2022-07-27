@@ -1,25 +1,23 @@
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 import {
-  PgAddress,
   PgAdmissionProposal,
-  PgBasePermission,
   PgContact,
   PgDocument,
-  PgImage,
-  PgModule,
   PgOrganization,
   PgUser,
-  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 import {
   makeFakeDb,
   mockContact,
   mockDocument,
+  mockPgAdmissionProposal,
   mockPgOrganization,
   mockPgUser,
 } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgOrganizationMemberRepository } from '@/infra/repos/postgres'
+import { PgOrganizationMember } from '@/infra/repos/postgres/entities/organization-member'
+import { OrganizationMember } from '@/domain/entities'
 
 import { Repository } from 'typeorm'
 import { IBackup } from 'pg-mem'
@@ -32,26 +30,17 @@ describe('PgOrganizationMemberRepository', () => {
   let pgUserRepo: Repository<PgUser>
   let pgDocumentRepo: Repository<PgDocument>
   let pgContactRepo: Repository<PgContact>
+  let pgOrganizationMemberRepo: Repository<PgOrganizationMember>
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([
-      PgOrganization,
-      PgUser,
-      PgDocument,
-      PgContact,
-      PgAddress,
-      PgImage,
-      PgAdmissionProposal,
-      PgBasePermission,
-      PgModule,
-      PgUserPermission,
-    ])
+    const db = await makeFakeDb()
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
     pgUserRepo = connection.getRepository(PgUser)
     pgDocumentRepo = connection.getRepository(PgDocument)
     pgContactRepo = connection.getRepository(PgContact)
+    pgOrganizationMemberRepo = connection.getRepository(PgOrganizationMember)
   })
 
   beforeEach(() => {
@@ -69,42 +58,39 @@ describe('PgOrganizationMemberRepository', () => {
 
   describe('load', () => {
     it('should load organization member', async () => {
-      let pgOrganization = pgOrganizationRepo.create(mockPgOrganization({}))
+      const pgUser = await pgUserRepo.create(mockPgUser())
+      pgUser.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
+      pgUser.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
+      await pgUserRepo.save(pgUser)
+      let pgOrganization = await pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization = await pgOrganizationRepo.save(pgOrganization)
-      const pgUser1 = await pgUserRepo.create(mockPgUser())
-      pgUser1.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
-      pgUser1.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
-      await pgUserRepo.save(pgUser1)
-      const pgUser2 = await pgUserRepo.create(mockPgUser())
-      pgUser2.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
-      pgUser2.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
-      await pgUserRepo.save(pgUser2)
-      const pgUser3 = await pgUserRepo.create(mockPgUser())
-      pgUser3.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
-      pgUser3.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
-      await pgUserRepo.save(pgUser3)
-      pgOrganization.members = Promise.resolve([pgUser1, pgUser2, pgUser3])
+      const pgAdmissionProposal = await connection.getRepository(PgAdmissionProposal).save(
+        mockPgAdmissionProposal({
+          createdBy: pgUser,
+          organization: pgOrganization,
+        })
+      )
+      let pgOrganizationMember = await pgOrganizationMemberRepo.create({
+        user: pgUser,
+        joinDate: new Date('2021-03-01'),
+        admissionProposal: pgAdmissionProposal,
+      })
+      pgOrganizationMember = await pgOrganizationMemberRepo.save(pgOrganizationMember)
+      pgOrganization.members = Promise.resolve([pgOrganizationMember])
       await pgOrganizationRepo.save(pgOrganization)
 
       const organizationMember = await sut.load({
-        user: { id: pgUser2.id },
+        user: { id: pgUser.id },
         organization: { id: pgOrganization.id },
       })
 
-      expect(organizationMember).toEqual({
-        id: pgUser2.id,
-        firstName: pgUser2.firstName,
-        lastName: pgUser2.lastName,
-        contacts: (await pgUser2.contacts).map((pgContact) => ({
-          value: pgContact.value,
-          type: pgContact.type,
-          label: pgContact.label,
-          verified: pgContact.verified,
-        })),
-        documents: (await pgUser2.documents).map((pgDocument) => ({
-          number: pgDocument.number,
-        })),
-      })
+      expect(organizationMember).toEqual(
+        new OrganizationMember({
+          userId: pgUser.id,
+          admissionProposalId: pgAdmissionProposal.id,
+          joinDate: new Date('2021-03-01'),
+        })
+      )
     })
   })
 })

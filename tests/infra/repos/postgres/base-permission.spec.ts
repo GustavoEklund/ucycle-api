@@ -9,11 +9,13 @@ import {
   PgAddress,
   PgAdmissionProposal,
   PgBasePermission,
+  PgBasePermissionStatus,
   PgContact,
   PgDocument,
   PgImage,
   PgModule,
   PgOrganization,
+  PgOrganizationMember,
   PgUser,
   PgUserPermission,
 } from '@/infra/repos/postgres/entities'
@@ -36,6 +38,7 @@ describe('PgBasePermissionRepository', () => {
       PgImage,
       PgAdmissionProposal,
       PgUserPermission,
+      PgOrganizationMember,
     ])
     backup = db.backup()
   })
@@ -72,7 +75,7 @@ describe('PgBasePermissionRepository', () => {
       write: expectedBasePermission.write,
       owner: expectedBasePermission.owner,
       name: expectedBasePermission.name,
-      status: 'GRANTED',
+      status: PgBasePermissionStatus.granted,
       description: expectedBasePermission.description,
       module: pgModule,
       expiresAt: expectedBasePermission.expiration,

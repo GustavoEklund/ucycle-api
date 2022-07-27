@@ -1,4 +1,4 @@
-import { PgAddress, PgImage, PgUser } from '@/infra/repos/postgres/entities'
+import { PgAddress, PgImage, PgOrganizationMember, PgUser } from '@/infra/repos/postgres/entities'
 
 import { faker } from '@faker-js/faker'
 
@@ -16,6 +16,6 @@ export const mockPgOrganization = ({
   pictures: Promise.resolve(pictures),
   address,
   admissionProposals: Promise.resolve([]),
-  members: Promise.resolve([]),
+  members: Promise.resolve([] as PgOrganizationMember[]),
   description: faker.random.word(),
 })

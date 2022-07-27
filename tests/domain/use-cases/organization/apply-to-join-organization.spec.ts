@@ -14,7 +14,11 @@ import {
   UserAccountNotFoundError,
 } from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
-import { AdmissionProposalStatus, Organization } from '@/domain/entities/organization'
+import {
+  AdmissionProposalStatus,
+  Organization,
+  OrganizationMember,
+} from '@/domain/entities/organization'
 import { mockOrganization, mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 
@@ -104,13 +108,13 @@ describe('ApplyToJoinOrganizationUseCase', () => {
   })
 
   it('should throw AlreadyMemberOfOrganizationError if user is member of organization', async () => {
-    organizationMemberRepoSpy.load.mockResolvedValueOnce({
-      id: 'any_organization_id',
-      firstName: 'any_user_name',
-      lastName: 'any_user_last_name',
-      documents: [],
-      contacts: [],
-    })
+    organizationMemberRepoSpy.load.mockResolvedValueOnce(
+      new OrganizationMember({
+        userId: 'any_user_id',
+        joinDate: new Date('2022-03-01T10:00:00'),
+        admissionProposalId: 'any_admission_proposal_id',
+      })
+    )
 
     const promise = sut.perform({ userId: 'any_user_id', organizationId: 'any_organization_id' })
 
