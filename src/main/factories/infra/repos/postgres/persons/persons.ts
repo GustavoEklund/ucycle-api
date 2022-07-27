@@ -1,5 +1,5 @@
-import { PgPersonsRepository } from '@/infra/repos/postgres'
+import { PgPersonRepository } from '@/infra/repos/postgres'
 
-export const makePgPersonsRepo = (): PgPersonsRepository => {
-  return new PgPersonsRepository()
+export const makePgPersonsRepo = (): PgPersonRepository => {
+  return new PgPersonRepository()
 }

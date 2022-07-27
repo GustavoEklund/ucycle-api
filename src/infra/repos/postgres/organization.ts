@@ -1,7 +1,7 @@
 import { Organization } from '@/domain/entities'
 import { LoadOrganization, LoadOrganizations, SaveOrganization } from '@/domain/contracts/repos'
 import { PgRepository } from '@/infra/repos/postgres/repository'
-import { PgUser, PgOrganization } from '@/infra/repos/postgres/entities'
+import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
 export class PgOrganizationRepository
   extends PgRepository
@@ -19,7 +19,7 @@ export class PgOrganizationRepository
         name: pgOrganization.name,
         address: {
           city: pgOrganization.address.city,
-          buildingNumber: pgOrganization.address.buildingNumber,
+          buildingNumber: String(pgOrganization.address.buildingNumber),
           street: pgOrganization.address.street,
           country: pgOrganization.address.country,
           state: pgOrganization.address.state,
@@ -61,9 +61,9 @@ export class PgOrganizationRepository
           name: pgOrganization.name,
           address: {
             city: address.city,
-            buildingNumber: address.buildingNumber,
+            buildingNumber: String(address.buildingNumber),
             street: address.street,
-            postalCode: address.postalCode,
+            postalCode: address.zipCode,
             neighbourhood: address.neighbourhood,
             country: address.country,
             state: address.state,

@@ -11,12 +11,14 @@ import {
 
 import { PgModule, PgUser } from '@/infra/repos/postgres/entities'
 
+export enum PgBasePermissionStatus {
+  granted = 'GRANTED',
+  revoked = 'REVOKED',
+}
+
 @Entity({ name: 'base_permission' })
 export class PgBasePermission {
-  @PrimaryGeneratedColumn('uuid', {
-    name: 'id',
-    comment: 'the base permission id, in uuid format',
-  })
+  @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
   @Column('varchar', {
@@ -68,23 +70,25 @@ export class PgBasePermission {
   })
   owner!: boolean
 
-  @ManyToOne(() => PgModule, (module) => module.basePermissions, { nullable: false })
-  @JoinColumn({ name: 'module_id', referencedColumnName: 'id' })
-  module!: PgModule
-
-  @Column('enum', {
-    enum: ['GRANTED', 'REVOKED'],
+  @Column({
+    type: 'enum',
+    enum: PgBasePermissionStatus,
     name: 'status',
     nullable: false,
     comment: 'the permission status can be either GRANTED or REVOKED',
   })
-  status!: string
+  status!: PgBasePermissionStatus
+
+  @ManyToOne(() => PgModule, (module) => module.basePermissions, { nullable: false })
+  @JoinColumn({ name: 'module_id', referencedColumnName: 'id' })
+  module!: PgModule
 
   @ManyToOne(() => PgUser, (user) => user.basePermissions, { nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
   createdBy?: PgUser
 
-  @Column('timestamp', {
+  @Column({
+    type: 'timestamp',
     name: 'expires_at',
     nullable: true,
     comment: 'the date when the permission expires',
@@ -93,7 +97,7 @@ export class PgBasePermission {
 
   @CreateDateColumn({
     name: 'created_at',
-    comment: 'the date when the permission was created',
+    comment: 'the date and time when the permission was created',
   })
   createdAt!: Date
 
@@ -105,7 +109,7 @@ export class PgBasePermission {
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    comment: 'the date when the permission was deleted',
+    comment: 'the date when the permission was deleted, null if not deleted',
   })
-  deletedAt!: Date
+  deletedAt?: Date
 }

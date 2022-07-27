@@ -1,51 +1,29 @@
-// TODO: create document and contact repository
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { LoadPersons, SavePersons } from '@/domain/contracts/repos'
-import { PgPersons } from '@/infra/repos/postgres/entities'
+import { PgPerson, PgPersonMaritalStatus } from '@/infra/repos/postgres/entities'
 
-type Input = {
-  firstName: string
-  lastName: string
-
-  // document: Address;
-  // contact: number;
-
-  birthDate?: string
-  professional?: string
-  marriedStatus?: string
-
-  specialNeeds: boolean
-  specialNeedsDescription?: string
-}[]
-
-export class PgPersonsRepository extends PgRepository implements LoadPersons, SavePersons {
+export class PgPersonRepository extends PgRepository implements LoadPersons, SavePersons {
   public async load({ id }: LoadPersons.Input): Promise<LoadPersons.Output> {
-    const personsRepo = this.getRepository(PgPersons)
-    const persons = await personsRepo.findOne({ id: id })
-
-    if (persons !== undefined) {
-      return { id: persons!.id }
+    const personsRepo = this.getRepository(PgPerson)
+    const pgPerson = await personsRepo.findOne({ id: id })
+    if (pgPerson !== undefined) {
+      return { id: pgPerson!.id }
     }
   }
 
-  public async save(receivedData: SavePersons.Input): Promise<SavePersons.Output> {
-    const personsRepo = this.getRepository(PgPersons)
-    const personsToSave: Input = receivedData.map((personData) => {
-      return {
+  public async save(input: SavePersons.Input): Promise<SavePersons.Output> {
+    const pgPersonRepo = this.getRepository(PgPerson)
+    const pgPersons = await pgPersonRepo.save(
+      input.map((personData) => ({
         firstName: personData.firstName,
         lastName: personData.lastName,
         birthDate: personData.birthDate,
         professional: personData.professional,
-        marriedStatus: personData.marriedStatus,
-        specialNeeds: personData.specialNeeds,
+        maritalStatus: personData.maritalStatus as PgPersonMaritalStatus,
+        hasSpecialNeeds: personData.specialNeeds,
         specialNeedsDescription: personData.specialNeedsDescription,
-      }
-    })
-
-    const persons = await personsRepo.save(personsToSave)
-
-    return persons.map((i) => {
-      return { id: i.id }
-    })
+      }))
+    )
+    return pgPersons.map((pgPerson) => ({ id: pgPerson.id }))
   }
 }
