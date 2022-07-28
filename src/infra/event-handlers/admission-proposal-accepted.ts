@@ -3,9 +3,11 @@ import { Mailer } from '@/domain/contracts/gateways'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
 import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
 import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import { JoinUserToOrganization } from '@/domain/use-cases'
 
 export class AdmissionProposalAcceptedHandler extends Observer {
   public constructor(
+    private readonly joinUserToOrganizationUseCase: JoinUserToOrganization,
     private readonly mailer: Mailer,
     private readonly userRepository: LoadUserAccount,
     private readonly organizationRepository: LoadOrganization
@@ -14,6 +16,14 @@ export class AdmissionProposalAcceptedHandler extends Observer {
   }
 
   public async handle({ admissionProposal }: AdmissionProposalAccepted): Promise<void> {
+    const output = await this.joinUserToOrganizationUseCase.perform({
+      admissionProposal: {
+        id: admissionProposal.id,
+        organization: { id: admissionProposal.organizationId },
+        user: { id: admissionProposal.userId },
+      },
+    })
+    if (output instanceof UserNotFoundError) throw output
     const user = await this.userRepository.load({ id: admissionProposal.userId })
     if (user === undefined) throw new UserNotFoundError(admissionProposal.userId)
     const organization = await this.organizationRepository.load({

@@ -7,9 +7,11 @@ import { User } from '@/domain/entities/user'
 import { Mailer } from '@/domain/contracts/gateways'
 import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { Organization } from '@/domain/entities'
+import { JoinUserToOrganization } from '@/domain/use-cases'
 
 describe('AdmissionProposalAcceptedHandler', () => {
   let mailerSpy: MockProxy<Mailer>
+  let joinUserToOrganizationUseCaseSpy: MockProxy<JoinUserToOrganization>
   let userRepoSpy: MockProxy<LoadUserAccount>
   let organizationRepoSpy: MockProxy<LoadOrganization>
   let sut: AdmissionProposalAcceptedHandler
@@ -19,6 +21,7 @@ describe('AdmissionProposalAcceptedHandler', () => {
 
   beforeAll(() => {
     mailerSpy = mock()
+    joinUserToOrganizationUseCaseSpy = mock()
     userStub = mockUser()
     userRepoSpy = mock()
     userRepoSpy.load.mockResolvedValue(userStub)
@@ -32,7 +35,12 @@ describe('AdmissionProposalAcceptedHandler', () => {
   })
 
   beforeEach(() => {
-    sut = new AdmissionProposalAcceptedHandler(mailerSpy, userRepoSpy, organizationRepoSpy)
+    sut = new AdmissionProposalAcceptedHandler(
+      joinUserToOrganizationUseCaseSpy,
+      mailerSpy,
+      userRepoSpy,
+      organizationRepoSpy
+    )
   })
 
   it('should call LoadUserAccount with correct input', async () => {
