@@ -3,19 +3,7 @@ import { mockAddress } from '@/tests/infra/repos/postgres/mocks/address'
 import { Organization } from '@/domain/entities'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import {
-  PgAddress,
-  PgAdmissionProposal,
-  PgBasePermission,
-  PgContact,
-  PgDocument,
-  PgImage,
-  PgModule,
-  PgOrganization,
-  PgOrganizationMember,
-  PgUser,
-  PgUserPermission,
-} from '@/infra/repos/postgres/entities'
+import { PgAddress, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 import { PgOrganizationRepository } from '@/infra/repos/postgres/organization'
 
 import { IBackup } from 'pg-mem'
@@ -31,19 +19,7 @@ describe('PgOrganizationRepository', () => {
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([
-      PgOrganization,
-      PgUser,
-      PgDocument,
-      PgContact,
-      PgAddress,
-      PgImage,
-      PgAdmissionProposal,
-      PgBasePermission,
-      PgModule,
-      PgUserPermission,
-      PgOrganizationMember,
-    ])
+    const db = await makeFakeDb()
     backup = db.backup()
     pgOrganizationRepo = connection.getRepository(PgOrganization)
     pgAddressRepo = connection.getRepository(PgAddress)

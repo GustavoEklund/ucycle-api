@@ -5,15 +5,8 @@ import {
   PgAddress,
   PgAdmissionProposal,
   PgAdmissionProposalStatus,
-  PgBasePermission,
-  PgContact,
-  PgDocument,
-  PgImage,
-  PgModule,
   PgOrganization,
-  PgOrganizationMember,
   PgUser,
-  PgUserPermission,
 } from '@/infra/repos/postgres/entities'
 
 import { IBackup } from 'pg-mem'
@@ -32,19 +25,7 @@ describe('PgAdmissionProposalRepository', () => {
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([
-      PgOrganization,
-      PgUser,
-      PgDocument,
-      PgContact,
-      PgAddress,
-      PgImage,
-      PgAdmissionProposal,
-      PgBasePermission,
-      PgModule,
-      PgUserPermission,
-      PgOrganizationMember,
-    ])
+    const db = await makeFakeDb()
     backup = db.backup()
     pgAddressRepo = connection.getRepository(PgAddress)
     pgOrganizationRepo = connection.getRepository(PgOrganization)

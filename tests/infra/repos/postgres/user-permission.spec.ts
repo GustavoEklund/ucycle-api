@@ -1,19 +1,7 @@
 import { UserPermission } from '@/domain/entities/permission'
 import { PgUserPermissionRepository } from '@/infra/repos/postgres/user-permission'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import {
-  PgAddress,
-  PgAdmissionProposal,
-  PgBasePermission,
-  PgContact,
-  PgDocument,
-  PgImage,
-  PgModule,
-  PgOrganization,
-  PgOrganizationMember,
-  PgUser,
-  PgUserPermission,
-} from '@/infra/repos/postgres/entities'
+import { PgModule, PgOrganization, PgUser, PgUserPermission } from '@/infra/repos/postgres/entities'
 
 import {
   makeFakeDb,
@@ -32,19 +20,7 @@ describe('PgUserPermissionRepository', () => {
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([
-      PgUserPermission,
-      PgBasePermission,
-      PgUser,
-      PgModule,
-      PgDocument,
-      PgContact,
-      PgOrganization,
-      PgAddress,
-      PgImage,
-      PgAdmissionProposal,
-      PgOrganizationMember,
-    ])
+    const db = await makeFakeDb()
     backup = db.backup()
   })
 

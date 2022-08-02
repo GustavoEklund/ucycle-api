@@ -5,20 +5,7 @@ import { makeFakeDb } from '@/tests/infra/repos/postgres/mocks'
 
 import { faker } from '@faker-js/faker'
 import { IBackup } from 'pg-mem'
-import {
-  PgAddress,
-  PgAdmissionProposal,
-  PgBasePermission,
-  PgBasePermissionStatus,
-  PgContact,
-  PgDocument,
-  PgImage,
-  PgModule,
-  PgOrganization,
-  PgOrganizationMember,
-  PgUser,
-  PgUserPermission,
-} from '@/infra/repos/postgres/entities'
+import { PgBasePermission, PgBasePermissionStatus, PgModule } from '@/infra/repos/postgres/entities'
 
 describe('PgBasePermissionRepository', () => {
   let sut: PgBasePermissionRepository
@@ -27,19 +14,7 @@ describe('PgBasePermissionRepository', () => {
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([
-      PgBasePermission,
-      PgUser,
-      PgModule,
-      PgDocument,
-      PgContact,
-      PgOrganization,
-      PgAddress,
-      PgImage,
-      PgAdmissionProposal,
-      PgUserPermission,
-      PgOrganizationMember,
-    ])
+    const db = await makeFakeDb()
     backup = db.backup()
   })
 

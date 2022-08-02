@@ -6,19 +6,7 @@ import {
 } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import {
-  PgAddress,
-  PgAdmissionProposal,
-  PgBasePermission,
-  PgContact,
-  PgDocument,
-  PgImage,
-  PgModule,
-  PgOrganization,
-  PgOrganizationMember,
-  PgUser,
-  PgUserPermission,
-} from '@/infra/repos/postgres/entities'
+import { PgContact, PgUser } from '@/infra/repos/postgres/entities'
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
 import { PgContactRepository } from '@/infra/repos/postgres'
@@ -33,19 +21,7 @@ describe('PgContactRepository', () => {
 
   beforeAll(async () => {
     connection = PgConnection.getInstance()
-    const db = await makeFakeDb([
-      PgOrganization,
-      PgUser,
-      PgDocument,
-      PgContact,
-      PgAddress,
-      PgImage,
-      PgAdmissionProposal,
-      PgBasePermission,
-      PgUserPermission,
-      PgModule,
-      PgOrganizationMember,
-    ])
+    const db = await makeFakeDb()
     backup = db.backup()
     pgUserRepo = connection.getRepository(PgUser)
     pgContactRepo = connection.getRepository(PgContact)

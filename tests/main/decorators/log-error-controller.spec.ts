@@ -38,10 +38,11 @@ describe('LogErrorControllerDecorator', () => {
       code: 'SERVER_ERROR',
       message: 'server failed, try again soon',
       stack: 'any_stack',
+      userId: 'any_user_id',
     })
     controllerSpy.handle.mockResolvedValueOnce(HttpResponse.serverError(expectedError))
 
-    await sut.handle({ any: 'any' })
+    await sut.handle({ any: 'any', userId: 'any_user_id' })
 
     expect(errorLogRepositorySpy.save).toHaveBeenCalledTimes(1)
     expect(errorLogRepositorySpy.save).toHaveBeenCalledWith(expectedErrorLog)
@@ -70,10 +71,11 @@ describe('LogErrorControllerDecorator', () => {
             : 'AnyName',
         message: errorHttpResponse.data[0].message,
         stack: errorHttpResponse.data[0].stack,
+        userId: 'any_user_id',
       })
       controllerSpy.handle.mockResolvedValueOnce(errorHttpResponse)
 
-      await sut.handle({ any: 'any' })
+      await sut.handle({ any: 'any', userId: 'any_user_id' })
 
       expect(errorLogRepositorySpy.save).toHaveBeenCalledTimes(1)
       expect(errorLogRepositorySpy.save).toHaveBeenCalledWith(expectedErrorLog)
