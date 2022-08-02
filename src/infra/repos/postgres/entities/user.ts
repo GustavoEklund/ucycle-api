@@ -14,6 +14,7 @@ import {
   PgBasePermission,
   PgContact,
   PgDocument,
+  PgErrorLog,
   PgImage,
   PgModule,
   PgOrganization,
@@ -66,6 +67,9 @@ export class PgUser {
 
   @OneToMany(() => PgImage, (image) => image.createdBy)
   images!: Promise<PgImage[]>
+
+  @OneToMany(() => PgErrorLog, (errorLog) => errorLog.createdBy)
+  errorLogs!: Promise<PgErrorLog[]>
 
   @CreateDateColumn({
     name: 'created_at',

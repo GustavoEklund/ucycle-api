@@ -26,12 +26,14 @@ export class LogErrorControllerDecorator extends Controller {
       HttpStatus.serverError,
     ]
     if (errorStatuses.includes(httpResponse.statusCode)) {
+      const userId = httpRequest.userId
       const error = httpResponse.data[0]
       const errorLog = new ErrorLog({
         id: this.crypto.uuid(),
         code: error?.code ?? error?.name,
         message: error.message,
         stack: error.stack,
+        userId: typeof userId === 'string' ? userId : undefined,
       })
       await this.errorLogRepository.save(errorLog)
     }
