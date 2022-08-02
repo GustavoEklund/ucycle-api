@@ -4,7 +4,7 @@ type Input = {
   id: string
   code: string
   message: string
-  stack: string
+  stack: string | undefined
 }
 
 export class ErrorLog extends Entity {

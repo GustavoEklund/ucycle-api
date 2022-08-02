@@ -17,7 +17,15 @@ export class LogErrorControllerDecorator extends Controller {
 
   public async perform(httpRequest: HttpRequest): Promise<HttpResponse> {
     const httpResponse = await this.controller.handle(httpRequest)
-    if (httpResponse.statusCode === HttpStatus.serverError) {
+    const errorStatuses = [
+      HttpStatus.badRequest,
+      HttpStatus.unauthorized,
+      HttpStatus.forbidden,
+      HttpStatus.notFound,
+      HttpStatus.conflict,
+      HttpStatus.serverError,
+    ]
+    if (errorStatuses.includes(httpResponse.statusCode)) {
       const error = httpResponse.data[0]
       const errorLog = new ErrorLog({
         id: this.crypto.uuid(),
