@@ -2,7 +2,7 @@ import { LogErrorControllerDecorator } from '@/main/decorators'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { Controller } from '@/application/controllers'
 import { SaveErrorLogRepository } from '@/domain/contracts/repos'
-import { HttpResponse } from '@/application/helpers'
+import { HttpResponse, HttpStatus } from '@/application/helpers'
 import { UUIDGenerator } from '@/domain/contracts/gateways'
 import { ErrorLog } from '@/domain/entities/errors'
 
@@ -46,6 +46,39 @@ describe('LogErrorControllerDecorator', () => {
     expect(errorLogRepositorySpy.save).toHaveBeenCalledTimes(1)
     expect(errorLogRepositorySpy.save).toHaveBeenCalledWith(expectedErrorLog)
   })
+
+  const errorStub = new Error('any_error')
+  errorStub.name = 'AnyName'
+  errorStub.stack = 'any_stack'
+
+  const errorHttpResponses = [
+    HttpResponse.badRequest([errorStub]),
+    HttpResponse.unauthorized(),
+    HttpResponse.forbidden([errorStub]),
+    HttpResponse.notFound([errorStub]),
+    HttpResponse.conflict([errorStub]),
+  ]
+
+  it.each(errorHttpResponses)(
+    'should call SaveErrorLogRepository if Controller returns a client error',
+    async (errorHttpResponse) => {
+      const expectedErrorLog = new ErrorLog({
+        id: 'any_uuid',
+        code:
+          errorHttpResponse.statusCode === HttpStatus.unauthorized
+            ? 'UNAUTHORIZED_ERROR'
+            : 'AnyName',
+        message: errorHttpResponse.data[0].message,
+        stack: errorHttpResponse.data[0].stack,
+      })
+      controllerSpy.handle.mockResolvedValueOnce(errorHttpResponse)
+
+      await sut.handle({ any: 'any' })
+
+      expect(errorLogRepositorySpy.save).toHaveBeenCalledTimes(1)
+      expect(errorLogRepositorySpy.save).toHaveBeenCalledWith(expectedErrorLog)
+    }
+  )
 
   it('should not call SaveErrorLogRepository if Controller returns a non server error', async () => {
     controllerSpy.handle.mockResolvedValueOnce(HttpResponse.ok({ any: 'any_other' }))
