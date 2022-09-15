@@ -83,3 +83,113 @@ To run coverage, run the following command:
 ```bash
 npm run test:coverage
 ```
+
+## Authorization Server: OpenID Connect and OAuth 2.0 - Keycloak
+
+The application utilizes the [Keycloak](https://www.keycloak.org/) OpenID Connect and OAuth 2.0 server. For development,
+we use the Docker [jboss/keycloak](https://hub.docker.com/r/jboss/keycloak/) image, which is configured to use the
+[postgres](https://www.postgresql.org/) database, so make sure the credentials and host for the database are set up
+correctly in `docker-compose.yml`.
+
+With the **docker-compose** up, you can access the Keycloak administration console at the following URL:
+
+> http://localhost:8080/
+
+After that, got to **`Administration Console >`**.
+
+![Welcome](./docs/keycloak/images/01-welcome.png)
+
+Then use the default credentials to login, you can change that in `docker-compose.yml`, but notice that you will need to
+delete the Keycloak container and re-launch it.
+
+> **Username:** admin
+
+> **Password:** admin
+
+![Login](./docs/keycloak/images/02-login.png)
+
+When you log in, you will see the **Master Realm** home page, which is the default realm. Be careful, do not delete the
+**Master Realm** or leak any information about it, having access to it is a huge security risk.
+
+![Master Realm](./docs/keycloak/images/03-master-home.png)
+
+The next step is to create a new realm. For instance, we will create a realm called **`controwl-app-development`**.
+Which will be the realm that will be used for the local development of the application. You can create as many realms
+as you need for other applications.
+
+In the `Master Realm Home`, click at `Master  ⌄` > `Add Realm`
+
+![Add Realm 01](./docs/keycloak/images/04-add-realm-01.png)
+
+Then name it with `controwl-app-development` and click `Create`. The name `controwl-app-development` is important,
+it will be used as a `KEYCLOAK_REALM` parameter in the environment variables, so make sure to remember it.
+
+![Add Realm 02](./docs/keycloak/images/05-add-realm-02.png)
+
+Next, you will need to configure the realm. In the `General` tab, there is a important configuration option called
+`Frontend URL`, which need to be set to `http://localhost:8080/auth`. If not set, Keycloak will generate not expected
+redirect links. The other options, you can just set as the following image:
+
+![General Realm Configuration](./docs/keycloak/images/06-general-realm-configuration.png)
+
+Now go to `Login` tab, to configure Keycloak default login page. So turn on the following options:
+
+- Email as username
+- Forgot password
+- Remember me
+- Verify email
+- Login with email
+
+![Login Realm Configuration](./docs/keycloak/images/07-login-realm-configuration.png)
+
+One more important thing is to configure an email account to send the verification emails. In the `Email` tab, you
+will see some email parameters to configure, but first, you will need to configure the admin account email to receive
+the test email. Click at `Admin ⌄` > `Manage account` at the right top corner.
+
+![Email Realm Configuration 01](./docs/keycloak/images/08-email-realm-configuration-01.png)
+
+Then go to `Personal Info`.
+
+![Email Realm Configuration 02](./docs/keycloak/images/08-email-realm-configuration-02.png)
+
+Fill `Email`, `First name`, and `Last name` fields and click in `Save`. Finally click at `Back to Security Admin Console`
+to go back to Email settings.
+
+![Email Realm Configuration 03](./docs/keycloak/images/08-email-realm-configuration-03.png)
+
+The last thing to do is to configure the email account to send the test email. Fill the fields with any email settings
+you want to use and click in `Save` and `Test connection`. If you receive the email registered at the admin account,
+then you can proceed with the next's steps.
+
+![Email Realm Configuration 04](./docs/keycloak/images/08-email-realm-configuration-04.png)
+
+With the email configuration done, go to `Themes` tab, enable the option `Internalization Enabled` and set the
+`Default Locale` to `pt-BR`.
+
+![Themes Realm Configuration](./docs/keycloak/images/09-themes-realm-configuration.png)
+
+Now we need to add a **Client** to who will consume the Keycloak REST API, here there are important settings to pay
+attention or the API will fail to work. So, in te right panel, go to `Clients` and then go to `Create`.
+
+![Add New Client 01](./docs/keycloak/images/10-add-new-client-01.png)
+
+Set the field `Client ID` as `controwl-api`, which will be used as a `KEYCLOAK_CLIENT_ID` parameter in the environment
+variables, so make sure to remember it. The field `Root URL` must be filled with the application root URL, in this case
+is `http://localhost:3000/api`, if you set another port for example, then change it here too.
+
+![Add New Client 02](./docs/keycloak/images/10-add-new-client-02.png)
+
+In the `Settings` tab, is important to change `Access Type` to `confidential` and enable the option
+`Service Accounts Enabled`. At the bottom of the page click at `Save`.
+
+![Client Settings](./docs/keycloak/images/12-client-settings.png)
+
+In the `Credentials` tab copy the `Secret` key and add this to `KEYCLOAK_CLIENT_SECRET` in the `.env` file.
+
+![Client Credentials](./docs/keycloak/images/11-client-credentials.png)
+
+Last, go to `Service Account Roles` > `Client Roles` > `realm-management` > `realm-admin` > `Add selected »`
+
+![Client Service Account Roles](./docs/keycloak/images/13-client-service-account-roles.png)
+
+You are all set with Keycloak!
