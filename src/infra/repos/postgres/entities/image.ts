@@ -20,6 +20,7 @@ export class PgImage {
   url!: string
 
   @ManyToOne(() => PgOrganization, (organization) => organization.pictures)
+  @JoinColumn({ name: 'organization_id', referencedColumnName: 'id' })
   organization!: PgOrganization
 
   @ManyToOne(() => PgUser, (user) => user.images)
