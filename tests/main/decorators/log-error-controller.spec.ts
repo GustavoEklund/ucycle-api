@@ -4,7 +4,7 @@ import { Controller } from '@/application/controllers'
 import { SaveErrorLogRepository } from '@/domain/contracts/repos'
 import { HttpResponse, HttpStatus } from '@/application/helpers'
 import { UUIDGenerator } from '@/domain/contracts/gateways'
-import { ErrorLog } from '@/domain/entities/errors'
+import { ErrorLog, Exception } from '@/domain/entities/errors'
 
 describe('LogErrorControllerDecorator', () => {
   let controllerSpy: MockProxy<Controller>
@@ -48,7 +48,7 @@ describe('LogErrorControllerDecorator', () => {
     expect(errorLogRepositorySpy.save).toHaveBeenCalledWith(expectedErrorLog)
   })
 
-  const errorStub = new Error('any_error')
+  const errorStub = new Exception('AnyError', 'any_error')
   errorStub.name = 'AnyName'
   errorStub.stack = 'any_stack'
 
@@ -68,7 +68,7 @@ describe('LogErrorControllerDecorator', () => {
         code:
           errorHttpResponse.statusCode === HttpStatus.unauthorized
             ? 'UNAUTHORIZED_ERROR'
-            : 'AnyName',
+            : 'ANY_ERROR',
         message: errorHttpResponse.data[0].message,
         stack: errorHttpResponse.data[0].stack,
         userId: 'any_user_id',
