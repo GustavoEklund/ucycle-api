@@ -45,6 +45,7 @@ export class PgOrganization {
   members!: Promise<PgOrganizationMember[]>
 
   @ManyToOne(() => PgUserPermission, (userPermission) => userPermission.grantAtOrganization)
+  @JoinColumn({ name: 'user_permission_id', referencedColumnName: 'id' })
   userPermissions!: Promise<PgUserPermission[]>
 
   @CreateDateColumn({
