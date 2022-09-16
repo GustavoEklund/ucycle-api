@@ -9,7 +9,7 @@ export enum PgPersonMaritalStatus {
   widowed = 'WIDOWED',
 }
 
-@Entity({ name: 'persons' })
+@Entity({ name: 'person' })
 export class PgPerson extends PgBaseEntity {
   @Column({ name: 'first_name', nullable: false })
   firstName!: string
@@ -30,7 +30,7 @@ export class PgPerson extends PgBaseEntity {
     type: 'enum',
     enum: PgPersonMaritalStatus,
     name: 'marital_status',
-    comment: 'the marital status can be either single, married, divorced, widowed',
+    comment: 'the marital status can be either SINGLE, MARRIED, DIVORCED, WIDOWED',
   })
   maritalStatus?: PgPersonMaritalStatus
 
