@@ -32,7 +32,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_MULTIPLE_DATABASES=condo_app,keycloak
+      - POSTGRES_MULTIPLE_DATABASES=digital_bank,keycloak
 
   keycloak-auth:
     container_name: keycloak-auth
