@@ -1,6 +1,7 @@
-import { HttpResponse, ok } from '@/application/helpers'
+import { HttpResponse } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
 import { SignUp } from '@/domain/use-cases'
+import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
 
 type HttpRequest = {
   name: string
@@ -14,24 +15,58 @@ type HttpRequest = {
 type Model = Error | undefined
 
 export class SignUpController extends Controller {
-  constructor(private readonly signUp: SignUp) {
+  public constructor(private readonly signUp: SignUp) {
     super()
   }
 
-  async perform(httpRequest: HttpRequest): Promise<HttpResponse<Model>> {
+  async perform({
+    name,
+    email,
+    phone,
+    document,
+    password,
+    socialName,
+  }: HttpRequest): Promise<HttpResponse<Model>> {
     await this.signUp.perform({
       account: {
-        name: httpRequest.name,
-        password: httpRequest.password,
-        email: httpRequest.email,
-        document: httpRequest.document,
-        phone: httpRequest.phone,
+        name,
+        password,
+        email,
+        document,
+        phone,
       },
-      profile: {
-        socialName: httpRequest.socialName,
-      },
+      profile: { socialName: socialName },
     })
+    return HttpResponse.ok(undefined)
+  }
 
-    return ok(undefined)
+  public override buildValidators({
+    name,
+    email,
+    phone,
+    document,
+    password,
+    socialName,
+  }: any): Validator[] {
+    return [
+      ...ValidationBuilder.of({ value: name, fieldName: 'name' })
+        .required(RequiredType.string)
+        .build(),
+      ...ValidationBuilder.of({ value: email, fieldName: 'email' })
+        .required(RequiredType.string)
+        .build(),
+      ...ValidationBuilder.of({ value: phone, fieldName: 'phone' })
+        .required(RequiredType.string)
+        .build(),
+      ...ValidationBuilder.of({ value: document, fieldName: 'document' })
+        .required(RequiredType.string)
+        .build(),
+      ...ValidationBuilder.of({ value: password, fieldName: 'password' })
+        .required(RequiredType.string)
+        .build(),
+      ...ValidationBuilder.of({ value: socialName, fieldName: 'socialName' })
+        .required(RequiredType.string)
+        .build(),
+    ]
   }
 }
