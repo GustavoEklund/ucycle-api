@@ -1,30 +1,28 @@
-export class RequiredFieldError extends Error {
+import { Exception } from '@/domain/entities/errors'
+
+export class RequiredFieldError extends Exception {
   constructor(fieldName?: string) {
     const message =
       fieldName === undefined ? 'field required' : `the field ${fieldName} is required`
-    super(message)
-    this.name = 'RequiredFieldError'
+    super('RequiredFieldError', message)
   }
 }
 
-export class InvalidFieldError extends Error {
+export class InvalidFieldError extends Exception {
   constructor(fieldName?: string) {
     const message = fieldName === undefined ? 'field invalid' : `the field ${fieldName} is invalid`
-    super(message)
-    this.name = 'InvalidFieldError'
+    super('InvalidFieldError', message)
   }
 }
 
-export class InvalidMimeTypeError extends Error {
+export class InvalidMimeTypeError extends Exception {
   constructor(allowed: string[]) {
-    super(`Unsupported mime type. Allowed types: ${allowed.join(', ')}`)
-    this.name = 'InvalidMimeTypeError'
+    super('InvalidMimeTypeError', `Unsupported mime type. Allowed types: ${allowed.join(', ')}`)
   }
 }
 
-export class MaxFileSizeError extends Error {
+export class MaxFileSizeError extends Exception {
   constructor(maxSizeInMb: number) {
-    super(`File upload limit is ${maxSizeInMb}MB`)
-    this.name = 'MaxFileSizeError'
+    super('MaxFileSizeError', `File upload limit is ${maxSizeInMb}MB`)
   }
 }
