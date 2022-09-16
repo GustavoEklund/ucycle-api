@@ -74,7 +74,7 @@ export class KeycloakApi implements SaveKeycloakUserAccount {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authToken.access_token}`,
         },
-        body: ['UPDATE_PASSWORD', 'VERIFY_EMAIL'],
+        body: ['VERIFY_EMAIL'],
       })
     if (executeActionsStatusCode !== HttpStatus.noContent) {
       const error = new Error('failed to send confirmation email')
@@ -95,7 +95,7 @@ export class KeycloakApi implements SaveKeycloakUserAccount {
   }
 
   private async getAuthToken(): Promise<AuthenticationToken> {
-    const { data: authenticationToken } = await this.httpClient.post<AuthenticationToken>({
+    const httpResponse = await this.httpClient.post<AuthenticationToken>({
       url: this.makeUrl('/protocol/openid-connect/token'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -106,6 +106,8 @@ export class KeycloakApi implements SaveKeycloakUserAccount {
         client_secret: this.clientSecret,
       }),
     })
-    return authenticationToken
+    if (httpResponse?.data?.access_token === undefined)
+      throw new Error('failed to get keycloak access token')
+    return httpResponse.data
   }
 }
