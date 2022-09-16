@@ -1,14 +1,15 @@
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import { IBackup } from 'pg-mem'
 import { makeFakeDb, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
-import { PgLogErrorRepository } from '@/infra/repos/postgres'
+import { PgErrorLogRepository } from '@/infra/repos/postgres'
 import { PgErrorLog, PgUser } from '@/infra/repos/postgres/entities'
 import { ErrorLog } from '@/domain/entities/errors'
+
+import { IBackup } from 'pg-mem'
 import { faker } from '@faker-js/faker'
 
 describe('PgLogErrorRepository', () => {
-  let sut: PgLogErrorRepository
+  let sut: PgErrorLogRepository
   let connection: PgConnection
   let backup: IBackup
 
@@ -20,7 +21,7 @@ describe('PgLogErrorRepository', () => {
 
   beforeEach(() => {
     backup.restore()
-    sut = new PgLogErrorRepository()
+    sut = new PgErrorLogRepository()
   })
 
   afterAll(async () => {
