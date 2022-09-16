@@ -13,7 +13,7 @@ export const env = {
     healthCheck: {
       enabled: Number(process.env.HEALTH_CHECK_ENABLED) === 1,
     },
-    mainWebsiteUrl: process.env.MAIN_WEBSITE ?? 'https://owlcondomine.com.br',
+    mainWebsiteUrl: process.env.MAIN_WEBSITE_URL ?? 'https://digital-bank.com.br',
   },
   session: {
     secret: process.env.SESSION_SECRET ?? '',
@@ -22,10 +22,10 @@ export const env = {
     },
   },
   keycloak: {
-    realm: process.env.KEYCLOAK_REALM ?? 'homologation',
+    realm: process.env.KEYCLOAK_REALM ?? 'digital-bank-staging',
     authServerUrl: process.env.KEYCLOAK_AUTH_SERVER_URL ?? 'http://localhost:8080/auth',
-    clientId: process.env.KEYCLOAK_CLIENT_ID ?? 'condo-api',
-    protectClientId: process.env.KEYCLOAK_PROTECT_CLIENT_ID ?? 'condo-react-native',
+    clientId: process.env.KEYCLOAK_CLIENT_ID ?? 'digital-bank-api',
+    protectClientId: process.env.KEYCLOAK_PROTECT_CLIENT_ID ?? 'digital-bank-react-native',
     clientSecret: process.env.KEYCLOAK_CLIENT_SECRET ?? '',
   },
   facebookApi: {
