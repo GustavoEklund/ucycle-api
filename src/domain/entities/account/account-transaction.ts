@@ -1,7 +1,7 @@
 import { ValueObject } from '@/domain/value-objects'
 import { TransactionType } from '@/domain/entities/transaction'
 
-export class BankAccountTransaction extends ValueObject {
+export class AccountTransaction extends ValueObject {
   private _transactionId: string
   private readonly _amountInCents: number
   private readonly _type: TransactionType

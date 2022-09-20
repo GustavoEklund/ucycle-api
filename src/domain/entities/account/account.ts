@@ -1,5 +1,5 @@
 import { Entity } from '@/domain/entities'
-import { Bank, BankAccountTransaction } from '@/domain/entities/bank-account'
+import { AccountTransaction, Bank } from '@/domain/entities/account'
 import { InstallmentStatus, Transaction, TransactionType } from '@/domain/entities/transaction'
 import {
   InstallmentAlreadyPaidError,
@@ -23,17 +23,17 @@ export enum BankAccountType {
   payment = 'PAYMENT',
 }
 
-export class BankAccount extends Entity {
+export class Account extends Entity {
   private _type: BankAccountType
   private _status: BankAccountStatus
-  private _bank: Bank
-  private _transactions: BankAccountTransaction[]
+  private _bank?: Bank
+  private _transactions: AccountTransaction[]
 
   public constructor(input: {
     id: string
     type: BankAccountType
     status?: BankAccountStatus
-    bank: {
+    bank?: {
       ispb: string
       compe: string
       name: string
@@ -42,7 +42,7 @@ export class BankAccount extends Entity {
     super({ id: input.id })
     this._type = input.type
     this._status = input.status ?? BankAccountStatus.onboardingStarted
-    this._bank = new Bank(input.bank)
+    this._bank = input.bank ? new Bank(input.bank) : undefined
     this._transactions = []
   }
 
@@ -65,7 +65,7 @@ export class BankAccount extends Entity {
       throw new InstallmentDoesNotExistError(installmentNumber, transaction.id)
     if (installment.status !== InstallmentStatus.awaitingPayment)
       throw new InstallmentAlreadyPaidError(installmentNumber, transaction.id)
-    const bankAccountTransaction = new BankAccountTransaction({
+    const bankAccountTransaction = new AccountTransaction({
       transactionId: transaction.id,
       amountInCents: transaction.total,
       type: TransactionType.credit,

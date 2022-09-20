@@ -1,9 +1,9 @@
-import { BankAccount, BankAccountStatus, BankAccountType } from '@/domain/entities/bank-account'
+import { Account, BankAccountStatus, BankAccountType } from '@/domain/entities/account'
 import { faker } from '@faker-js/faker'
 import { Transaction, TransactionType } from '@/domain/entities/transaction'
 
-describe('BankAccount', () => {
-  it('should credit the account', () => {
+describe('Account', () => {
+  it('should credit', () => {
     const transaction = new Transaction({
       id: 'any_transaction_id',
       type: TransactionType.credit,
@@ -13,7 +13,7 @@ describe('BankAccount', () => {
       totalAmountInCents: 8000,
       currentDate: new Date('2021-03-01T10:00:00'),
     })
-    const sut = new BankAccount({
+    const sut = new Account({
       id: 'any_id',
       status: faker.helpers.arrayElement([
         undefined,
