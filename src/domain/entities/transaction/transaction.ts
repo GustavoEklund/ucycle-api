@@ -1,5 +1,6 @@
 import { Entity } from '@/domain/entities'
 import { Installment } from '@/domain/entities/transaction'
+import { InstallmentDoesNotExistError } from '@/domain/entities/errors/installment'
 
 export enum TransactionStatus {
   created = 'CREATED',
@@ -37,6 +38,10 @@ export class Transaction extends Entity {
     )
   }
 
+  public get numberOfInstallments(): number {
+    return this._installments.length
+  }
+
   public addInstallments(input: {
     numberOfInstallments: number
     totalAmountInCents: number
@@ -56,5 +61,15 @@ export class Transaction extends Entity {
 
   public getInstallment(installmentNumber: number): Installment | undefined {
     return this._installments.find((installment) => installment.number === installmentNumber)
+  }
+
+  /**
+   * @throws InstallmentDoesNotExistError
+   */
+  public payInstallment(installmentNumber: number): void {
+    const installment = this.getInstallment(installmentNumber)
+    if (installment === undefined)
+      throw new InstallmentDoesNotExistError(installmentNumber, this.id)
+    installment.pay()
   }
 }

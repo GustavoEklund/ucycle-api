@@ -56,6 +56,10 @@ export class Account extends Entity {
     }, 0)
   }
 
+  /**
+   * @throws InstallmentDoesNotExistError
+   * @throws InstallmentAlreadyPaidError
+   */
   public creditFromTransactionInstallment(
     installmentNumber: number,
     transaction: Transaction
