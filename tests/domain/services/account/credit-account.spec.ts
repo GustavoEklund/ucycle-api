@@ -76,4 +76,21 @@ describe('CreditAccountService', () => {
 
     await expect(promise).rejects.toThrow(expectedError)
   })
+
+  it('should throw if transaction.payInstallment throws InstallmentDoesNotExistError', async () => {
+    const accountMock = mock<Account>()
+    const transactionStub = mock<Transaction>()
+    const expectedError = new InstallmentDoesNotExistError(1, 'any_id')
+    transactionStub.payInstallment.mockImplementationOnce(() => {
+      throw expectedError
+    })
+
+    const promise = sut.perform({
+      account: accountMock,
+      transaction: transactionStub,
+      installmentNumber: 1,
+    })
+
+    await expect(promise).rejects.toThrow(expectedError)
+  })
 })
