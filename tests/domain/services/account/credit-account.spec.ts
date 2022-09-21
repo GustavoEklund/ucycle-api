@@ -3,10 +3,16 @@ import { faker } from '@faker-js/faker'
 import { mock } from 'jest-mock-extended'
 import { Transaction } from '@/domain/entities/transaction'
 import { Account } from '@/domain/entities/account'
+import { InstallmentDoesNotExistError } from '@/domain/entities/errors/installment'
 
 describe('CreditAccountService', () => {
-  it('should call account.creditFromTransactionInstallment before transaction.payInstallment with correct input', () => {
-    const sut = new CreditAccountService()
+  let sut: CreditAccountService
+
+  beforeEach(() => {
+    sut = new CreditAccountService()
+  })
+
+  it('should call account.creditFromTransactionInstallment before transaction.payInstallment with correct input', async () => {
     const accountStub = mock<Account>()
     const transactionMock = mock<Transaction>()
     const installmentNumber = faker.datatype.number({
@@ -18,7 +24,7 @@ describe('CreditAccountService', () => {
       'creditFromTransactionInstallment'
     )
 
-    sut.perform({
+    await sut.perform({
       account: accountStub,
       transaction: transactionMock,
       installmentNumber,
@@ -32,5 +38,22 @@ describe('CreditAccountService', () => {
       installmentNumber,
       transactionMock
     )
+  })
+
+  it('should throw if account.creditFromTransactionInstallment throws InstallmentDoesNotExistError', async () => {
+    const accountStub = mock<Account>()
+    const transactionMock = mock<Transaction>()
+    const expectedError = new InstallmentDoesNotExistError(1, 'any_id')
+    accountStub.creditFromTransactionInstallment.mockImplementationOnce(() => {
+      throw expectedError
+    })
+
+    const promise = sut.perform({
+      account: accountStub,
+      transaction: transactionMock,
+      installmentNumber: 1,
+    })
+
+    await expect(promise).rejects.toThrow(expectedError)
   })
 })

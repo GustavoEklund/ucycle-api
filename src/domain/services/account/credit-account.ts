@@ -2,11 +2,11 @@ import { Account } from '@/domain/entities/account'
 import { Transaction } from '@/domain/entities/transaction'
 
 export interface CreditAccount {
-  perform: (input: CreditAccount.Input) => CreditAccount.Output
+  perform: (input: CreditAccount.Input) => Promise<CreditAccount.Output>
 }
 
-export class CreditAccountService {
-  public perform(input: CreditAccount.Input): void {
+export class CreditAccountService implements CreditAccount {
+  public async perform(input: CreditAccount.Input): Promise<void> {
     input.account.creditFromTransactionInstallment(input.installmentNumber, input.transaction)
     input.transaction.payInstallment(input.installmentNumber)
   }
