@@ -1,7 +1,7 @@
 {
-  "name": "digital-bank-api",
+  "name": "ucycle-api",
   "version": "0.0.1",
-  "description": "An API for digital banking, account management and financial transactions.",
+  "description": "uCycle",
   "keywords": [
     "fashion",
     "clean architecture",
@@ -23,10 +23,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/EsattoDevelopment/digital-bank-api.git"
+    "url": "https://github.com/GustavoEklund/ucycle-api.git"
   },
   "bugs": {
-    "url": "https://github.com/EsattoDevelopment/digital-bank-api/issues",
+    "url": "https://github.com/GustavoEklund/ucycle-api/issues",
     "email": "gustavo.eklund@esattodigital.com"
   },
   "license": "ISC",
