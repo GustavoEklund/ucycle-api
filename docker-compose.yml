@@ -32,7 +32,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_MULTIPLE_DATABASES=digital_bank,keycloak
+      - POSTGRES_MULTIPLE_DATABASES=ucycle,keycloak
 
   keycloak-auth:
     container_name: keycloak-auth
