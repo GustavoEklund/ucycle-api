@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -19,6 +20,8 @@ import {
   PgModule,
   PgOrganization,
   PgOrganizationMember,
+  PgProduct,
+  PgProductCategory,
 } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'user' })
@@ -67,6 +70,13 @@ export class PgUser {
 
   @OneToMany(() => PgImage, (image) => image.createdBy)
   images!: Promise<PgImage[]>
+
+  @OneToMany(() => PgProduct, (product) => product.createdBy)
+  @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
+  products!: Promise<PgProduct[]>
+
+  @OneToMany(() => PgProductCategory, (productCategory) => productCategory.createdBy)
+  productCategories!: Promise<PgProductCategory[]>
 
   @OneToMany(() => PgErrorLog, (errorLog) => errorLog.createdBy)
   errorLogs!: Promise<PgErrorLog[]>

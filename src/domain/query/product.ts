@@ -19,7 +19,7 @@ export namespace LoadProductsFromSearchQuery {
   type ProductDTO = {
     id: string
     title: string
-    picture: string
+    pictureUrl: string
     price: {
       totalInCents: number
       discountInPercentage: number
