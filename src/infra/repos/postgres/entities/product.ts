@@ -38,7 +38,7 @@ export class PgProduct {
   @ManyToMany(() => PgProductCategory, (productCategory) => productCategory.products)
   productCategories!: Promise<PgProductCategory[]>
 
-  @ManyToOne(() => PgUser, (user) => user.addresses)
+  @ManyToOne(() => PgUser, (user) => user.products)
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
   createdBy!: PgUser
 

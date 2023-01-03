@@ -19,6 +19,9 @@ import {
   PgModule,
   PgOrganization,
   PgOrganizationMember,
+  PgProduct,
+  PgProductCategory,
+  PgShoppingCart,
 } from '@/infra/repos/postgres/entities'
 import { PgEmailTemplate } from '@/infra/repos/postgres/entities/email-template'
 
@@ -68,6 +71,15 @@ export class PgUser {
 
   @OneToMany(() => PgImage, (image) => image.createdBy)
   images!: Promise<PgImage[]>
+
+  @OneToMany(() => PgShoppingCart, (shoppingCart) => shoppingCart.createdBy)
+  shoppingCarts!: Promise<PgShoppingCart[]>
+
+  @OneToMany(() => PgProduct, (products) => products.createdBy)
+  products!: Promise<PgProduct[]>
+
+  @OneToMany(() => PgProductCategory, (productCategory) => productCategory.createdBy)
+  productCategories!: Promise<PgProductCategory[]>
 
   @OneToMany(() => PgEmailTemplate, (emailTemplate) => emailTemplate.createdBy)
   emailTemplates!: Promise<PgEmailTemplate[]>
