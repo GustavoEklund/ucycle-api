@@ -1,5 +1,5 @@
 import { Name, NameType, ValueObject } from '@/domain/value-objects'
-import { InvalidNameError } from '@/domain/entities/errors'
+import { InvalidNameError } from '@/domain/entities/errors/user'
 
 describe('Name', () => {
   it('should extend ValueObject', () => {

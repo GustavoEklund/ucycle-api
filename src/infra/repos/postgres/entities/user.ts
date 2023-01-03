@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -20,10 +19,8 @@ import {
   PgModule,
   PgOrganization,
   PgOrganizationMember,
-  PgProduct,
-  PgProductCategory,
-  PgShoppingCart,
 } from '@/infra/repos/postgres/entities'
+import { PgEmailTemplate } from '@/infra/repos/postgres/entities/email-template'
 
 @Entity({ name: 'user' })
 export class PgUser {
@@ -72,15 +69,8 @@ export class PgUser {
   @OneToMany(() => PgImage, (image) => image.createdBy)
   images!: Promise<PgImage[]>
 
-  @OneToMany(() => PgProduct, (product) => product.createdBy)
-  @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
-  products!: Promise<PgProduct[]>
-
-  @OneToMany(() => PgProductCategory, (productCategory) => productCategory.createdBy)
-  productCategories!: Promise<PgProductCategory[]>
-
-  @OneToMany(() => PgShoppingCart, (shoppingCart) => shoppingCart.createdBy)
-  shoppingCarts!: Promise<PgShoppingCart[]>
+  @OneToMany(() => PgEmailTemplate, (emailTemplate) => emailTemplate.createdBy)
+  emailTemplates!: Promise<PgEmailTemplate[]>
 
   @OneToMany(() => PgErrorLog, (errorLog) => errorLog.createdBy)
   errorLogs!: Promise<PgErrorLog[]>

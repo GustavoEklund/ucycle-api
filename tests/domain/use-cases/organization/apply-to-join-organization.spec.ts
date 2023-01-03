@@ -6,13 +6,6 @@ import {
   LoadUserAccount,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
-import {
-  AlreadyAppliedToJoinOrganizationError,
-  AlreadyMemberOfOrganizationError,
-  OrganizationNotFoundError,
-  TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
-  UserAccountNotFoundError,
-} from '@/domain/entities/errors'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
 import {
   AdmissionProposalStatus,
@@ -23,6 +16,13 @@ import { mockOrganization, mockUser } from '@/tests/domain/mocks/entities'
 import { User } from '@/domain/entities/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import {
+  AlreadyAppliedToJoinOrganizationError,
+  AlreadyMemberOfOrganizationError,
+  OrganizationNotFoundError,
+  TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
+} from '@/domain/entities/errors/organization'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
 
 describe('ApplyToJoinOrganizationUseCase', () => {
   let sut: ApplyToJoinOrganizationUseCase

@@ -1,6 +1,6 @@
 import { DomainEvent } from '@/domain/events'
 import { Document } from '@/domain/value-objects'
-import { Contact } from '@/domain/value-objects/contact'
+import { Contact } from '@/domain/entities/contact'
 
 export class ApplicationToJoinOrganizationSent extends DomainEvent {
   public readonly admissionProposalId: string

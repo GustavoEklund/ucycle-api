@@ -1,9 +1,9 @@
 import { HttpResponse, notFound, ok } from '@/application/helpers'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
-import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
-
 import { GrantPermission } from '@/domain/use-cases/permissions'
-import { Controller } from '../controller'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
+import { BasePermissionNotFoundError } from '@/domain/entities/errors/permission'
+import { Controller } from '@/application/controllers'
 
 type HttpRequest = {
   userId: string

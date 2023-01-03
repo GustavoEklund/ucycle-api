@@ -135,4 +135,24 @@ describe('KeycloakApi', () => {
 
     await expect(promise).rejects.toThrow(new Error('failed to create user'))
   })
+
+  it('should throw if getAuthToken access_token is undefined', async () => {
+    httpClientSpy.post.mockClear()
+    httpClientSpy.post.mockReset()
+    httpClientSpy.post.mockResolvedValueOnce({
+      data: undefined,
+      statusCode: 200,
+      headers: {},
+    })
+
+    const promise = sut.saveWithKeycloak({
+      id: 'any_id',
+      email: 'any_email',
+      password: 'any_password',
+      firstName: 'any_first_name',
+      lastName: 'any_last_name',
+    })
+
+    await expect(promise).rejects.toThrow(new Error('failed to get keycloak access token'))
+  })
 })

@@ -1,5 +1,5 @@
 import { Document, DocumentType } from '@/domain/value-objects'
-import { InvalidDocumentError } from '@/domain/entities/errors'
+import { InvalidDocumentError } from '@/domain/entities/errors/user'
 
 describe('Document', () => {
   it('should be a valid cpf document', () => {

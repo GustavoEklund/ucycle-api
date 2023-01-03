@@ -1,11 +1,15 @@
 export abstract class Entity {
-  public readonly id: string
-
   protected constructor({ id }: { id: string }) {
-    this.id = id
+    this._id = id
+  }
+
+  protected _id: string
+
+  public get id(): string {
+    return this._id
   }
 
   public equals(other: Entity): boolean {
-    return this.id === other.id
+    return this._id === other.id
   }
 }

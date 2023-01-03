@@ -1,9 +1,10 @@
 import { LoadBasePermission, LoadUserAccount, SaveUserPermission } from '@/domain/contracts/repos'
-import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 import { Publisher } from '@/domain/events'
 import { UserPermission } from '@/domain/entities/permission'
 import { UUIDGenerator } from '@/domain/contracts/gateways'
 import { PermissionGranted } from '@/domain/events/permission'
+import { BasePermissionNotFoundError } from '@/domain/entities/errors/permission'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
 
 export interface GrantPermission {
   perform: (input: GrantPermission.Input) => Promise<GrantPermission.Output>

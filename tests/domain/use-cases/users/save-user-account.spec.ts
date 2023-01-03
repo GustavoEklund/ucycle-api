@@ -1,12 +1,15 @@
 import { LoadContact, LoadDocument, SaveUserAccount } from '@/domain/contracts/repos'
 import { SignUp, SignUpUseCase } from '@/domain/use-cases/users'
-import { mock, MockProxy } from 'jest-mock-extended'
-import { ContactAlreadyExistsError, DocumentAlreadyExistsError } from '@/domain/entities/errors'
 import { Document } from '@/domain/value-objects'
-import { faker } from '@faker-js/faker'
-import { Email, EmailType, Phone, PhoneType } from '@/domain/value-objects/contact'
+import { Email, EmailType, Phone, PhoneType } from '@/domain/entities/contact'
 import { SaveKeycloakUserAccount, UUIDGenerator } from '@/domain/contracts/gateways'
 import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
+import { UserSignedUpEvent } from '@/domain/events/user'
+import { DocumentAlreadyExistsError } from '@/domain/entities/errors/user'
+import { ContactAlreadyExistsError } from '@/domain/entities/errors/contact'
+
+import { mock, MockProxy } from 'jest-mock-extended'
+import { faker } from '@faker-js/faker'
 
 describe('SignUpUseCase', () => {
   let inputStub: SignUp.Input
@@ -63,6 +66,7 @@ describe('SignUpUseCase', () => {
     contactRepoSpy.load.mockResolvedValue(undefined)
     userRepoSpy = mock()
     userAccountApiSpy = mock()
+    userAccountApiSpy.saveWithKeycloak.mockResolvedValue({ id: 'any_uuid' })
   })
 
   beforeEach(() => {
@@ -75,11 +79,43 @@ describe('SignUpUseCase', () => {
     )
   })
 
+  const makeUser = (): User => {
+    const userProfile = new UserProfile({ socialName: inputStub.profile.socialName })
+    const userAccount = new UserAccount({
+      name: inputStub.account.name,
+      documents: [inputStub.account.document],
+      phones: [
+        {
+          value: inputStub.account.phone,
+          label: PhoneType.primary,
+          verified: false,
+          isPrivate: true,
+        },
+      ],
+      emails: [
+        {
+          value: inputStub.account.email,
+          label: EmailType.primary,
+          verified: false,
+          isPrivate: true,
+        },
+      ],
+      verified: false,
+      status: UserAccountStatus.disabled,
+      userId: 'any_uuid',
+    })
+    return new User({
+      id: 'any_uuid',
+      profile: userProfile,
+      account: userAccount,
+    })
+  }
+
   it('should call load document with correct input', async () => {
     await sut.perform(inputStub)
 
     expect(documentRepoSpy.load).toHaveBeenCalledTimes(1)
-    expect(documentRepoSpy.load).toHaveBeenCalledWith({ number: cpf })
+    expect(documentRepoSpy.load).toHaveBeenCalledWith({ number: Document.removeNonNumbers(cpf) })
   })
 
   it('should return DocumentAlreadyExistsError if LoadDocument returns a document', async () => {
@@ -98,7 +134,15 @@ describe('SignUpUseCase', () => {
   })
 
   it('should return ContactAlreadyExistsError if LoadContact returns an email', async () => {
-    contactRepoSpy.load.mockResolvedValueOnce(new Email(emailFaker, EmailType.primary))
+    contactRepoSpy.load.mockResolvedValueOnce(
+      new Email({
+        value: emailFaker,
+        label: EmailType.primary,
+        verified: true,
+        isPrivate: false,
+        userId: 'any_uuid',
+      })
+    )
 
     const output = await sut.perform(inputStub)
 
@@ -109,13 +153,21 @@ describe('SignUpUseCase', () => {
     await sut.perform(inputStub)
 
     expect(contactRepoSpy.load).toHaveBeenCalledTimes(2)
-    expect(contactRepoSpy.load).toHaveBeenNthCalledWith(2, { value: phoneFaker })
+    expect(contactRepoSpy.load).toHaveBeenNthCalledWith(2, {
+      value: Phone.removeNonNumbers(phoneFaker),
+    })
   })
 
   it('should return ContactAlreadyExistsError if LoadContact returns an phone', async () => {
-    contactRepoSpy.load
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(new Phone(phoneFaker, PhoneType.whatsapp))
+    contactRepoSpy.load.mockResolvedValueOnce(undefined).mockResolvedValueOnce(
+      new Phone({
+        value: phoneFaker,
+        label: PhoneType.whatsapp,
+        verified: true,
+        isPrivate: false,
+        userId: 'any_uuid',
+      })
+    )
 
     const output = await sut.perform(inputStub)
 
@@ -123,25 +175,12 @@ describe('SignUpUseCase', () => {
   })
 
   it('should call save user with correct input', async () => {
+    const user = makeUser()
+
     await sut.perform(inputStub)
 
-    const userProfile = new UserProfile({ socialName: inputStub.profile.socialName })
-    const userAccount = new UserAccount({
-      name: inputStub.account.name,
-      documents: [inputStub.account.document],
-      phones: [{ value: inputStub.account.phone, label: PhoneType.whatsapp }],
-      emails: [{ value: inputStub.account.email, label: EmailType.primary }],
-      verified: false,
-      status: UserAccountStatus.disabled,
-    })
     expect(userRepoSpy.save).toHaveBeenCalledTimes(1)
-    expect(userRepoSpy.save).toHaveBeenCalledWith(
-      new User({
-        id: 'any_uuid',
-        profile: userProfile,
-        account: userAccount,
-      })
-    )
+    expect(userRepoSpy.save).toHaveBeenCalledWith(user)
   })
 
   it('should call SaveKeycloakUserAccount with correct input', async () => {
@@ -149,7 +188,6 @@ describe('SignUpUseCase', () => {
 
     expect(userAccountApiSpy.saveWithKeycloak).toHaveBeenCalledTimes(1)
     expect(userAccountApiSpy.saveWithKeycloak).toHaveBeenCalledWith({
-      id: 'any_uuid',
       email: inputStub.account.email,
       password: 'any_password',
       firstName: firstName,
@@ -164,5 +202,18 @@ describe('SignUpUseCase', () => {
     const promise = sut.perform(inputStub)
 
     await expect(promise).rejects.toThrow(error)
+  })
+
+  it('should call notify with correct input on success', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2022-03-01T10:00:00'))
+    const user = makeUser()
+    const expectedEvent = new UserSignedUpEvent({ user })
+    const notifySpy = jest.spyOn(sut, 'notify')
+
+    await sut.perform(inputStub)
+
+    expect(notifySpy).toHaveBeenCalledTimes(1)
+    expect(notifySpy).toHaveBeenCalledWith(expectedEvent)
+    expect(notifySpy).toHaveBeenCalledAfter(userRepoSpy.save)
   })
 })

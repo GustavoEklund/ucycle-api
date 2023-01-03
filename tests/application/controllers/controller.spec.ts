@@ -4,6 +4,7 @@ import { HttpResponse } from '@/application/helpers'
 import { ValidationComposite } from '@/application/validation'
 
 import { mocked } from 'ts-jest/utils'
+import { DomainException } from '@/domain/entities/errors'
 
 jest.mock('@/application/validation/composite')
 
@@ -16,6 +17,12 @@ class ControllerStub extends Controller {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async perform(httpRequest: any): Promise<HttpResponse> {
     return this.result
+  }
+}
+
+class ErrorStub extends DomainException {
+  constructor() {
+    super('ErrorStub', 'any error message')
   }
 }
 
@@ -49,15 +56,27 @@ describe('Controller', () => {
     })
   })
 
+  it('should return 400 if perform throws a DomainException', async () => {
+    const expectedError = new ErrorStub()
+    jest.spyOn(sut, 'perform').mockRejectedValueOnce(expectedError)
+
+    const output = await sut.handle('any_value')
+
+    expect(output).toEqual({
+      statusCode: 400,
+      data: [expectedError],
+    })
+  })
+
   it('should return 500 perform throws', async () => {
-    const error = new Error('perform_error')
-    jest.spyOn(sut, 'perform').mockRejectedValueOnce(error)
+    const expectedError = new Error('perform_error')
+    jest.spyOn(sut, 'perform').mockRejectedValueOnce(expectedError)
 
     const httpResponse = await sut.handle('any_value')
 
     expect(httpResponse).toEqual({
       statusCode: 500,
-      data: [new ServerError(error)],
+      data: [new ServerError(expectedError)],
     })
   })
 

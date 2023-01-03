@@ -1,7 +1,7 @@
 import { Observer } from '@/domain/events'
 import { Mailer } from '@/domain/contracts/gateways'
 import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
-import { Email } from '@/domain/value-objects/contact'
+import { Email } from '@/domain/entities/contact'
 
 export class ApplicationToJoinOrganizationSentHandler extends Observer {
   public constructor(private readonly mailer: Mailer) {
@@ -19,7 +19,7 @@ export class ApplicationToJoinOrganizationSentHandler extends Observer {
           email: Email.getPrimary(organization.ownerUser.contacts)?.value.address ?? '',
         },
         template: {
-          id: 'd-e2679264028841579b0eb21a65e0a9d0',
+          code: 'APPLICATION_TO_JOIN_ORGANIZATION_SENT',
           data: {
             userId: user.id,
             userName: user.name,

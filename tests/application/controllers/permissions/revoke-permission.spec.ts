@@ -1,9 +1,10 @@
 import { RevokePermission } from '@/domain/use-cases/permissions'
 import { Controller, HttpRequest, RevokePermissionController } from '@/application/controllers'
+import { RequiredString } from '@/application/validation'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { UserPermissionNotFoundError } from '@/domain/entities/errors/permission'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { RequiredString } from '@/application/validation'
-import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
 
 describe('RevokePermissionController', () => {
   let revokePermissionSpy: MockProxy<RevokePermission>

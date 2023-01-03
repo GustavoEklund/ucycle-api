@@ -1,11 +1,12 @@
 import { LoadUserAccount, LoadUserPermission, SaveUserPermission } from '@/domain/contracts/repos'
 import { RevokePermission, RevokePermissionUseCase } from '@/domain/use-cases/permissions'
-import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
 import { User } from '@/domain/entities/user'
 import { UserPermission } from '@/domain/entities/permission'
 import { mockUser, mockUserPermission } from '@/tests/domain/mocks/entities'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { UserPermissionNotFoundError } from '@/domain/entities/errors/permission/user-permission-not-found'
 
 describe('RevokePermissionUseCase', () => {
   let userRepositorySpy: MockProxy<LoadUserAccount>

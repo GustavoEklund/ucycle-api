@@ -1,12 +1,10 @@
 import { UpdateOrganization } from '@/domain/use-cases/organizations'
 import { forbidden, HttpResponse, notFound, ok } from '@/application/helpers'
-import { Controller } from '../controller'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
-import {
-  OrganizationNotFoundError,
-  UnauthorizedUserError,
-  UserNotFoundError,
-} from '@/domain/entities/errors'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
+import { Controller } from '@/application/controllers'
 
 type Organization = {
   name: string

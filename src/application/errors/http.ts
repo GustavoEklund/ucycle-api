@@ -3,7 +3,7 @@ import { Exception } from '@/domain/entities/errors'
 export class ServerError extends Exception {
   public constructor(error?: Error) {
     super('ServerError', 'server failed, try again soon')
-    this.stack = error?.stack
+    this.stack = this.stack + '\n' + error?.stack
   }
 }
 

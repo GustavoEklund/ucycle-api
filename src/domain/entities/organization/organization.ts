@@ -1,8 +1,6 @@
 import { Entity, OrganizationMember } from '@/domain/entities'
-import { description } from 'aws-sdk/clients/frauddetector'
-import { name } from 'aws-sdk/clients/importexport'
-import { InvalidNameError } from '../errors'
-import { InvalidDescriptionError } from '../errors/invalid-description'
+import { InvalidNameError } from '@/domain/entities/errors/user'
+import { InvalidDescriptionError } from '@/domain/entities/errors/organization'
 
 export type Address = {
   city: string
@@ -14,9 +12,6 @@ export type Address = {
 }
 
 export class Organization extends Entity {
-  public _description: string
-  public _id: string | undefined
-  public _name: string
   public address: Address
   public ownerUserId: string
   public readonly members: OrganizationMember[]
@@ -43,20 +38,16 @@ export class Organization extends Entity {
     this.members = []
   }
 
-  public get name(): string {
-    return this._name
-  }
+  public _description: string
 
   public get description(): string {
     return this._description
   }
 
-  private isNameValid(): undefined | InvalidNameError {
-    if (this.name.length < 3) return new InvalidNameError(this.name)
-  }
+  public _name: string
 
-  private isDescriptionValid(): undefined | InvalidDescriptionError {
-    if (this.description === '') return new InvalidDescriptionError(this.description)
+  public get name(): string {
+    return this._name
   }
 
   public isOwner(userId: string): boolean {
@@ -83,5 +74,13 @@ export class Organization extends Entity {
         joinDate: member.date,
       })
     )
+  }
+
+  private isNameValid(): undefined | InvalidNameError {
+    if (this.name.length < 3) return new InvalidNameError(this.name)
+  }
+
+  private isDescriptionValid(): undefined | InvalidDescriptionError {
+    if (this.description === '') return new InvalidDescriptionError(this.description)
   }
 }

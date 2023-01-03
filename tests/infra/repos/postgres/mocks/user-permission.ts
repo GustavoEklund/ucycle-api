@@ -11,7 +11,7 @@ export const mockPgUserPermission = (input?: {
   grantToOrganization?: PgOrganization
 }) => ({
   id: faker.datatype.uuid(),
-  code: faker.random.word().toUpperCase(),
+  code: faker.random.word().toUpperCase().padStart(3, 'A'),
   name: faker.random.word(),
   description: faker.random.word(),
   read: faker.datatype.boolean(),

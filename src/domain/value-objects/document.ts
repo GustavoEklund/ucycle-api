@@ -1,4 +1,4 @@
-import { InvalidDocumentError } from '@/domain/entities/errors'
+import { InvalidDocumentError } from '@/domain/entities/errors/user'
 
 export enum DocumentType {
   cpf = 'CPF',
@@ -18,6 +18,10 @@ export class Document {
     this.type = type
   }
 
+  public static removeNonNumbers(number: string): string {
+    return number.replace(/\D/g, '')
+  }
+
   private static isValid(number: string): boolean {
     return Document.isCpf(number) || Document.isCnpj(number)
   }
@@ -26,10 +30,6 @@ export class Document {
     if (Document.isCpf(number)) return DocumentType.cpf
     if (Document.isCnpj(number)) return DocumentType.cnpj
     return undefined
-  }
-
-  private static removeNonNumbers(number: string): string {
-    return number.replace(/\D/g, '')
   }
 
   private static isCpf(number: string): boolean {

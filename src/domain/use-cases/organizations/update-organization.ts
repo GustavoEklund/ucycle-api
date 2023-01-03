@@ -1,7 +1,7 @@
-import { UUIDGenerator } from '@/domain/contracts/gateways'
 import { LoadOrganization, LoadUserAccount, SaveOrganization } from '@/domain/contracts/repos'
-import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
-import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission/unauthorized-user'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
 
 export interface UpdateOrganization {
   perform(input: UpdateOrganization.Input): Promise<UpdateOrganization.Output>
@@ -22,7 +22,7 @@ export class UpdateOrganizationUseCase implements UpdateOrganization {
       return new UnauthorizedUserError(input.user.id, 'UPDATE_ORGANIZATION')
     organization.updateName(input.organization.name)
     organization.updateDescription(input.organization.description)
-    this.organizationRepo.save(organization)
+    await this.organizationRepo.save(organization)
   }
 }
 
@@ -45,5 +45,3 @@ export namespace UpdateOrganization {
     | UserNotFoundError
     | UnauthorizedUserError
 }
-
-type Setup = (organizationsRepo: SaveOrganization, crypto: UUIDGenerator) => UpdateOrganization

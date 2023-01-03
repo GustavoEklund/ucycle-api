@@ -7,8 +7,8 @@ import {
   AlreadyMemberOfOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
-  UserAccountNotFoundError,
-} from '@/domain/entities/errors'
+} from '@/domain/entities/errors/organization'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
 
 type HttpRequest = {
   userId: string

@@ -1,6 +1,5 @@
-export * from './account'
 export * from './admission-proposal'
+export * from './contact'
 export * from './organization'
-export * from './transaction'
 export * from './user'
 export * from './user-permission'

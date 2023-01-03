@@ -2,7 +2,8 @@ import { RevokePermission } from '@/domain/use-cases/permissions'
 import { Controller } from '@/application/controllers'
 import { HttpResponse, noContent, notFound } from '@/application/helpers'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
-import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { UserPermissionNotFoundError } from '@/domain/entities/errors/permission'
 
 export type HttpRequest = {
   userId: string

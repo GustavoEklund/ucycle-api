@@ -2,7 +2,7 @@ import { LoadUserAccount, SaveUserAccount } from '@/domain/contracts/repos/user-
 import { PgRepository } from './repository'
 import { PgContact, PgDocument, PgUser } from '@/infra/repos/postgres/entities'
 import { User, UserAccount, UserAccountStatus, UserProfile } from '@/domain/entities/user'
-import { EmailType, PhoneType } from '@/domain/value-objects/contact'
+import { EmailType, PhoneType } from '@/domain/entities/contact'
 
 export class PgUserAccountRepository
   extends PgRepository
@@ -29,12 +29,23 @@ export class PgUserAccountRepository
           documents: (await pgUser.documents).map((document) => document.number),
           emails: (await pgUser.contacts)
             .filter((contact) => contact.type === 'EMAIL')
-            .map((contact) => ({ value: contact.value, label: contact.label as EmailType })),
+            .map((contact) => ({
+              value: contact.value,
+              label: contact.label as EmailType,
+              verified: contact.verified,
+              isPrivate: contact.isPrivate,
+            })),
           phones: (await pgUser.contacts)
             .filter((contact) => contact.type === 'PHONE')
-            .map((contact) => ({ value: contact.value, label: contact.label as PhoneType })),
+            .map((contact) => ({
+              value: contact.value,
+              label: contact.label as PhoneType,
+              verified: contact.verified,
+              isPrivate: contact.isPrivate,
+            })),
           status: UserAccountStatus.active,
           verified: false,
+          userId: pgUser.id,
         }),
         profile: userProfile,
       })

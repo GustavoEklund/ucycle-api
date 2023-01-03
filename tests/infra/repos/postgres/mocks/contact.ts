@@ -1,13 +1,10 @@
 import { faker } from '@faker-js/faker'
 
-export const mockContact = () => ({
-  verified: true,
-  type: 'EMAIL',
-  label: 'PRIMARY',
-  value: 'email@email.com',
-})
+export const mockPgContact = () => {
+  return faker.datatype.boolean() ? makePgEmailContact() : makePgPhoneContact()
+}
 
-export const makeEmailContact = () => ({
+export const makePgEmailContact = () => ({
   verified: true,
   type: 'EMAIL',
   label: 'PRIMARY',
@@ -15,7 +12,7 @@ export const makeEmailContact = () => ({
   isPrivate: true,
 })
 
-export const makePhoneContact = () => ({
+export const makePgPhoneContact = () => ({
   verified: true,
   type: 'PHONE',
   label: 'WHATSAPP',

@@ -8,14 +8,14 @@ import {
 import { Router } from 'express'
 
 export default (router: Router): void => {
-  router.post(
+  router.put(
     '/admission-proposals/:admissionProposalId/approve',
-    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
     adapt(makeApproveAdmissionProposalController())
   )
-  router.post(
+  router.put(
     '/admission-proposals/:admissionProposalId/decline',
-    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
     adapt(makeDeclineAdmissionProposalController())
   )
 }

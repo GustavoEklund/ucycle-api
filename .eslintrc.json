@@ -32,7 +32,9 @@
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/return-await": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-useless-constructor": ["error"],
+    "@typescript-eslint/no-useless-constructor": [
+      "error"
+    ],
     "no-useless-constructor": "off",
     "camelcase": "off"
   }

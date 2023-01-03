@@ -39,9 +39,9 @@ export const noContent = (): HttpResponse<undefined> => ({
   data: undefined,
 })
 
-export const badRequest = (error: Error[]): HttpResponse<Error[]> => ({
+export const badRequest = (errors: Error[]): HttpResponse<Error[]> => ({
   statusCode: 400,
-  data: error,
+  data: errors,
 })
 
 export const unauthorized = (): HttpResponse<Error[]> => ({
@@ -54,20 +54,36 @@ export const forbidden = (errors?: Error[]): HttpResponse<Error[]> => ({
   data: errors ?? [new ForbiddenError()],
 })
 
-export const notFound = (error?: Error[]): HttpResponse<Error[]> => ({
+export const notFound = (errors?: Error[]): HttpResponse<Error[]> => ({
   statusCode: 404,
-  data: error ?? [new NotFoundError()],
+  data: errors ?? [new NotFoundError()],
 })
 
-export const conflict = (error: Error[]): HttpResponse<Error[]> => ({
+export const conflict = (errors: Error[]): HttpResponse<Error[]> => ({
   statusCode: 409,
-  data: error,
+  data: errors,
 })
 
 export const serverError = (error: unknown): HttpResponse<Error[]> => ({
   statusCode: 500,
   data: [new ServerError(error instanceof Error ? error : undefined)],
 })
+
+export const isServerError = (httpResponse: HttpResponse<any>): boolean => {
+  return httpResponse.statusCode === HttpStatus.serverError
+}
+
+export const isError = (httpResponse: HttpResponse<any>): boolean => {
+  const errorStatuses = [
+    HttpStatus.badRequest,
+    HttpStatus.unauthorized,
+    HttpStatus.forbidden,
+    HttpStatus.notFound,
+    HttpStatus.conflict,
+    HttpStatus.serverError,
+  ]
+  return errorStatuses.includes(httpResponse.statusCode)
+}
 
 export const HttpResponse = {
   ok,
@@ -79,4 +95,6 @@ export const HttpResponse = {
   notFound,
   conflict,
   serverError,
+  isError,
+  isServerError,
 }

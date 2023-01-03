@@ -6,9 +6,10 @@ import {
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { mockOrganization, mockUser } from '@/tests/domain/mocks/entities'
-import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { User } from '@/domain/entities/user'
 import { Organization } from '@/domain/entities'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
 
 describe('JoinUserToOrganizationUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>

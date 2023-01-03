@@ -1,13 +1,20 @@
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
-import { mockAdmissionProposal, mockOrganization, mockUser } from '@/tests/domain/mocks/entities'
+import {
+  mockAdmissionProposal,
+  mockEmailContact,
+  mockOrganization,
+  mockPhoneContact,
+  mockUser,
+} from '@/tests/domain/mocks/entities'
 import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { AdmissionProposalAcceptedHandler } from '@/infra/event-handlers/admission-proposal-accepted'
 import { User } from '@/domain/entities/user'
 import { Mailer } from '@/domain/contracts/gateways'
-import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { Organization } from '@/domain/entities'
 import { JoinUserToOrganization } from '@/domain/use-cases'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
 
 describe('AdmissionProposalAcceptedHandler', () => {
   let mailerSpy: MockProxy<Mailer>
@@ -22,7 +29,10 @@ describe('AdmissionProposalAcceptedHandler', () => {
   beforeAll(() => {
     mailerSpy = mock()
     joinUserToOrganizationUseCaseSpy = mock()
-    userStub = mockUser()
+    userStub = mockUser({
+      emails: [mockEmailContact({ forcePrimary: true })],
+      phones: [mockPhoneContact({ forcePrimary: true })],
+    })
     userRepoSpy = mock()
     userRepoSpy.load.mockResolvedValue(userStub)
     organizationRepoSpy = mock()
@@ -86,7 +96,7 @@ describe('AdmissionProposalAcceptedHandler', () => {
         name: userStub.account.name.value,
       },
       template: {
-        id: 'd-edc111240ab4437388a38c9003298462',
+        code: 'ADMISSION_PROPOSAL_ACCEPTED',
         data: {
           organizationName: organizationStub.name,
         },

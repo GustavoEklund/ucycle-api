@@ -1,8 +1,9 @@
 import { Controller } from '@/application/controllers'
 import { HttpResponse, notFound, ok } from '@/application/helpers'
 import { ApproveAdmissionProposal } from '@/domain/use-cases'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { AdmissionProposalNotFoundError } from '@/domain/entities/errors/organization'
 
 type HttpRequest = {
   userId: string

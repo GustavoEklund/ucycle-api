@@ -1,22 +1,16 @@
-import {
-  makeEmailContact,
-  makeFakeDb,
-  makePhoneContact,
-  mockPgUser,
-} from '@/tests/infra/repos/postgres/mocks'
+import { makeFakeDb, mockPgUser } from '@/tests/infra/repos/postgres/mocks'
 import { PgRepository } from '@/infra/repos/postgres/repository'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
-import { PgContact, PgUser } from '@/infra/repos/postgres/entities'
+import { PgUser } from '@/infra/repos/postgres/entities'
 import { IBackup } from 'pg-mem'
 import { Repository } from 'typeorm'
 import { PgContactRepository } from '@/infra/repos/postgres'
-import { Email, EmailType, Phone, PhoneType } from '@/domain/value-objects/contact'
+import { mockContact, mockEmailContact, mockPhoneContact } from '@/tests/domain/mocks/entities'
 
 describe('PgContactRepository', () => {
   let sut: PgContactRepository
   let connection: PgConnection
   let pgUserRepo: Repository<PgUser>
-  let pgContactRepo: Repository<PgContact>
   let backup: IBackup
 
   beforeAll(async () => {
@@ -24,7 +18,6 @@ describe('PgContactRepository', () => {
     const db = await makeFakeDb()
     backup = db.backup()
     pgUserRepo = connection.getRepository(PgUser)
-    pgContactRepo = connection.getRepository(PgContact)
   })
 
   beforeEach(() => {
@@ -40,37 +33,89 @@ describe('PgContactRepository', () => {
     expect(sut).toBeInstanceOf(PgRepository)
   })
 
-  describe('loadAll', () => {
+  describe('load', () => {
     it('should load email contact', async () => {
       const pgUser = await pgUserRepo.save(mockPgUser())
-      const pgContact = await pgContactRepo.save({
-        user: pgUser,
-        label: makeEmailContact().label,
-        value: makeEmailContact().value,
-        type: makeEmailContact().type,
-        isPrivate: makeEmailContact().isPrivate,
-        verified: makeEmailContact().verified,
-      })
+      const expectedContact = mockEmailContact({ userId: pgUser.id })
+      await sut.save(expectedContact)
 
-      const contacts = await sut.load({ value: pgContact.value })
+      const contact = await sut.load({ value: expectedContact.getFullPlainValue() })
 
-      expect(contacts).toEqual(new Email(pgContact.value, pgContact.label as EmailType))
+      expect(contact).toEqual(expectedContact)
     })
 
     it('should load phone contact', async () => {
       const pgUser = await pgUserRepo.save(mockPgUser())
-      const pgContact = await pgContactRepo.save({
-        user: pgUser,
-        label: makePhoneContact().label,
-        value: makePhoneContact().value,
-        type: makePhoneContact().type,
-        isPrivate: makePhoneContact().isPrivate,
-        verified: makePhoneContact().verified,
+      const expectedContact = mockPhoneContact({ userId: pgUser.id })
+      await sut.save(expectedContact)
+
+      const contact = await sut.load({ value: expectedContact.getFullPlainValue() })
+
+      expect(contact).toEqual(expectedContact)
+    })
+
+    it('should return undefined if email does not exist', async () => {
+      const pgUser = await pgUserRepo.save(mockPgUser())
+      const contact1 = mockEmailContact({ userId: pgUser.id })
+      const contact2 = mockEmailContact({ userId: pgUser.id })
+      await sut.save(contact1)
+      await sut.save(contact2)
+
+      const contact = await sut.load({
+        value: mockEmailContact().getFullPlainValue(),
       })
 
-      const contacts = await sut.load({ value: pgContact.value })
+      expect(contact).toBeUndefined()
+    })
 
-      expect(contacts).toEqual(new Phone(pgContact.value, pgContact.label as PhoneType))
+    it('should not load an soft deleted contact', async () => {
+      const pgUser = await pgUserRepo.save(mockPgUser())
+      const expectedContact = mockContact({ userId: pgUser.id })
+      await sut.save(expectedContact)
+      const contactBeforeDelete = await sut.load({ value: expectedContact.getFullPlainValue() })
+      expect(contactBeforeDelete).toEqual(expectedContact)
+      await sut.delete(expectedContact)
+
+      const contact = await sut.load({ value: expectedContact.getFullPlainValue() })
+
+      expect(contact).toBeUndefined()
+    })
+  })
+
+  describe('delete', () => {
+    it('should delete email contact', async () => {
+      const pgUser = await pgUserRepo.save(mockPgUser())
+      const contact = mockEmailContact({ userId: pgUser.id })
+      await sut.save(contact)
+
+      await sut.delete(contact)
+
+      const deletedContact = await sut.load({ value: contact.getFullPlainValue() })
+      expect(deletedContact).toBeUndefined()
+    })
+
+    it('should delete phone contact', async () => {
+      const pgUser = await pgUserRepo.save(mockPgUser())
+      const contact = mockPhoneContact({ userId: pgUser.id })
+      await sut.save(contact)
+
+      await sut.delete(contact)
+
+      const deletedContact = await sut.load({ value: contact.getFullPlainValue() })
+      expect(deletedContact).toBeUndefined()
+    })
+
+    it('should throw Error if contact cannot be found', async () => {
+      const pgUser = await pgUserRepo.save(mockPgUser())
+      const contact1 = mockEmailContact({ userId: pgUser.id })
+      const contact2 = mockEmailContact({ userId: pgUser.id })
+      await sut.save(contact1)
+      await sut.save(contact2)
+      const expectedError = new Error('could not find contact to delete')
+
+      const promise = sut.delete(mockEmailContact())
+
+      await expect(promise).rejects.toThrow(expectedError)
     })
   })
 })

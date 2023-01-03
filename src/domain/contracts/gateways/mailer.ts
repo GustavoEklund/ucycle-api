@@ -18,7 +18,7 @@ export namespace Mailer {
   }
   export type InputWithTemplate = Input & {
     template: {
-      id: string
+      code: string
       data: { [key: string]: any }
     }
   }

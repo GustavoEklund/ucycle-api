@@ -1,12 +1,10 @@
 import { DeclineAdmissionProposal } from '@/domain/use-cases'
-import {
-  AdmissionProposalNotFoundError,
-  UnauthorizedUserError,
-  UserNotFoundError,
-} from '@/domain/entities/errors'
 import { HttpResponse } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { AdmissionProposalNotFoundError } from '@/domain/entities/errors/organization'
 
 type HttpRequest = {
   userId: string

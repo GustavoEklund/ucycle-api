@@ -1,14 +1,13 @@
 import { LoadOrganization, LoadUserAccount, SaveOrganization } from '@/domain/contracts/repos'
 import { Organization } from '@/domain/entities'
-import {
-  OrganizationNotFoundError,
-  UnauthorizedUserError,
-  UserNotFoundError,
-} from '@/domain/entities/errors'
 import { User } from '@/domain/entities/user'
-import { mock, MockProxy } from 'jest-mock-extended'
 import { UpdateOrganizationUseCase } from '@/domain/use-cases/organizations'
-import { mockOrganization, mockUser } from '../../mocks/entities'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
+
+import { mock, MockProxy } from 'jest-mock-extended'
+import { mockOrganization, mockUser } from '@/tests/domain/mocks/entities'
 
 describe('UpdateOrganizationUseCase', () => {
   let userMock: User

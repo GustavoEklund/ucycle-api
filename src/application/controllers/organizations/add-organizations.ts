@@ -1,5 +1,5 @@
-import { HttpResponse, ok } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
+import { HttpResponse } from '@/application/helpers'
 import { AddOrganizations } from '@/domain/use-cases'
 import { RequiredType, ValidationBuilder as Builder, Validator } from '@/application/validation'
 
@@ -38,7 +38,7 @@ export class AddOrganizationsController extends Controller {
       userId,
       description,
     })
-    return ok(response)
+    return HttpResponse.ok(response)
   }
 
   public override buildValidators({ userId, name, address }: HttpRequest): Validator[] {

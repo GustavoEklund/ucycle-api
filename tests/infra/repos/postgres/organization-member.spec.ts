@@ -8,9 +8,9 @@ import {
 } from '@/infra/repos/postgres/entities'
 import {
   makeFakeDb,
-  mockContact,
   mockDocument,
   mockPgAdmissionProposal,
+  mockPgContact,
   mockPgOrganization,
   mockPgUser,
 } from '@/tests/infra/repos/postgres/mocks'
@@ -60,7 +60,7 @@ describe('PgOrganizationMemberRepository', () => {
     it('should load organization member', async () => {
       const pgUser = await pgUserRepo.create(mockPgUser())
       pgUser.documents = Promise.resolve([pgDocumentRepo.create(mockDocument())])
-      pgUser.contacts = Promise.resolve([pgContactRepo.create(mockContact())])
+      pgUser.contacts = Promise.resolve([pgContactRepo.create(mockPgContact())])
       await pgUserRepo.save(pgUser)
       let pgOrganization = await pgOrganizationRepo.create(mockPgOrganization({}))
       pgOrganization = await pgOrganizationRepo.save(pgOrganization)

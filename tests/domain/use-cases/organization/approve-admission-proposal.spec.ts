@@ -6,15 +6,16 @@ import {
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
 import { PermissionStatus } from '@/domain/entities/permission'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { mockAdmissionProposal, mockUser, mockUserPermission } from '@/tests/domain/mocks/entities'
-import { UnauthorizedUserError } from '@/domain/entities/errors/unauthorized-user'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission/unauthorized-user'
 import { AdmissionProposal } from '@/domain/entities'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
 import { User } from '@/domain/entities/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { reset, set } from 'mockdate'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { AdmissionProposalNotFoundError } from '@/domain/entities/errors/organization'
 
 describe('ApproveAdmissionProposalUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>

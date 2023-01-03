@@ -3,14 +3,14 @@ import { ApplyToJoinOrganization } from '@/domain/use-cases'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { RequiredString } from '@/application/validation'
+import { conflict, created, notFound, serverError } from '@/application/helpers'
 import {
   AlreadyAppliedToJoinOrganizationError,
   AlreadyMemberOfOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
-  UserAccountNotFoundError,
-} from '@/domain/entities/errors'
-import { conflict, created, notFound, serverError } from '@/application/helpers'
+} from '@/domain/entities/errors/organization'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
 
 describe('ApplyToJoinOrganizationController', () => {
   let sut: ApplyToJoinOrganizationController

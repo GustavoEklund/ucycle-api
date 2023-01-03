@@ -13,7 +13,7 @@ services:
       - keycloak-auth
     ports:
       - '3000:3000'
-      - '9222:9222'
+      - '9229:9229'
     volumes:
       - ./:/usr/src/app/
     networks:
@@ -32,7 +32,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_MULTIPLE_DATABASES=ucycle,keycloak
+      - POSTGRES_MULTIPLE_DATABASES=ucycle_app,keycloak
 
   keycloak-auth:
     container_name: keycloak-auth

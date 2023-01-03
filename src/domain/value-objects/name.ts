@@ -1,4 +1,4 @@
-import { InvalidNameError } from '@/domain/entities/errors'
+import { InvalidNameError } from '@/domain/entities/errors/user'
 import { ValueObject } from '@/domain/value-objects/value-object'
 
 export enum NameType {

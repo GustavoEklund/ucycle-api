@@ -2,6 +2,8 @@ import { HttpResponse } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
 import { SignUp } from '@/domain/use-cases'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
+import { DocumentAlreadyExistsError } from '@/domain/entities/errors/user'
+import { ContactAlreadyExistsError } from '@/domain/entities/errors/contact'
 
 type HttpRequest = {
   name: string
@@ -12,7 +14,7 @@ type HttpRequest = {
   socialName: string
 }
 
-type Model = Error | undefined
+type Model = undefined | Error[]
 
 export class SignUpController extends Controller {
   public constructor(private readonly signUp: SignUp) {
@@ -27,7 +29,7 @@ export class SignUpController extends Controller {
     password,
     socialName,
   }: HttpRequest): Promise<HttpResponse<Model>> {
-    await this.signUp.perform({
+    const output = await this.signUp.perform({
       account: {
         name,
         password,
@@ -37,6 +39,8 @@ export class SignUpController extends Controller {
       },
       profile: { socialName: socialName },
     })
+    if (output instanceof DocumentAlreadyExistsError) return HttpResponse.conflict([output])
+    if (output instanceof ContactAlreadyExistsError) return HttpResponse.conflict([output])
     return HttpResponse.ok(undefined)
   }
 

@@ -1,5 +1,6 @@
 import { LoadUserAccount, LoadUserPermission, SaveUserPermission } from '@/domain/contracts/repos'
-import { UserNotFoundError, UserPermissionNotFoundError } from '@/domain/entities/errors'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { UserPermissionNotFoundError } from '@/domain/entities/errors/permission'
 
 export interface RevokePermission {
   perform: (input: RevokePermission.Input) => Promise<RevokePermission.Output>

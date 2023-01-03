@@ -1,11 +1,13 @@
 import { LoadBasePermission, LoadUserAccount, SaveUserPermission } from '@/domain/contracts/repos'
-import { mock, MockProxy } from 'jest-mock-extended'
 import { GrantPermission, GrantPermissionUseCase } from '@/domain/use-cases/permissions'
-import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 import { BasePermission } from '@/domain/entities/permission/base-permission'
 import { UUIDGenerator } from '@/domain/contracts/gateways'
 import { UserPermission } from '@/domain/entities/permission'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
+import { BasePermissionNotFoundError } from '@/domain/entities/errors/permission'
 import { mockUser } from '@/tests/domain/mocks/entities'
+
+import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('GrantPermissionUseCase', () => {
   let userRepoSpy: MockProxy<LoadUserAccount>

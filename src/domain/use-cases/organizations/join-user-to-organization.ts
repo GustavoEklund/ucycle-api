@@ -1,5 +1,6 @@
 import { LoadOrganization, LoadUserAccount, SaveOrganization } from '@/domain/contracts/repos'
-import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
 
 export interface JoinUserToOrganization {
   perform: (input: JoinUserToOrganization.Input) => Promise<JoinUserToOrganization.Output>

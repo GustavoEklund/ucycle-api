@@ -1,5 +1,5 @@
 import { ValueObject } from '@/domain/value-objects'
-import { InvalidPermissionCodeError } from '@/domain/entities/errors'
+import { InvalidPermissionCodeError } from '@/domain/entities/errors/permission'
 
 export class PermissionCode extends ValueObject {
   public readonly value: string

@@ -1,8 +1,9 @@
 import { Controller, GrantPermissionController } from '@/application/controllers'
 import { RequiredBoolean, RequiredString } from '@/application/validation'
-import { BasePermissionNotFoundError, UserAccountNotFoundError } from '@/domain/entities/errors'
 import { GrantPermission } from '@/domain/use-cases/permissions'
 import { notFound, ok } from '@/application/helpers'
+import { BasePermissionNotFoundError } from '@/domain/entities/errors/permission'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 

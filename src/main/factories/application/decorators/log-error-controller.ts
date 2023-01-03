@@ -1,8 +1,8 @@
-import { LogErrorControllerDecorator } from '@/main/decorators'
 import { Controller } from '@/application/controllers'
-import { makeUuidHandler } from '@/main/factories/infra/gateways'
-import { makePgErrorLogRepository } from '@/main/factories/infra/repos/postgres'
+import { LogErrorControllerDecorator } from '@/application/decorators'
+import { makeLogErrorsUseCase } from '@/main/factories/domain/use-cases/errors'
+import { makePgConnection } from '@/main/factories/infra/repos/postgres/helpers'
 
 export const makeLogErrorControllerDecorator = (controller: Controller) => {
-  return new LogErrorControllerDecorator(controller, makeUuidHandler(), makePgErrorLogRepository())
+  return new LogErrorControllerDecorator(controller, makeLogErrorsUseCase(), makePgConnection())
 }

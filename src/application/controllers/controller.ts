@@ -1,5 +1,6 @@
-import { badRequest, HttpResponse, serverError } from '@/application/helpers'
+import { HttpResponse } from '@/application/helpers'
 import { ValidationComposite, Validator } from '@/application/validation'
+import { DomainException } from '@/domain/entities/errors'
 
 export abstract class Controller {
   public abstract perform(httpRequest: any): Promise<HttpResponse>
@@ -11,11 +12,12 @@ export abstract class Controller {
 
   async handle(httpRequest: any): Promise<HttpResponse> {
     const errors = this.validate(httpRequest)
-    if (errors.length > 0) return badRequest(errors)
+    if (errors.length > 0) return HttpResponse.badRequest(errors)
     try {
       return await this.perform(httpRequest)
     } catch (error) {
-      return serverError(error)
+      if (error instanceof DomainException) return HttpResponse.badRequest([error])
+      return HttpResponse.serverError(error)
     }
   }
 

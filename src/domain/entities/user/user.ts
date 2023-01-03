@@ -18,4 +18,8 @@ export class User extends Entity {
     this.account = account
     this.profile = profile
   }
+
+  public assignNewId(id: string): void {
+    this._id = id
+  }
 }

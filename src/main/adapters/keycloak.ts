@@ -3,7 +3,7 @@ import { keycloak } from '@/main/config/keycloak'
 import { ServerError } from '@/application/errors'
 
 export const adaptKeycloakProtect =
-  (spec: string): RequestHandler =>
+  (spec?: string): RequestHandler =>
   (req, res, next) => {
     const protect = keycloak.protect(spec)
     protect(req, res, (error) => {

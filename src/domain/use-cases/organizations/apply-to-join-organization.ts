@@ -5,16 +5,16 @@ import {
   LoadUserAccount,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
+import { Publisher } from '@/domain/events'
+import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
+import { AdmissionProposalStatus } from '@/domain/entities/organization'
+import { UserAccountNotFoundError } from '@/domain/entities/errors/user'
 import {
   AlreadyAppliedToJoinOrganizationError,
   AlreadyMemberOfOrganizationError,
   OrganizationNotFoundError,
   TheOrganizationOwnerCanNotApplyToJoinOrganizationError,
-  UserAccountNotFoundError,
-} from '@/domain/entities/errors'
-import { Publisher } from '@/domain/events'
-import { ApplicationToJoinOrganizationSent } from '@/domain/events/organization'
-import { AdmissionProposalStatus } from '@/domain/entities/organization'
+} from '@/domain/entities/errors/organization'
 
 export interface ApplyToJoinOrganization {
   perform: (input: ApplyToJoinOrganization.Input) => Promise<ApplyToJoinOrganization.Output>

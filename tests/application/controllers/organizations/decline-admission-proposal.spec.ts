@@ -1,13 +1,11 @@
 import { Controller, DeclineAdmissionProposalController } from '@/application/controllers'
 import { DeclineAdmissionProposal } from '@/domain/use-cases'
+import { RequiredString } from '@/application/validation'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { AdmissionProposalNotFoundError } from '@/domain/entities/errors/organization'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import {
-  AdmissionProposalNotFoundError,
-  UnauthorizedUserError,
-  UserNotFoundError,
-} from '@/domain/entities/errors'
-import { RequiredString } from '@/application/validation'
 
 describe('DeclineAdmissionProposalController', () => {
   let httpRequestStub: { userId: string; admissionProposalId: string }

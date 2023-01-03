@@ -1,10 +1,11 @@
 import { ApproveAdmissionProposalController } from '@/application/controllers/organizations'
 import { ApproveAdmissionProposal } from '@/domain/use-cases'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { AdmissionProposalNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { notFound } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
 import { RequiredString } from '@/application/validation'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { AdmissionProposalNotFoundError } from '@/domain/entities/errors/organization'
 
 describe('ApproveAdmissionProposalController', () => {
   let httpResponseStub: MockProxy<{ userId: string; admissionProposalId: string }>

@@ -1,5 +1,5 @@
 import { PermissionCode } from '@/domain/entities/permission/permission-code'
-import { InvalidPermissionCodeError } from '@/domain/entities/errors'
+import { InvalidPermissionCodeError } from '@/domain/entities/errors/permission'
 
 describe('PermissionCode', () => {
   it('should throw InvalidPermissionCodeError when code is empty', () => {

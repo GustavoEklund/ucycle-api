@@ -2,8 +2,9 @@ import { Observer } from '@/domain/events'
 import { Mailer } from '@/domain/contracts/gateways'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
 import { LoadOrganization, LoadUserAccount } from '@/domain/contracts/repos'
-import { OrganizationNotFoundError, UserNotFoundError } from '@/domain/entities/errors'
 import { JoinUserToOrganization } from '@/domain/use-cases'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { OrganizationNotFoundError } from '@/domain/entities/errors/organization'
 
 export class AdmissionProposalAcceptedHandler extends Observer {
   public constructor(
@@ -37,7 +38,7 @@ export class AdmissionProposalAcceptedHandler extends Observer {
         email: user.account.getPrimaryEmail().value.address,
       },
       template: {
-        id: 'd-edc111240ab4437388a38c9003298462',
+        code: 'ADMISSION_PROPOSAL_ACCEPTED',
         data: {
           organizationName: organization.name,
         },

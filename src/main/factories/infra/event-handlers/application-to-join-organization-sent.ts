@@ -1,7 +1,7 @@
 import { ApplicationToJoinOrganizationSentHandler } from '@/infra/event-handlers'
-import { makeSendGridMailer } from '@/main/factories/infra/gateways/sdks'
+import { makeSendGridSdkGateway } from '@/main/factories/infra/gateways/sdks'
 
 export const makeApplicationToJoinOrganizationSentHandler =
   (): ApplicationToJoinOrganizationSentHandler => {
-    return new ApplicationToJoinOrganizationSentHandler(makeSendGridMailer())
+    return new ApplicationToJoinOrganizationSentHandler(makeSendGridSdkGateway())
   }

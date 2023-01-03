@@ -9,20 +9,24 @@ import {
 } from '@/main/factories/application/controllers'
 
 export default (router: Router): void => {
-  router.post('/organizations', adapt(makeAddOrganizationsController()))
+  router.post(
+    '/organizations',
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
+    adapt(makeAddOrganizationsController())
+  )
   router.get(
     '/users/:userId/organizations',
-    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
     adapt(makeLoadMyOrganizationsController())
   )
   router.post(
     '/organizations/:organizationId/apply-to-join',
-    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
     adapt(makeApplyToJoinOrganizationController())
   )
   router.put(
     '/organizations/:organizationId',
-    adaptKeycloakProtect(`realm:default-roles${env.keycloak.realm}`),
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
     adapt(makeUpdateOrganizationController())
   )
 }

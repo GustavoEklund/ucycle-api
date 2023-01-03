@@ -4,14 +4,12 @@ import {
   LoadUserPermission,
   SaveAdmissionProposal,
 } from '@/domain/contracts/repos'
-import {
-  AdmissionProposalNotFoundError,
-  UnauthorizedUserError,
-  UserNotFoundError,
-} from '@/domain/entities/errors'
 import { PermissionStatus } from '@/domain/entities/permission'
 import { Publisher } from '@/domain/events'
 import { AdmissionProposalAccepted } from '@/domain/events/organization'
+import { UnauthorizedUserError } from '@/domain/entities/errors/permission/unauthorized-user'
+import { UserNotFoundError } from '@/domain/entities/errors/user'
+import { AdmissionProposalNotFoundError } from '@/domain/entities/errors/organization'
 
 export interface ApproveAdmissionProposal {
   perform: (input: ApproveAdmissionProposal.Input) => Promise<ApproveAdmissionProposal.Output>
