@@ -22,6 +22,7 @@ import {
   PgOrganizationMember,
   PgProduct,
   PgProductCategory,
+  PgShoppingCart,
 } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'user' })
@@ -77,6 +78,9 @@ export class PgUser {
 
   @OneToMany(() => PgProductCategory, (productCategory) => productCategory.createdBy)
   productCategories!: Promise<PgProductCategory[]>
+
+  @OneToMany(() => PgShoppingCart, (shoppingCart) => shoppingCart.createdBy)
+  shoppingCarts!: Promise<PgShoppingCart[]>
 
   @OneToMany(() => PgErrorLog, (errorLog) => errorLog.createdBy)
   errorLogs!: Promise<PgErrorLog[]>
