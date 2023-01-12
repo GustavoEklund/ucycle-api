@@ -6,11 +6,12 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgProductCategory, PgUser } from '@/infra/repos/postgres/entities'
+import { PgProductCategory, PgShoppingCartProduct, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'product' })
 export class PgProduct {
@@ -37,6 +38,9 @@ export class PgProduct {
 
   @ManyToMany(() => PgProductCategory, (productCategory) => productCategory.products)
   productCategories!: Promise<PgProductCategory[]>
+
+  @OneToMany(() => PgShoppingCartProduct, (shoppingCartProduct) => shoppingCartProduct.product)
+  shoppingCartProducts!: Promise<PgShoppingCartProduct[]>
 
   @ManyToOne(() => PgUser, (user) => user.products)
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })

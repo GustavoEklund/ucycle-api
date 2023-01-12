@@ -1,27 +1,34 @@
 import {
+  Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgShoppingCartProduct, PgUser } from '@/infra/repos/postgres/entities'
+import { PgProduct, PgShoppingCart } from '@/infra/repos/postgres/entities'
 
-@Entity({ name: 'shopping_cart' })
-export class PgShoppingCart {
+@Entity({ name: 'shopping_cart_product' })
+export class PgShoppingCartProduct {
   @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
-  @OneToMany(() => PgShoppingCartProduct, (shoppingCartProduct) => shoppingCartProduct.shoppingCart)
-  shoppingCartProducts!: Promise<PgShoppingCartProduct[]>
+  @ManyToOne(() => PgProduct, (product) => product.shoppingCartProducts)
+  product!: PgProduct
 
-  @ManyToOne(() => PgUser, (user) => user.shoppingCarts, { nullable: true })
-  @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
-  createdBy?: PgUser
+  @ManyToOne(() => PgShoppingCart, (shoppingCart) => shoppingCart.shoppingCartProducts)
+  shoppingCart!: PgShoppingCart
+
+  @Column({ name: 'title', nullable: false })
+  title!: string
+
+  @Column({ name: 'amount', nullable: false })
+  amount!: number
+
+  @Column({ name: 'priceInCents', nullable: false })
+  priceInCents!: number
 
   @CreateDateColumn({
     name: 'created_at',
