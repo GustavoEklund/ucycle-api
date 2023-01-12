@@ -3,6 +3,7 @@ import { HttpResponse } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
 import { RequiredType, ValidationBuilder, Validator } from '@/application/validation'
 import {
+  ContactAlreadyVerifiedError,
   ContactDoesNotBelongToUserError,
   ContactNotFoundError,
   InvalidPhoneNumberVerificationCodeError,
@@ -28,6 +29,7 @@ export class VerifyContactController extends Controller {
     const output = await this.verifyContact.perform({ user: { id: userId }, contact })
     if (output instanceof UserNotFoundError) return HttpResponse.notFound([output])
     if (output instanceof ContactNotFoundError) return HttpResponse.notFound([output])
+    if (output instanceof ContactAlreadyVerifiedError) return HttpResponse.conflict([output])
     if (output instanceof ContactDoesNotBelongToUserError) return HttpResponse.forbidden([output])
     if (output instanceof InvalidPhoneNumberVerificationCodeError)
       return HttpResponse.badRequest([output])
