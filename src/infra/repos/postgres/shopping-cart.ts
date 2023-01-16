@@ -32,6 +32,7 @@ export class PgShoppingCartRepository
       if (!shoppingCartProducWasDeleted) return
       this.getRepository(PgShoppingCartProduct).softRemove(pgShoppingCartProduct)
     })
+    await pgShoppingCartRepository.save(pgShoppingCart)
     for (const shoppingCartProduct of shoppingCart.products) {
       const pgProduct = await this.getRepository(PgProduct).findOneOrFail(shoppingCartProduct.id)
       await this.getRepository(PgShoppingCartProduct).save({
@@ -43,13 +44,14 @@ export class PgShoppingCartRepository
         product: pgProduct,
       })
     }
-    await pgShoppingCartRepository.save(pgShoppingCart)
   }
 
-  public async load({ id }: LoadShoppingCart.Input): Promise<LoadShoppingCart.Output> {
-    const pgShoppingCart = await this.getRepository(PgShoppingCart).findOne(id, {
-      relations: ['shoppingCartProducts', 'createdBy'],
+  public async load({ id, userId }: LoadShoppingCart.Input): Promise<LoadShoppingCart.Output> {
+    const pgShoppingCarts = await this.getRepository(PgShoppingCart).find({
+      where: [{ id }, { createdBy: { id: userId } }],
+      relations: ['shoppingCartProducts', 'shoppingCartProducts.product', 'createdBy'],
     })
+    const pgShoppingCart = pgShoppingCarts[0]
     if (pgShoppingCart === undefined) return undefined
     const shoppingCart = new ShoppingCart({
       id: pgShoppingCart.id,

@@ -10,7 +10,8 @@ export interface LoadShoppingCart {
 
 export namespace LoadShoppingCart {
   export type Input = {
-    id: string
+    id?: string
+    userId?: string
   }
   export type Output = ShoppingCart | undefined
 }
