@@ -1,4 +1,4 @@
-import { HttpGetClient, FacebookApi } from '@/infra/gateways'
+import { FacebookApi, HttpGetClient } from '@/infra/gateways'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -16,9 +16,12 @@ describe('FacebookApi', () => {
 
   beforeEach(() => {
     httpClient.get
-      .mockResolvedValueOnce({ access_token: 'any_app_token' })
-      .mockResolvedValueOnce({ data: { user_id: 'any_user_id' } })
-      .mockResolvedValueOnce({ id: 'any_fb_id', name: 'any_fb_name', email: 'any_fb_email' })
+      .mockResolvedValueOnce({ statusCode: 200, data: { access_token: 'any_app_token' } })
+      .mockResolvedValueOnce({ statusCode: 200, data: { user_id: 'any_user_id' } })
+      .mockResolvedValueOnce({
+        statusCode: 200,
+        data: { id: 'any_fb_id', name: 'any_fb_name', email: 'any_fb_email' },
+      })
     sut = new FacebookApi(httpClient, clientId, clientSecret)
   })
 
