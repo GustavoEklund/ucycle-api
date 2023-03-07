@@ -3,10 +3,10 @@ import { LoadContact, SaveContact } from '@/domain/contracts/repos'
 import { ContactAlreadyExistsError } from '@/domain/entities/errors/contact'
 import { Contact, ContactFromRawValueFactory } from '@/domain/entities/contact'
 import { Publisher } from '@/domain/events'
+import { ContactAddedEvent } from '@/domain/events/user'
 import { mockContact } from '@/tests/domain/mocks/entities'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { ContactAddedEvent } from '@/domain/events/user'
 
 describe('AddContactUseCase', () => {
   let sut: AddContactUseCase

@@ -18,28 +18,33 @@ export class PgShoppingCartRepository
     if (shoppingCart.userId) pgUser = await this.getRepository(PgUser).findOne(shoppingCart.userId)
     const pgShoppingCartRepository = this.getRepository(PgShoppingCart)
     let pgShoppingCart = await pgShoppingCartRepository.findOne(shoppingCart.id)
-    if (pgShoppingCart === undefined)
-      pgShoppingCart = pgShoppingCartRepository.create({
+    if (pgShoppingCart === undefined) {
+      pgShoppingCart = await pgShoppingCartRepository.save({
         id: shoppingCart.id,
         createdBy: pgUser,
+        shoppingCartProducts: Promise.resolve([]),
       })
-    const pgShoppingCartProducts = await pgShoppingCart.shoppingCartProducts
-    pgShoppingCartProducts.forEach((pgShoppingCartProduct) => {
-      const shoppingCartProduct = shoppingCart.products.find(
-        (shoppingCartProduct) => shoppingCartProduct.id === pgShoppingCartProduct.id
-      )
-      const shoppingCartProducWasDeleted = shoppingCartProduct === undefined
-      if (!shoppingCartProducWasDeleted) return
-      this.getRepository(PgShoppingCartProduct).softRemove(pgShoppingCartProduct)
+    }
+    const pgShoppingCartProducts = await this.getRepository(PgShoppingCartProduct).find({
+      where: {
+        shoppingCart: { id: pgShoppingCart.id },
+      },
+      relations: ['product'],
     })
-    await pgShoppingCartRepository.save(pgShoppingCart)
+    for (const pgShoppingCartProduct of pgShoppingCartProducts) {
+      if (!shoppingCart.containsProduct(pgShoppingCartProduct.product.id))
+        await this.getRepository(PgShoppingCartProduct).softRemove(pgShoppingCartProduct)
+    }
     for (const shoppingCartProduct of shoppingCart.products) {
       const pgProduct = await this.getRepository(PgProduct).findOneOrFail(shoppingCartProduct.id)
+      const existingShoppingCartProduct = pgShoppingCartProducts.find(
+        (pgShoppingCartProduct) => pgShoppingCartProduct.product.id === shoppingCartProduct.id
+      )
       await this.getRepository(PgShoppingCartProduct).save({
-        id: shoppingCartProduct.id,
+        id: existingShoppingCartProduct?.id,
         title: shoppingCartProduct.title,
         amount: shoppingCartProduct.amount,
-        priceInCents: shoppingCartProduct.totalPrinceInCents,
+        priceInCents: shoppingCartProduct.priceInCents,
         shoppingCart: pgShoppingCart,
         product: pgProduct,
       })
@@ -70,7 +75,7 @@ export class PgShoppingCartRepository
           discountInPercentage: pgProduct.totalDiscountInPercentage,
         },
       })
-      shoppingCart.addProduct(product)
+      shoppingCart.addProduct(product, pgShoppingCartProduct.amount)
     })
     return shoppingCart
   }

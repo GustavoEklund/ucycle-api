@@ -13,10 +13,12 @@ import {
   PgAdmissionProposal,
   PgBasePermission,
   PgContact,
+  PgCoupon,
   PgDocument,
   PgErrorLog,
   PgImage,
   PgModule,
+  PgOrder,
   PgOrganization,
   PgOrganizationMember,
   PgProduct,
@@ -80,6 +82,12 @@ export class PgUser {
 
   @OneToMany(() => PgProductCategory, (productCategory) => productCategory.createdBy)
   productCategories!: Promise<PgProductCategory[]>
+
+  @OneToMany(() => PgCoupon, (coupon) => coupon.createdBy)
+  coupons!: Promise<PgOrder[]>
+
+  @OneToMany(() => PgOrder, (order) => order.createdBy)
+  orders!: Promise<PgOrder[]>
 
   @OneToMany(() => PgEmailTemplate, (emailTemplate) => emailTemplate.createdBy)
   emailTemplates!: Promise<PgEmailTemplate[]>

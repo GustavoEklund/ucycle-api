@@ -21,7 +21,14 @@ export class LoadMyShoppingCartUseCase implements LoadMyShoppingCart {
       return new ShoppingCartNotFoundError(input.shoppingCart.id ?? '(no id provided)')
     return {
       id: shoppingCart.id,
-      products: shoppingCart.products,
+      products: shoppingCart.products.map((shoppingCartProduct) => {
+        return {
+          id: shoppingCartProduct.id,
+          title: shoppingCartProduct.title,
+          priceInCents: shoppingCartProduct.priceInCents,
+          amount: shoppingCartProduct.amount,
+        }
+      }),
     }
   }
 }

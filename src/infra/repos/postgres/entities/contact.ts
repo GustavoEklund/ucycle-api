@@ -5,11 +5,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgUser } from '@/infra/repos/postgres/entities'
+import { PgAddress, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'contact' })
 export class PgContact {
@@ -30,6 +31,11 @@ export class PgContact {
 
   @Column({ type: 'varchar', nullable: false })
   value!: string
+
+  @OneToMany(() => PgAddress, (address) => address.phoneContact, {
+    nullable: true,
+  })
+  addresses?: Promise<PgAddress[]>
 
   @ManyToOne(() => PgUser, (user) => user.contacts, {
     cascade: ['insert'],

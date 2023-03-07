@@ -1,14 +1,15 @@
-import { HttpResponse, HttpRequest } from '@/application/helpers'
+import { HttpRequest, HttpResponse } from '@/application/helpers'
 
 export interface HttpGetClient {
-  get: <T = any>(params: HttpGetClient.Input) => Promise<T>
+  get: <T = any>(params: HttpGetClient.Input) => Promise<HttpGetClient.Output<T>>
 }
 
 export namespace HttpGetClient {
   export type Input = {
     url: string
-    params: object
+    params?: object
   }
+  export type Output<T, H = any> = HttpResponse<T, H>
 }
 
 export interface HttpPostClient {

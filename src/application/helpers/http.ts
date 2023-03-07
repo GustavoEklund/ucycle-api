@@ -34,6 +34,11 @@ export const created = <T = any>(data: T): HttpResponse<T> => ({
   data,
 })
 
+export const accepted = <T = any>(data: T): HttpResponse<T> => ({
+  statusCode: 202,
+  data,
+})
+
 export const noContent = (): HttpResponse<undefined> => ({
   statusCode: 204,
   data: undefined,
@@ -64,6 +69,11 @@ export const conflict = (errors: Error[]): HttpResponse<Error[]> => ({
   data: errors,
 })
 
+export const unprocessableEntity = (errors: Error[]): HttpResponse<Error[]> => ({
+  statusCode: 422,
+  data: errors,
+})
+
 export const serverError = (error: unknown): HttpResponse<Error[]> => ({
   statusCode: 500,
   data: [new ServerError(error instanceof Error ? error : undefined)],
@@ -88,12 +98,14 @@ export const isError = (httpResponse: HttpResponse<any>): boolean => {
 export const HttpResponse = {
   ok,
   created,
+  accepted,
   noContent,
   badRequest,
   unauthorized,
   forbidden,
   notFound,
   conflict,
+  unprocessableEntity,
   serverError,
   isError,
   isServerError,

@@ -11,7 +11,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgProductCategory, PgShoppingCartProduct, PgUser } from '@/infra/repos/postgres/entities'
+import {
+  PgOrder,
+  PgProductCategory,
+  PgShoppingCartProduct,
+  PgUser,
+} from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'product' })
 export class PgProduct {
@@ -41,6 +46,9 @@ export class PgProduct {
 
   @OneToMany(() => PgShoppingCartProduct, (shoppingCartProduct) => shoppingCartProduct.product)
   shoppingCartProducts!: Promise<PgShoppingCartProduct[]>
+
+  @ManyToMany(() => PgOrder, (order) => order.items)
+  orders!: Promise<PgOrder[]>
 
   @ManyToOne(() => PgUser, (user) => user.products)
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })

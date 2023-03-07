@@ -63,21 +63,29 @@ export class PgUserAccountRepository
       pictureUrl: user.profile.pictureUrl,
       initials: user.profile.initials,
     })
-    await pgDocumentRepo.save(
-      user.account.documents.map((document) => ({
+    for (const document of user.account.documents) {
+      const pgDocument = await pgDocumentRepo.findOne({
+        where: { number: document.number },
+      })
+      if (pgDocument !== undefined) continue
+      await pgDocumentRepo.save({
         user: pgUser,
         type: document.type,
         number: document.number,
-      }))
-    )
-    await pgContactRepo.save(
-      user.account.contacts.map((contact) => ({
+      })
+    }
+    for (const contact of user.account.contacts) {
+      const pgContact = await pgContactRepo.findOne({
+        where: { value: contact.getFullPlainValue() },
+      })
+      if (pgContact !== undefined) continue
+      await pgContactRepo.save({
         user: pgUser,
         type: contact.type,
-        value: contact.value,
+        value: contact.getFullPlainValue(),
         label: contact.label,
         isPrivate: contact.isPrivate,
-      }))
-    )
+      })
+    }
   }
 }

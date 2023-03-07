@@ -10,36 +10,48 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
+import { PgContact, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'address' })
 export class PgAddress {
   @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
-  @Column({ name: 'country', nullable: false })
+  @Column({ name: 'country', type: 'varchar', nullable: false })
   country!: string
 
-  @Column({ name: 'street_name', nullable: false })
+  @Column({ name: 'street_name', type: 'varchar', nullable: false })
   state!: string
 
-  @Column({ name: 'city', nullable: false })
+  @Column({ name: 'city', type: 'varchar', nullable: false })
   city!: string
 
-  @Column({ name: 'neighbourhood', nullable: false })
+  @Column({ name: 'neighbourhood', type: 'varchar', nullable: false })
   neighbourhood!: string
 
-  @Column({ name: 'street', nullable: false })
+  @Column({ name: 'street', type: 'varchar', nullable: false })
   street!: string
 
-  @Column({ name: 'building_number', nullable: true })
+  @Column({ name: 'building_number', type: 'varchar', nullable: true })
   buildingNumber?: string
+
+  @Column({ name: 'landmark', type: 'varchar', nullable: true })
+  landmark?: string
+
+  @Column({ name: 'type', type: 'varchar', nullable: false })
+  type!: string
 
   @Column({ name: 'zip_code', type: 'varchar', length: 8, nullable: false })
   zipCode!: string
 
+  @Column({ name: 'is_default', type: 'boolean', nullable: false })
+  isDefault!: boolean
+
+  @ManyToOne(() => PgContact, (phoneContact) => phoneContact.addresses)
+  @JoinColumn({ name: 'phone_contact_id', referencedColumnName: 'id' })
+  phoneContact!: PgContact
+
   @OneToMany(() => PgOrganization, (organization) => organization.address)
-  @JoinColumn({ name: 'organization_id', referencedColumnName: 'id' })
   organizations!: Promise<PgOrganization[]>
 
   @ManyToOne(() => PgUser, (user) => user.addresses)
