@@ -42,7 +42,7 @@ describe('CheckoutUseCase', () => {
     inputStub = {
       user: { id: 'any_user_id' },
       shipping: {
-        address: { id: 'any_address_id' },
+        address: { id: 'any_shipping_address_id' },
       },
       items: [
         {
@@ -118,7 +118,7 @@ describe('CheckoutUseCase', () => {
   it('should call save order with correct input', async () => {
     const expectedOrder = new Order({
       id: 'any_uuid',
-      shippingAddressId: 'any_shipping_address_uuid',
+      shippingAddressId: 'any_shipping_address_id',
       userId: userStub.id,
     })
     expectedOrder.addItem(productStub, 2)
@@ -133,7 +133,7 @@ describe('CheckoutUseCase', () => {
   it('should call notify with correct input on success', async () => {
     const expectedOrder = new Order({
       id: 'any_uuid',
-      shippingAddressId: 'any_shipping_address_uuid',
+      shippingAddressId: 'any_shipping_address_id',
       userId: userStub.id,
     })
     expectedOrder.addItem(productStub, 2)

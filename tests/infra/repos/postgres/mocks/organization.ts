@@ -11,6 +11,7 @@ export const mockPgOrganization = ({
   address?: PgAddress
   pictures?: PgImage[]
 }) => ({
+  id: faker.datatype.uuid(),
   name: faker.company.companyName(),
   ownerUser,
   pictures: Promise.resolve(pictures),
