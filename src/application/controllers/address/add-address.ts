@@ -53,15 +53,6 @@ export class AddAddressController extends Controller {
       ...ValidationBuilder.of({ value: httpRequest.zipCode, fieldName: 'zipCode' })
         .required(RequiredType.string)
         .build(),
-      ...ValidationBuilder.of({ value: httpRequest.landmark, fieldName: 'landmark' })
-        .required(RequiredType.string)
-        .build(),
-      ...ValidationBuilder.of({ value: httpRequest.phoneContactId, fieldName: 'phoneContactId' })
-        .required(RequiredType.string)
-        .build(),
-      ...ValidationBuilder.of({ value: httpRequest.phoneContactId, fieldName: 'phoneContactId' })
-        .required(RequiredType.string)
-        .build(),
       ...ValidationBuilder.of({ value: httpRequest.type, fieldName: 'type' })
         .required(RequiredType.string)
         .build(),

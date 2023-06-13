@@ -16,6 +16,7 @@ export abstract class Controller {
     try {
       return await this.perform(httpRequest)
     } catch (error) {
+      console.error(error)
       if (error instanceof DomainException) return HttpResponse.badRequest([error])
       return HttpResponse.serverError(error)
     }

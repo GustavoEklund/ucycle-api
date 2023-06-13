@@ -8,10 +8,7 @@ import { ContactAlreadyExistsError } from '@/domain/entities/errors/contact'
 type HttpRequest = {
   name: string
   email: string
-  phone: string
-  document: string
   password: string
-  socialName: string
 }
 
 type Model = undefined | Error[]
@@ -21,37 +18,19 @@ export class SignUpController extends Controller {
     super()
   }
 
-  async perform({
-    name,
-    email,
-    phone,
-    document,
-    password,
-    socialName,
-  }: HttpRequest): Promise<HttpResponse<Model>> {
+  async perform({ name, email, password }: HttpRequest): Promise<HttpResponse<Model>> {
     const output = await this.signUp.perform({
       account: {
         name,
         password,
         email,
-        document,
-        phone,
       },
-      profile: { socialName: socialName },
     })
-    if (output instanceof DocumentAlreadyExistsError) return HttpResponse.conflict([output])
     if (output instanceof ContactAlreadyExistsError) return HttpResponse.conflict([output])
-    return HttpResponse.ok(undefined)
+    return HttpResponse.noContent()
   }
 
-  public override buildValidators({
-    name,
-    email,
-    phone,
-    document,
-    password,
-    socialName,
-  }: any): Validator[] {
+  public override buildValidators({ name, email, password }: HttpRequest): Validator[] {
     return [
       ...ValidationBuilder.of({ value: name, fieldName: 'name' })
         .required(RequiredType.string)
@@ -59,16 +38,7 @@ export class SignUpController extends Controller {
       ...ValidationBuilder.of({ value: email, fieldName: 'email' })
         .required(RequiredType.string)
         .build(),
-      ...ValidationBuilder.of({ value: phone, fieldName: 'phone' })
-        .required(RequiredType.string)
-        .build(),
-      ...ValidationBuilder.of({ value: document, fieldName: 'document' })
-        .required(RequiredType.string)
-        .build(),
       ...ValidationBuilder.of({ value: password, fieldName: 'password' })
-        .required(RequiredType.string)
-        .build(),
-      ...ValidationBuilder.of({ value: socialName, fieldName: 'socialName' })
         .required(RequiredType.string)
         .build(),
     ]

@@ -20,10 +20,16 @@ export class LogErrorControllerDecorator extends Controller {
     const httpResponse = await this.controller.handle(httpRequest)
     const errors = httpResponse.data
     if (HttpResponse.isError(httpResponse) && this.isArrayOfErrors(errors)) {
-      await this.dbTransaction.openTransaction()
-      await this.logErrors.perform({ user: { id: userId }, errors })
-      await this.dbTransaction.commit()
-      await this.dbTransaction.closeTransaction()
+      try {
+        await this.dbTransaction.openTransaction()
+        await this.logErrors.perform({ user: { id: userId }, errors })
+        await this.dbTransaction.commit()
+        await this.dbTransaction.closeTransaction()
+      } catch (error) {
+        await this.dbTransaction.rollback()
+        await this.dbTransaction.closeTransaction()
+        throw error
+      }
     }
     return httpResponse
   }

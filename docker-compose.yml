@@ -5,7 +5,6 @@ services:
   node-api:
     container_name: node-api
     build: .
-    restart: always
     working_dir: /usr/src/app
     entrypoint: /usr/src/app/.docker/entrypoint.sh
     depends_on:
@@ -22,7 +21,6 @@ services:
   postgres-database:
     container_name: postgres-database
     build: ./.docker/database
-    restart: always
     ports:
       - '5432:5432'
     volumes:
@@ -36,25 +34,53 @@ services:
 
   keycloak-auth:
     container_name: keycloak-auth
-    image: jboss/keycloak:16.1.0
+    image: quay.io/keycloak/keycloak:21.0.1
+    command:
+      - start-dev
     depends_on:
       - postgres-database
     ports:
       - '8080:8080'
-    volumes:
-      - keycloak-data:/opt/jboss/keycloak/standalone/data
     networks:
       - application-network
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - DB_VENDOR=postgres
-      - DB_PORT=5432
-      - DB_ADDR=postgres-database
-      - DB_SCHEMA=public
-      - DB_DATABASE=keycloak
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_PORT=5432
+      - KC_DB_URL_HOST=postgres-database
+      - KC_DB_URL_DATABASE=keycloak
+      - KC_DB_SCHEMA=public
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=postgres
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+
+  aws-s3:
+    container_name: s3
+    build: ./.docker/aws-s3
+    ports:
+      - "9000:9000"
+    volumes:
+      - aws-s3:/home/sirius/data
+    networks:
+      - application-network
+
+  ngrok:
+    container_name: ngrok
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./.docker/ngrok/ngrok.yml:/etc/ngrok.yml
+    networks:
+      - application-network
+    ports:
+      - "4040:4040"
 
 networks:
   application-network:
@@ -62,4 +88,4 @@ networks:
 
 volumes:
   database-data:
-  keycloak-data:
+  aws-s3:

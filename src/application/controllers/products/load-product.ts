@@ -12,7 +12,7 @@ type Model = {
   id: string
   title: string
   description: string
-  pictureUrl: string
+  pictureUrls: string[]
   price: {
     totalInCents: number
     discountInPercentage: number

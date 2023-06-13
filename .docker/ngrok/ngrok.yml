@@ -1,0 +1,16 @@
+version: "2"
+authtoken: 2Qobhvc2Oh3Ks2oqM1wiHUuSDmo_7mAJqYPqLxbKagxw5jLoW
+region: us
+tunnels:
+  node-api:
+    proto: http
+    addr: 3000
+    inspect: false
+  keycloak-auth:
+    proto: http
+    addr: 8080
+    inspect: false
+  aws-s3:
+    proto: http
+    addr: 9000
+    inspect: false
