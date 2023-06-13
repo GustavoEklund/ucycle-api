@@ -4,16 +4,18 @@ import { RequestHandler } from 'express'
 import multer from 'multer'
 
 export const adaptMulter: RequestHandler = (req, res, next) => {
-  const upload = multer().single('picture')
-  upload(req, res, (error) => {
+  const uploads = multer().array('pictures')
+  uploads(req, res, (error) => {
     if (error !== undefined) {
       return res.status(500).json({ error: new ServerError(error).message })
     }
-    if (req.file !== undefined) {
-      req.locals = {
-        ...req.locals,
-        file: { buffer: req.file?.buffer, mimeType: req.file?.mimetype },
-      }
+    if (req.files !== undefined && Array.isArray(req.files)) {
+      req.files.forEach((file) => {
+        req.locals = {
+          ...req.locals,
+          files: [...(req.locals?.files ?? []), { buffer: file.buffer, mimeType: file.mimetype }],
+        }
+      })
     }
     next()
   })

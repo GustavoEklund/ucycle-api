@@ -6,7 +6,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -18,7 +17,7 @@ export class PgProductCategory {
   @PrimaryGeneratedColumn('uuid', { comment: 'uuid primary key' })
   id!: string
 
-  @PrimaryColumn({
+  @Column({
     type: 'varchar',
     length: 32,
     unique: true,
@@ -40,7 +39,7 @@ export class PgProductCategory {
   })
   description?: string
 
-  @OneToMany(() => PgProduct, (product) => product.productCategories)
+  @OneToMany(() => PgProduct, (product) => product.category)
   products!: Promise<PgProduct[]>
 
   @ManyToOne(() => PgProductCategory, (productCategory) => productCategory.childCategories, {

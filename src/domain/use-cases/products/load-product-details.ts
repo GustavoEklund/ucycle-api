@@ -15,7 +15,7 @@ export class LoadProductDetailsUseCase implements LoadProductDetails {
       id: product.id,
       title: product.title,
       description: product.description,
-      pictureUrl: product.pictureUrl,
+      pictureUrls: product.pictureUrls,
       price: {
         totalInCents: product.price.totalInCents,
         discountInPercentage: product.price.discountInPercentage,
@@ -35,7 +35,7 @@ export namespace LoadProductDetails {
         id: string
         title: string
         description: string
-        pictureUrl: string
+        pictureUrls: string[]
         price: {
           totalInCents: number
           discountInPercentage: number

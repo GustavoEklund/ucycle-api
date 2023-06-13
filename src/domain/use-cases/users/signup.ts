@@ -15,38 +15,32 @@ export interface SignUp {
 export class SignUpUseCase extends Publisher implements SignUp {
   public constructor(
     private readonly userAccountRepo: SaveUserAccount,
-    private readonly documentRepo: LoadDocument,
     private readonly contactRepo: LoadContact,
     private readonly crypto: UUIDGenerator,
-    private readonly userAccountApi: SaveKeycloakUserAccount
+    private readonly userAccountGateway: SaveKeycloakUserAccount
   ) {
     super()
   }
 
-  public async perform({ account, profile }: SignUp.Input): Promise<SignUp.Output> {
-    const document = await this.documentRepo.load({
-      number: Document.removeNonNumbers(account.document),
-    })
-    if (document !== undefined) return new DocumentAlreadyExistsError(account.document)
+  public async perform({ account }: SignUp.Input): Promise<SignUp.Output> {
     const emailContact = await this.contactRepo.load({ value: account.email })
     if (emailContact !== undefined) return new ContactAlreadyExistsError(account.email)
-    const phoneContact = await this.contactRepo.load({
-      value: Phone.removeNonNumbers(account.phone),
-    })
-    if (phoneContact !== undefined) return new ContactAlreadyExistsError(account.phone)
     const userId = this.crypto.uuid()
-    const profileUser = new UserProfile({ socialName: profile.socialName })
+    const profileUser = new UserProfile({})
     const accountUser = new UserAccount({
       name: account.name,
       emails: [
-        { value: account.email, label: EmailType.primary, verified: false, isPrivate: true },
+        {
+          value: account.email,
+          label: EmailType.primary,
+          verified: false,
+          isPrivate: true,
+        },
       ],
-      documents: [account.document],
-      phones: [
-        { value: account.phone, label: PhoneType.primary, verified: false, isPrivate: true },
-      ],
+      documents: [],
+      phones: [],
       verified: false,
-      status: UserAccountStatus.disabled,
+      status: UserAccountStatus.active,
       userId,
     })
     const userName = new Name({ value: account.name })
@@ -55,7 +49,7 @@ export class SignUpUseCase extends Publisher implements SignUp {
       profile: profileUser,
       account: accountUser,
     })
-    const { id: keycloakUserId } = await this.userAccountApi.saveWithKeycloak({
+    const { id: keycloakUserId } = await this.userAccountGateway.saveWithKeycloak({
       firstName: userName.first,
       lastName: userName.last,
       email: account.email,
@@ -73,13 +67,8 @@ export namespace SignUp {
     account: {
       name: string
       email: string
-      phone: string
-      document: string
       password: string
     }
-    profile: {
-      socialName: string
-    }
   }
-  export type Output = undefined | DocumentAlreadyExistsError | ContactAlreadyExistsError
+  export type Output = undefined | ContactAlreadyExistsError
 }

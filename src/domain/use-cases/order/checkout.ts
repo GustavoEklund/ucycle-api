@@ -4,7 +4,7 @@ import { UserNotFoundError } from '@/domain/entities/errors/user'
 import { OrderMustHaveAtLeastOneItemError } from '@/domain/entities/errors/order'
 import { ProductNotFoundError } from '@/domain/entities/errors/product'
 import { ShippingCalculatorGateway, UUIDGenerator } from '@/domain/contracts/gateways'
-import { Order } from '@/domain/entities/order'
+import { Order, OrderStatus } from '@/domain/entities/order'
 import { SaveOrder } from '@/domain/contracts/repos/order'
 import { OrderPlacedEvent } from '@/domain/events/order'
 
@@ -33,6 +33,8 @@ export class CheckoutUseCase extends Publisher implements Checkout {
       id: orderId,
       shippingAddressId: input.shipping.address.id,
       userId: user.id,
+      freight: 27.7 * 100,
+      status: OrderStatus.DRAFT,
     })
     for (const item of input.items) {
       const product = await this.productRepository.load({ id: item.id })
@@ -50,7 +52,7 @@ export class CheckoutUseCase extends Publisher implements Checkout {
     return {
       order: {
         id: order.id,
-        totalInCents: order.getTotal(),
+        totalInCents: order.getTotalInCents(),
       },
     }
   }

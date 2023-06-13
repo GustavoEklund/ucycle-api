@@ -9,21 +9,37 @@ export class ProductQuery extends PgRepository implements LoadProductsFromSearch
     const query =
       searchTerms === undefined
         ? `
-            SELECT product.*
+            SELECT
+              product.*,
+              image.url as picture_url
             FROM product
+            LEFT JOIN LATERAL (
+              SELECT url
+              FROM image
+              WHERE image.product_id = product.id
+              ORDER BY image.created_at
+              LIMIT 1) as image ON true
             LIMIT $1
-            OFFSET $2
+            OFFSET $2;
         `
         : `
-            SELECT product.*
+            SELECT
+            product.*,
+            image.url as picture_url
             FROM product
+            LEFT JOIN LATERAL (
+              SELECT url
+              FROM image
+              WHERE image.product_id = product.id
+              ORDER BY image.created_at
+              LIMIT 1) as image ON true
             WHERE to_tsvector(title) @@ to_tsquery('${searchTerms}')
             LIMIT $1
             OFFSET $2
         `
     const queryResult = await this.getEntityManager().query(query, [
       input.page.size,
-      input.page.number - 1,
+      (input.page.number - 1) * input.page.size,
     ])
     if (!Array.isArray(queryResult)) return []
     return queryResult.map((product) => ({

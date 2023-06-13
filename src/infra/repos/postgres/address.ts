@@ -26,7 +26,7 @@ export class PgAddressRepository
       country: pgAddress.country,
       zipCode: pgAddress.zipCode,
       landmark: pgAddress.landmark,
-      phoneContactId: pgAddress.phoneContact.id,
+      phoneContactId: pgAddress.phoneContact?.id,
       isDefault: pgAddress.isDefault,
       type: pgAddress.type as AddressType,
       userId: pgAddress.createdBy.id,
@@ -35,9 +35,12 @@ export class PgAddressRepository
 
   public async save(input: Address): Promise<void> {
     const pgUser = await this.getRepository(PgUser).findOneOrFail(input.userId)
-    const pgPhoneContact = await this.getRepository(PgContact).findOneOrFail(
-      input.phoneContact.phoneContactId
-    )
+    let pgPhoneContact: PgContact | undefined
+    if (input.phoneContact !== undefined) {
+      pgPhoneContact = await this.getRepository(PgContact).findOneOrFail(
+        input.phoneContact.phoneContactId
+      )
+    }
     await this.getRepository(PgAddress).save({
       id: input.id,
       street: input.street,

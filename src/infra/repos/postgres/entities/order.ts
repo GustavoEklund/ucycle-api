@@ -4,13 +4,15 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgCoupon, PgProduct, PgUser } from '@/infra/repos/postgres/entities'
+import { PgAddress, PgCoupon, PgOrderItem, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'order' })
 export class PgOrder {
@@ -20,15 +22,38 @@ export class PgOrder {
   @Column({ name: 'code', type: 'varchar', nullable: false })
   code!: string
 
-  @ManyToMany(() => PgProduct, (product) => product.orders)
-  items!: Promise<PgProduct[]>
+  @OneToMany(() => PgOrderItem, (orderItem) => orderItem.order)
+  items!: Promise<PgOrderItem[]>
 
   @ManyToMany(() => PgCoupon, (coupon) => coupon.orders)
-  @JoinColumn()
+  @JoinTable({
+    name: 'order_coupon',
+    joinColumn: {
+      name: 'order_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'coupon_id',
+      referencedColumnName: 'id',
+    },
+  })
   coupons!: Promise<PgCoupon[]>
 
-  @Column({ name: 'freight', type: 'float', nullable: false })
-  freight!: number
+  @Column({ name: 'shipping_price_in_cents', type: 'float', nullable: false })
+  shippingPriceInCents!: number
+
+  @Column({ name: 'estimated_delivery_date', type: 'date', nullable: false })
+  estimatedDeliveryDate!: Date
+
+  @ManyToOne(() => PgAddress, (address) => address.orders)
+  @JoinColumn({ name: 'shipping_address_id', referencedColumnName: 'id' })
+  shippingAddress!: PgAddress
+
+  @Column({ name: 'status', type: 'varchar', nullable: false })
+  status!: string
+
+  @Column({ name: 'total_in_cents', type: 'float', nullable: false })
+  totalInCents!: number
 
   @ManyToOne(() => PgUser, (user) => user.orders)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })

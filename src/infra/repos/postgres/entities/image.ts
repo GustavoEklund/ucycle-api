@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
+import { PgOrganization, PgProduct, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'image' })
 export class PgImage {
@@ -19,9 +19,18 @@ export class PgImage {
   @Column()
   url!: string
 
-  @ManyToOne(() => PgOrganization, (organization) => organization.pictures)
+  @ManyToOne(() => PgProduct, (product) => product.pictures, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
+  product?: PgProduct
+
+  @ManyToOne(() => PgOrganization, (organization) => organization.pictures, {
+    nullable: true,
+    cascade: true,
+  })
   @JoinColumn({ name: 'organization_id', referencedColumnName: 'id' })
-  organization!: PgOrganization
+  organization?: PgOrganization
 
   @ManyToOne(() => PgUser, (user) => user.images)
   @JoinColumn({ name: 'created_by' })

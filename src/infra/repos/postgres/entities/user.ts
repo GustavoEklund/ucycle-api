@@ -19,6 +19,7 @@ import {
   PgImage,
   PgModule,
   PgOrder,
+  PgOrderItem,
   PgOrganization,
   PgOrganizationMember,
   PgProduct,
@@ -88,6 +89,9 @@ export class PgUser {
 
   @OneToMany(() => PgOrder, (order) => order.createdBy)
   orders!: Promise<PgOrder[]>
+
+  @OneToMany(() => PgOrderItem, (orderItem) => orderItem.createdBy)
+  orderItems!: Promise<PgOrderItem[]>
 
   @OneToMany(() => PgEmailTemplate, (emailTemplate) => emailTemplate.createdBy)
   emailTemplates!: Promise<PgEmailTemplate[]>

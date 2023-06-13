@@ -50,7 +50,7 @@ export namespace AddAddress {
     neighbourhood: string
     buildingNumber?: string
     landmark?: string
-    phoneContactId: string
+    phoneContactId?: string
     type: AddressType
     userId: string
   }

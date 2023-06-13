@@ -38,6 +38,7 @@ export class ShoppingCart extends Entity {
       title: product.title,
       priceInCents: product.price.totalInCents,
       amount: amount,
+      pictureUrl: product.pictureUrls[0],
     })
     this._products.push(shoppingCartProduct)
   }

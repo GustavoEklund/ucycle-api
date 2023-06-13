@@ -1,21 +1,29 @@
 import { Entity } from '@/domain/entities'
 import { Product } from '@/domain/entities/product'
-import { Coupon, OrderItem } from '@/domain/entities/order'
+import { Coupon, OrderItem, OrderStatus } from '@/domain/entities/order'
 
 export class Order extends Entity {
   private readonly _items: OrderItem[]
   private readonly coupons: Coupon[]
   private readonly _shippingAddressId: string
   private readonly _freight: number
-  private readonly userId: string
+  private readonly _userId: string
+  private _status: OrderStatus
 
-  public constructor(input: { id: string; shippingAddressId: string; userId: string }) {
+  public constructor(input: {
+    id: string
+    shippingAddressId: string
+    userId: string
+    freight?: number
+    status: OrderStatus
+  }) {
     super({ id: input.id })
     this._items = []
     this.coupons = []
-    this._freight = 0
+    this._freight = input.freight ?? 0
     this._shippingAddressId = input.shippingAddressId
-    this.userId = input.userId
+    this._userId = input.userId
+    this._status = input.status
   }
 
   public get items(): OrderItem[] {
@@ -24,6 +32,26 @@ export class Order extends Entity {
 
   public get freight(): number {
     return this._freight
+  }
+
+  public get shippingAddressId(): string {
+    return this._shippingAddressId
+  }
+
+  public get userId(): string {
+    return this._userId
+  }
+
+  public get status(): OrderStatus {
+    return this._status
+  }
+
+  public set status(status: OrderStatus) {
+    this._status = status
+  }
+
+  public pay(): void {
+    this._status = OrderStatus.PAYMENT_PENDING
   }
 
   public addItem(product: Product, amount: number): void {
@@ -43,7 +71,7 @@ export class Order extends Entity {
     }
   }
 
-  public getTotal(): number {
+  public getTotalInCents(): number {
     let total = 0
     for (const item of this._items) {
       total += item.getTotal()

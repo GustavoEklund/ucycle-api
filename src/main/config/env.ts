@@ -4,7 +4,7 @@ import { ConnectionOptions } from 'typeorm'
 loadDotEnv()
 
 const srcDir = process.env.TS_NODE_DEV === undefined ? 'dist' : 'src'
-const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000
+const oneDayInMilliseconds = 24 * 60 * 60 * 1000
 
 export const env = {
   server: {
@@ -18,7 +18,7 @@ export const env = {
   session: {
     secret: process.env.SESSION_SECRET ?? '',
     cookie: {
-      maxAge: sevenDaysInMilliseconds,
+      maxAge: oneDayInMilliseconds,
     },
   },
   keycloak: {
@@ -34,6 +34,12 @@ export const env = {
     clientSecret: process.env.FB_CLIENT_SECRET ?? '',
     accessToken: process.env.FB_ACCESS_TOKEN ?? '',
   },
+  mercadoPago: {
+    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN ?? '',
+  },
+  correios: {
+    baseApiUrl: process.env.CORREIOS_BASE_API_URL ?? 'http://ws.correios.com.br',
+  },
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY ?? '',
     sender: {
@@ -47,8 +53,10 @@ export const env = {
     authToken: process.env.TWILIO_AUTH_TOKEN ?? '',
   },
   s3: {
-    accessKey: process.env.AWS_S3_ACCESS_KEY ?? '',
-    secret: process.env.AWS_S3_SECRET ?? '',
+    endpointUrl: process.env.AWS_S3_ENDPOINT_URL ?? '',
+    url: process.env.AWS_S3_URL ?? '',
+    accessKey: process.env.AWS_S3_ACCESS_KEY_ID ?? '',
+    secret: process.env.AWS_S3_SECRET_ACCESS_KEY ?? '',
     bucket: process.env.AWS_S3_BUCKET ?? '',
   },
   kafka: {

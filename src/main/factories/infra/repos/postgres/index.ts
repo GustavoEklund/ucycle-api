@@ -1,6 +1,7 @@
 export * from './address'
 export * from './organization'
 export * from './base-permission'
+export * from './category'
 export * from './shopping-cart'
 export * from './contact'
 export * from './coupon'

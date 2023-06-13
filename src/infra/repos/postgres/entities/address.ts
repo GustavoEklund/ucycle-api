@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PgContact, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
+import { PgContact, PgOrder, PgOrganization, PgUser } from '@/infra/repos/postgres/entities'
 
 @Entity({ name: 'address' })
 export class PgAddress {
@@ -20,7 +20,7 @@ export class PgAddress {
   @Column({ name: 'country', type: 'varchar', nullable: false })
   country!: string
 
-  @Column({ name: 'street_name', type: 'varchar', nullable: false })
+  @Column({ name: 'state', type: 'varchar', nullable: false })
   state!: string
 
   @Column({ name: 'city', type: 'varchar', nullable: false })
@@ -47,12 +47,17 @@ export class PgAddress {
   @Column({ name: 'is_default', type: 'boolean', nullable: false })
   isDefault!: boolean
 
-  @ManyToOne(() => PgContact, (phoneContact) => phoneContact.addresses)
+  @ManyToOne(() => PgContact, (phoneContact) => phoneContact.addresses, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'phone_contact_id', referencedColumnName: 'id' })
-  phoneContact!: PgContact
+  phoneContact?: PgContact
 
   @OneToMany(() => PgOrganization, (organization) => organization.address)
   organizations!: Promise<PgOrganization[]>
+
+  @OneToMany(() => PgOrder, (order) => order.shippingAddress)
+  orders!: Promise<PgOrder[]>
 
   @ManyToOne(() => PgUser, (user) => user.addresses)
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })

@@ -10,3 +10,7 @@ export namespace LoadProduct {
   }
   export type Output = undefined | Product
 }
+
+export interface SaveProduct {
+  save: (product: Product) => Promise<void>
+}

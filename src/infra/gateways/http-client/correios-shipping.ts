@@ -1,7 +1,8 @@
 import { ShippingCalculatorGateway } from '@/domain/contracts/gateways/shipping'
 import { HttpGetClient } from '@/infra/gateways'
+import Xml2js from 'xml2js'
 
-export class CorreiosShippingGateway implements ShippingCalculatorGateway {
+export class CorreiosShippingHttpClientGateway implements ShippingCalculatorGateway {
   public constructor(
     private readonly httpClient: HttpGetClient,
     private readonly baseCorreiosUrl: string,
@@ -13,27 +14,45 @@ export class CorreiosShippingGateway implements ShippingCalculatorGateway {
   public async calculate(
     input: ShippingCalculatorGateway.Input
   ): Promise<ShippingCalculatorGateway.Output> {
-    const url = new URL(`${this.baseCorreiosUrl}/calculador/CalcPrecoPrazo.aspx`)
-    url.searchParams.append('nCdEmpresa', '')
-    url.searchParams.append('sDsSenha', '')
-    url.searchParams.append('nCdServico', '04014')
-    url.searchParams.append('sCepOrigem', this.originZipcode)
-    url.searchParams.append('sCepDestino', input.zipcode)
-    url.searchParams.append('nVlPeso', String(input.item.weight))
-    url.searchParams.append('nCdFormato', '1')
-    url.searchParams.append('nVlComprimento', String(input.item.dimensions.length))
-    url.searchParams.append('nVlAltura', String(input.item.dimensions.height))
-    url.searchParams.append('nVlLargura', String(input.item.dimensions.width))
-    url.searchParams.append('nVlDiametro', '0')
-    url.searchParams.append('sCdMaoPropria', 'S')
-    url.searchParams.append('nVlValorDeclarado', '0')
-    url.searchParams.append('sCdAvisoRecebimento', 'N')
-    const httpResponse = await this.httpClient.get<{ Valor: number; PrazoEntrega: string }>({
-      url: url.toString(),
+    const urlSearchParams = new URLSearchParams({
+      StrRetorno: 'xml',
+      nCdEmpresa: '',
+      sDsSenha: '',
+      nCdServico: '04014',
+      sCepOrigem: this.originZipcode,
+      sCepDestino: input.zipcode,
+      nVlPeso: String(input.item.weight),
+      nCdFormato: '1',
+      nVlComprimento: String(input.item.dimensions.length),
+      nVlAltura: String(input.item.dimensions.height),
+      nVlLargura: String(input.item.dimensions.width),
+      nVlDiametro: '0',
+      sCdMaoPropria: 'S',
+      nVlValorDeclarado: '0',
+      sCdAvisoRecebimento: 'N',
     })
+    const httpResponse = await this.httpClient.get<{ Valor: number; PrazoEntrega: string }>({
+      url: `${this.baseCorreiosUrl}/calculador/CalcPrecoPrazo.aspx?${urlSearchParams.toString()}`,
+    })
+    const shippingData: { freightPrice: number; estimatedDeliveryDate: Date } = await new Promise(
+      (resolve, reject) => {
+        new Xml2js.Parser().parseString(httpResponse, (error, result) => {
+          if (error) return reject(error)
+          const { Valor, PrazoEntrega } = result.Servicos.cServico[0]
+          const freightPrice = parseFloat(Valor[0].replace(',', '.').replace(/[^\d.-]/g, ''))
+          const freightDeadline = parseInt(PrazoEntrega[0])
+          const estimatedDeliveryDate = new Date()
+          estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + freightDeadline)
+          return resolve({
+            freightPrice,
+            estimatedDeliveryDate,
+          })
+        })
+      }
+    )
     return {
-      valueInCents: httpResponse.data.Valor * 100,
-      estimatedDeliveryDate: new Date(httpResponse.data.PrazoEntrega),
+      valueInCents: shippingData.freightPrice * 100,
+      estimatedDeliveryDate: new Date(shippingData.estimatedDeliveryDate),
     }
   }
 }

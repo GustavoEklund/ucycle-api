@@ -10,7 +10,7 @@ export class Address extends Entity {
   private readonly _neighbourhood: string
   private readonly _buildingNumber: string | undefined
   private readonly _landmark: string | undefined
-  private readonly _phoneContact: AddressPhoneContact
+  private readonly _phoneContact?: AddressPhoneContact
   private readonly _type: AddressType
   private readonly _userId: string
 
@@ -23,7 +23,7 @@ export class Address extends Entity {
     country: string
     neighbourhood: string
     buildingNumber?: string
-    phoneContactId: string
+    phoneContactId?: string
     landmark?: string
     type: AddressType
     isDefault?: boolean
@@ -37,10 +37,12 @@ export class Address extends Entity {
     this._country = input.country
     this._neighbourhood = input.neighbourhood
     this._buildingNumber = input.buildingNumber
-    this._phoneContact = new AddressPhoneContact({
-      addressId: this.id,
-      phoneContactId: input.phoneContactId,
-    })
+    this._phoneContact = input.phoneContactId
+      ? new AddressPhoneContact({
+          addressId: this.id,
+          phoneContactId: input.phoneContactId,
+        })
+      : undefined
     this._landmark = input.landmark
     this._type = input.type
     this._isDefault = input.isDefault === undefined ? false : input.isDefault
@@ -85,7 +87,7 @@ export class Address extends Entity {
     return this._landmark
   }
 
-  public get phoneContact(): AddressPhoneContact {
+  public get phoneContact(): AddressPhoneContact | undefined {
     return this._phoneContact
   }
 

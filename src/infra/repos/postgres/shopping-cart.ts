@@ -54,7 +54,14 @@ export class PgShoppingCartRepository
   public async load({ id, userId }: LoadShoppingCart.Input): Promise<LoadShoppingCart.Output> {
     const pgShoppingCarts = await this.getRepository(PgShoppingCart).find({
       where: [{ id }, { createdBy: { id: userId } }],
-      relations: ['shoppingCartProducts', 'shoppingCartProducts.product', 'createdBy'],
+      relations: [
+        'shoppingCartProducts',
+        'shoppingCartProducts.product',
+        'shoppingCartProducts.product.category',
+        'shoppingCartProducts.product.pictures',
+        'shoppingCartProducts.product.createdBy',
+        'createdBy',
+      ],
     })
     const pgShoppingCart = pgShoppingCarts[0]
     if (pgShoppingCart === undefined) return undefined
@@ -63,13 +70,26 @@ export class PgShoppingCartRepository
       userId: pgShoppingCart.createdBy?.id,
     })
     const pgShoppingCartProducts = await pgShoppingCart.shoppingCartProducts
-    pgShoppingCartProducts.forEach((pgShoppingCartProduct) => {
+    const promises = pgShoppingCartProducts.map(async (pgShoppingCartProduct) => {
       const pgProduct = pgShoppingCartProduct.product
+      const pgImages = await pgProduct.pictures
+      const pgUser = await pgProduct.createdBy
+      const pgProductCategory = await pgProduct.category
       const product = new Product({
         id: pgProduct.id,
         title: pgProduct.title,
-        description: pgProduct.description ?? '',
-        pictureUrl: pgProduct.pictureUrl,
+        description: pgProduct.description,
+        pictureUrls: pgImages.map((pgImage) => pgImage.url),
+        condition: pgProduct.condition,
+        categoryId: pgProductCategory.id,
+        sellerId: pgUser.id,
+        warranty: {
+          duration: {
+            time: pgProduct.warrantyDurationTime,
+            unit: pgProduct.warrantyDurationUnit,
+          },
+          type: pgProduct.warrantyType,
+        },
         price: {
           totalInCents: pgProduct.totalPriceInCents,
           discountInPercentage: pgProduct.totalDiscountInPercentage,
@@ -77,6 +97,7 @@ export class PgShoppingCartRepository
       })
       shoppingCart.addProduct(product, pgShoppingCartProduct.amount)
     })
+    await Promise.all(promises)
     return shoppingCart
   }
 }

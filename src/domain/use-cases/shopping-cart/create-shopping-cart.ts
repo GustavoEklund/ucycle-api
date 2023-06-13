@@ -14,7 +14,10 @@ export class CreateShoppingCartUseCase implements CreateShoppingCart {
 
   public async perform(input: CreateShoppingCart.Input): Promise<CreateShoppingCart.Output> {
     const shoppingCartId = this.crypto.uuid()
-    const shoppingCart = new ShoppingCart({ id: shoppingCartId, userId: input.user.id })
+    const shoppingCart = new ShoppingCart({
+      id: shoppingCartId,
+      userId: input.user.id,
+    })
     await this.shoppingCartRepository.save(shoppingCart)
     return { id: shoppingCart.id }
   }

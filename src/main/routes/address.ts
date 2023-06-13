@@ -1,12 +1,13 @@
 import { env } from '@/main/config/env'
 import { adaptExpressRoute as adapt, adaptKeycloakProtect } from '@/main/adapters'
-
-import { Router } from 'express'
 import {
   makeAddAddressController,
+  makeLoadMyAddressesController,
   makeRemoveAddressController,
+  makeSetAddressDefaultController,
 } from '@/main/factories/application/controllers/address'
-import { makeSetAddressDefaultController } from '@/main/factories/application/controllers/address/set-address-default'
+
+import { Router } from 'express'
 
 export default (router: Router): void => {
   router.post(
@@ -23,5 +24,10 @@ export default (router: Router): void => {
     '/address/:addressId',
     adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
     adapt(makeRemoveAddressController())
+  )
+  router.get(
+    '/addresses',
+    adaptKeycloakProtect(`realm:default-roles-${env.keycloak.realm}`),
+    adapt(makeLoadMyAddressesController())
   )
 }

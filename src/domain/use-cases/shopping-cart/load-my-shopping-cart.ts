@@ -11,9 +11,9 @@ export class LoadMyShoppingCartUseCase implements LoadMyShoppingCart {
 
   public async perform(input: LoadMyShoppingCart.Input): Promise<LoadMyShoppingCart.Output> {
     let shoppingCart: ShoppingCart | undefined
-    if (input.user.id !== undefined) {
-      shoppingCart = await this.shoppingCartRepository.load({ userId: input.user.id })
-    }
+    // if (input.user.id !== undefined) {
+    //   shoppingCart = await this.shoppingCartRepository.load({ userId: input.user.id })
+    // }
     if (input.shoppingCart.id !== undefined) {
       shoppingCart = await this.shoppingCartRepository.load({ id: input.shoppingCart.id })
     }
@@ -27,6 +27,7 @@ export class LoadMyShoppingCartUseCase implements LoadMyShoppingCart {
           title: shoppingCartProduct.title,
           priceInCents: shoppingCartProduct.priceInCents,
           amount: shoppingCartProduct.amount,
+          pictureUrl: shoppingCartProduct.pictureUrl,
         }
       }),
     }
@@ -46,6 +47,7 @@ export namespace LoadMyShoppingCart {
           title: string
           priceInCents: number
           amount: number
+          pictureUrl: string
         }[]
       }
     | ShoppingCartNotFoundError
