@@ -54,13 +54,10 @@ export class PgOrderRepository extends PgRepository implements SaveOrder, LoadOr
   }
 
   public async save(order: Order): Promise<void> {
-    console.log('111111111111111111111111111111111111111')
     const shippingAddress = await this.getRepository(PgAddress).findOneOrFail(
       order.shippingAddressId
     )
-    console.log('222222222222222222222222222222222222222222')
     const pgUser = await this.getRepository(PgUser).findOneOrFail(order.userId)
-    console.log('3333333333333333333333333333333333333333')
     const pgOrder = this.getRepository(PgOrder).create({
       id: order.id,
       code: order.id,
@@ -72,15 +69,11 @@ export class PgOrderRepository extends PgRepository implements SaveOrder, LoadOr
       shippingPriceInCents: order.freight,
       estimatedDeliveryDate: new Date(),
     })
-    console.log('4444444444444444444444444444444444444444')
     await this.getRepository(PgOrder).save(pgOrder)
-    console.log('555555555555555555555555555555555555555')
     for (const item of order.items) {
-      console.log('66666666666666666666666666666666666666', item.productId)
       const pgProduct = await this.getRepository(PgProduct).findOneOrFail(item.productId, {
         relations: ['pictures'],
       })
-      console.log('77777777777777777777777777777777777777', item.productId)
       const pgImage = (await pgProduct.pictures)[0]
       const pgOrderItem = this.getRepository(PgOrderItem).create({
         productTitle: pgProduct.title,
